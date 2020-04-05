@@ -1,0 +1,43 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "ch.helpfuleth.instanthelpfinder",
+      "nativeLanguage": "de"
+    },
+    "jhipsterVersion": "6.8.0",
+    "applicationType": "monolith",
+    "baseName": "instantHelpFinder",
+    "packageName": "ch.helpfuleth.instanthelpfinder",
+    "packageFolder": "ch/helpfuleth/instanthelpfinder",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mariadb",
+    "prodDatabaseType": "mariadb",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "NjNlMzQxNmNmZWJlZTNmNWZjNGRkNzE1MzFjYWRhNzhmNWEzY2QwYTI2NzU5NTE2MDZkZjdmMTVlNWJkMTkyZTg5ODI1ZWM5NDRmZjZiZjE5MjkyOWQ3MzhkMmY5ODlmNjdhMTkxNWM5N2YyMGJjNTYzMjhlODJkNTM1NGZjOWQ=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "angularX",
+    "clientTheme": "cerulean",
+    "clientThemeVariant": "primary",
+    "creationTimestamp": 1586081272085,
+    "testFrameworks": ["protractor"],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "nativeLanguage": "de",
+    "languages": ["de", "en", "fr", "it"],
+    "blueprints": []
+  }
+}
