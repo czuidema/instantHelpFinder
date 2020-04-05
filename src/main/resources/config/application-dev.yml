@@ -46,7 +46,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mariadb://localhost:3306/instantHelpFinder?useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: root
+    username: helpfuleth_dev
     password:
     hikari:
       poolName: Hikari
