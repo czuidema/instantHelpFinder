@@ -1,0 +1,21 @@
+{
+  "instantHelpFinderApp": {
+    "doctor": {
+      "home": {
+        "title": "Doctors",
+        "createLabel": "Genera un nuovo Doctor",
+        "createOrEditLabel": "Genera o modifica un Doctor",
+        "notFound": "No Doctors found"
+      },
+      "created": "&Egrave; stato generato un nuovo Doctor con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Doctor identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Doctor con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Doctor {{ id }}?"
+      },
+      "detail": {
+        "title": "Doctor"
+      }
+    }
+  }
+}

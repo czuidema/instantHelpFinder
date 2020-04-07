@@ -1,0 +1,22 @@
+{
+  "instantHelpFinderApp": {
+    "userRole": {
+      "home": {
+        "title": "User Roles",
+        "createLabel": "User Role erstellen",
+        "createOrEditLabel": "User Role erstellen oder bearbeiten",
+        "notFound": "No User Roles found"
+      },
+      "created": "User Role erstellt mit ID {{ param }}",
+      "updated": "User Role aktualisiert mit ID {{ param }}",
+      "deleted": "User Role gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll User Role {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "User Role"
+      },
+      "pushSubscrioption": "Push Subscrioption"
+    }
+  }
+}

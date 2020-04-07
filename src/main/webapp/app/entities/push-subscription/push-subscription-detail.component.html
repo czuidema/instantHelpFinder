@@ -1,0 +1,38 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="pushSubscription">
+            <h2><span jhiTranslate="instantHelpFinderApp.pushSubscription.detail.title">Push Subscription</span> {{ pushSubscription.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="instantHelpFinderApp.pushSubscription.endpoint">Endpoint</span></dt>
+                <dd>
+                    <span>{{ pushSubscription.endpoint }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.pushSubscription.auth">Auth</span></dt>
+                <dd>
+                    <span>{{ pushSubscription.auth }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.pushSubscription.p256dh">P 256 Dh</span></dt>
+                <dd>
+                    <span>{{ pushSubscription.p256dh }}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/push-subscription', pushSubscription.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

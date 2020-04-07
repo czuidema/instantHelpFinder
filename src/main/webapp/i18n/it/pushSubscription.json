@@ -1,0 +1,25 @@
+{
+  "instantHelpFinderApp": {
+    "pushSubscription": {
+      "home": {
+        "title": "PushSubscriptions",
+        "createLabel": "Genera un nuovo Push Subscription",
+        "createOrEditLabel": "Genera o modifica un Push Subscription",
+        "notFound": "No Push Subscriptions found"
+      },
+      "created": "&Egrave; stato generato un nuovo Push Subscription con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Push Subscription identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Push Subscription con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Push Subscription {{ id }}?"
+      },
+      "detail": {
+        "title": "Push Subscription"
+      },
+      "endpoint": "Endpoint",
+      "auth": "Auth",
+      "p256dh": "P 256 Dh",
+      "userRole": "User Role"
+    }
+  }
+}

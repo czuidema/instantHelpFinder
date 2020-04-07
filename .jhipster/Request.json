@@ -1,0 +1,44 @@
+{
+    "name": "Request",
+    "fields": [
+        {
+            "fieldName": "location",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "doctor",
+            "otherEntityRelationshipName": "request",
+            "relationshipName": "doctor",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "iCUNurse",
+            "otherEntityRelationshipName": "request",
+            "relationshipName": "icuNurse",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityName": "assistant",
+            "otherEntityRelationshipName": "requests",
+            "relationshipName": "assistants",
+            "otherEntityField": "id",
+            "ownerSide": true
+        }
+    ],
+    "changelogDate": "20200407201600",
+    "entityTableName": "request",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

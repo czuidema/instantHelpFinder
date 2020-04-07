@@ -1,0 +1,16 @@
+{
+    "name": "Doctor",
+    "fields": [],
+    "relationships": [],
+    "changelogDate": "20200407201300",
+    "entityTableName": "doctor",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

@@ -1,0 +1,22 @@
+{
+  "instantHelpFinderApp": {
+    "assistant": {
+      "home": {
+        "title": "Assistants",
+        "createLabel": "Assistant erstellen",
+        "createOrEditLabel": "Assistant erstellen oder bearbeiten",
+        "notFound": "No Assistants found"
+      },
+      "created": "Assistant erstellt mit ID {{ param }}",
+      "updated": "Assistant aktualisiert mit ID {{ param }}",
+      "deleted": "Assistant gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Assistant {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Assistant"
+      },
+      "requests": "Requests"
+    }
+  }
+}

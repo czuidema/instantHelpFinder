@@ -1,0 +1,21 @@
+{
+  "instantHelpFinderApp": {
+    "iCUNurse": {
+      "home": {
+        "title": "ICU Nurses",
+        "createLabel": "ICU Nurse erstellen",
+        "createOrEditLabel": "ICU Nurse erstellen oder bearbeiten",
+        "notFound": "No ICU Nurses found"
+      },
+      "created": "ICU Nurse erstellt mit ID {{ param }}",
+      "updated": "ICU Nurse aktualisiert mit ID {{ param }}",
+      "deleted": "ICU Nurse gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll ICU Nurse {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "ICU Nurse"
+      }
+    }
+  }
+}

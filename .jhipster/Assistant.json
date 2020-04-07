@@ -1,0 +1,25 @@
+{
+    "name": "Assistant",
+    "fields": [],
+    "relationships": [
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityName": "request",
+            "otherEntityRelationshipName": "assistants",
+            "relationshipName": "requests",
+            "otherEntityField": "id",
+            "ownerSide": false
+        }
+    ],
+    "changelogDate": "20200407201500",
+    "entityTableName": "assistant",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

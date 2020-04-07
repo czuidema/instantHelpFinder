@@ -1,0 +1,79 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="instantHelpFinderApp.request.home.title">Requests</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-request" [routerLink]="['/request/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span  jhiTranslate="instantHelpFinderApp.request.home.createLabel">
+            Create a new Request
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="requests?.length === 0">
+        <span jhiTranslate="instantHelpFinderApp.request.home.notFound">No requests found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="requests?.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr>
+                    <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.request.location">Location</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.request.doctor">Doctor</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.request.icuNurse">Icu Nurse</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.request.assistants">Assistants</span></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let request of requests ;trackBy: trackId">
+                    <td><a [routerLink]="['/request', request.id, 'view']">{{ request.id }}</a></td>
+                    <td>{{ request.location }}</td>
+                    <td>
+                        <div *ngIf="request.doctor">
+                            <a [routerLink]="['/doctor', request.doctor?.id, 'view']" >{{ request.doctor?.id }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngIf="request.icuNurse">
+                            <a [routerLink]="['/icu-nurse', request.icuNurse?.id, 'view']" >{{ request.icuNurse?.id }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <span *ngFor="let assistants of request.assistants; let last = last">
+                            <a class="form-control-static" [routerLink]="['/assistant', assistants?.id, 'view']">{{ assistants.id }}</a>{{ last ? '' : ', ' }}
+                        </span>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/request', request.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/request', request.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(request)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

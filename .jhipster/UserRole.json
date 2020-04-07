@@ -1,0 +1,25 @@
+{
+    "name": "UserRole",
+    "fields": [],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "otherEntityName": "pushSubscription",
+            "otherEntityRelationshipName": "userRole",
+            "relationshipName": "pushSubscrioption",
+            "otherEntityField": "id",
+            "ownerSide": true
+        }
+    ],
+    "changelogDate": "20200407201200",
+    "entityTableName": "user_role",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

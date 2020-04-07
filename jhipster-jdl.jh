@@ -1,0 +1,38 @@
+entity UserRole{
+}
+
+entity Doctor {
+}
+
+entity ICUNurse {
+}
+
+entity Assistant {
+}
+
+entity Request {
+	location String
+}
+
+entity PushSubscription {
+	endpoint String
+    auth String
+    P256dh String
+}
+
+relationship ManyToOne {
+	Request{doctor} to Doctor
+}
+
+relationship ManyToOne {
+	Request{icuNurse} to ICUNurse
+}
+
+relationship ManyToMany {
+	Request{assistants} to Assistant{requests}
+}
+
+relationship OneToOne {
+	UserRole{pushSubscrioption} to PushSubscription{userRole}
+}
+

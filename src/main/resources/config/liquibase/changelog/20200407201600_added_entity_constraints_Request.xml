@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <!--
+        Added the constraints for entity Request.
+    -->
+    <changeSet id="20200407201600-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="doctor_id"
+                                 baseTableName="request"
+                                 constraintName="fk_request_doctor_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="doctor"/>
+
+        <addForeignKeyConstraint baseColumnNames="icu_nurse_id"
+                                 baseTableName="request"
+                                 constraintName="fk_request_icu_nurse_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="icu_nurse"/>
+
+        <addForeignKeyConstraint baseColumnNames="request_id"
+                                 baseTableName="request_assistants"
+                                 constraintName="fk_request_assistants_request_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="request"/>
+
+        <addForeignKeyConstraint baseColumnNames="assistants_id"
+                                 baseTableName="request_assistants"
+                                 constraintName="fk_request_assistants_assistants_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="assistant"/>
+        
+    </changeSet>
+</databaseChangeLog>

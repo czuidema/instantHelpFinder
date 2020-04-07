@@ -1,0 +1,16 @@
+{
+    "name": "ICUNurse",
+    "fields": [],
+    "relationships": [],
+    "changelogDate": "20200407201400",
+    "entityTableName": "icu_nurse",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

@@ -1,0 +1,25 @@
+{
+  "instantHelpFinderApp": {
+    "request": {
+      "home": {
+        "title": "Requests",
+        "createLabel": "Genera un nuovo Request",
+        "createOrEditLabel": "Genera o modifica un Request",
+        "notFound": "No Requests found"
+      },
+      "created": "&Egrave; stato generato un nuovo Request con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Request identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Request con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Request {{ id }}?"
+      },
+      "detail": {
+        "title": "Request"
+      },
+      "location": "Location",
+      "doctor": "Doctor",
+      "icuNurse": "Icu Nurse",
+      "assistants": "Assistants"
+    }
+  }
+}

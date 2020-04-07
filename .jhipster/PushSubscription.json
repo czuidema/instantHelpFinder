@@ -1,0 +1,37 @@
+{
+    "name": "PushSubscription",
+    "fields": [
+        {
+            "fieldName": "endpoint",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "auth",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "p256dh",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "otherEntityName": "userRole",
+            "otherEntityRelationshipName": "pushSubscrioption",
+            "relationshipName": "userRole",
+            "ownerSide": false
+        }
+    ],
+    "changelogDate": "20200407201700",
+    "entityTableName": "push_subscription",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

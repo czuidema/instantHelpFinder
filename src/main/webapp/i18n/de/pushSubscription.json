@@ -1,0 +1,25 @@
+{
+  "instantHelpFinderApp": {
+    "pushSubscription": {
+      "home": {
+        "title": "Push Subscriptions",
+        "createLabel": "Push Subscription erstellen",
+        "createOrEditLabel": "Push Subscription erstellen oder bearbeiten",
+        "notFound": "No Push Subscriptions found"
+      },
+      "created": "Push Subscription erstellt mit ID {{ param }}",
+      "updated": "Push Subscription aktualisiert mit ID {{ param }}",
+      "deleted": "Push Subscription gelöscht mit ID {{ param }}",
+      "delete": {
+        "question": "Soll Push Subscription {{ id }} wirklich dauerhaft gelöscht werden?"
+      },
+      "detail": {
+        "title": "Push Subscription"
+      },
+      "endpoint": "Endpoint",
+      "auth": "Auth",
+      "p256dh": "P 256 Dh",
+      "userRole": "User Role"
+    }
+  }
+}
