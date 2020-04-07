@@ -45,6 +45,14 @@ public class CacheConfiguration {
             createCache(cm, ch.helpfuleth.instanthelpfinder.domain.User.class.getName());
             createCache(cm, ch.helpfuleth.instanthelpfinder.domain.Authority.class.getName());
             createCache(cm, ch.helpfuleth.instanthelpfinder.domain.User.class.getName() + ".authorities");
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.UserRole.class.getName());
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.Doctor.class.getName());
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.ICUNurse.class.getName());
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.Assistant.class.getName());
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.Assistant.class.getName() + ".requests");
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.Request.class.getName());
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.Request.class.getName() + ".assistants");
+            createCache(cm, ch.helpfuleth.instanthelpfinder.domain.PushSubscription.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

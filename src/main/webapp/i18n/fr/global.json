@@ -7,6 +7,12 @@
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
         "main": "Entités",
+        "userRole": "User Role",
+        "doctor": "Doctor",
+        "icuNurse": "ICU Nurse",
+        "assistant": "Assistant",
+        "request": "Request",
+        "pushSubscription": "Push Subscription",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {
