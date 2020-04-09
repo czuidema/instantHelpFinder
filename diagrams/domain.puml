@@ -1,0 +1,50 @@
+@startuml
+    class User {
+        Long id
+        String login
+        String password
+        String firstName
+        String lastName
+        String email
+        String langKey
+        String imageUrl
+        String activationKey
+        String resetKey
+        Instant resetDate
+        UserRole role
+    }
+
+    abstract class UserRole {
+        Collection<TurnEvent> turnEvents
+    }
+
+    class Doctor {
+    }
+    class Anesthesiologist {
+    }
+    class Assistant {
+    }
+    class ICUNurse {
+    }
+
+    class TurnEvent {
+        Doctor doctor
+        Anesthesiologist anesthesiologist
+        Collection<Assistant> assistants
+        ICUNurse icuNurse
+    }
+
+    User "1" *-- "1" UserRole
+    Doctor -up-|> UserRole
+    Anesthesiologist -up-|> UserRole
+    Assistant -up-|> UserRole
+    ICUNurse -up-|> UserRole
+
+    Doctor "1" --o "1..n" TurnEvent
+    Anesthesiologist "1" --o "1..n" TurnEvent
+    Assistant "1..n" --o "1..n" TurnEvent
+    ICUNurse "1" --o "1..n" TurnEvent
+
+    UserRole "1..n" -- "1..n" TurnEvent
+
+@enduml

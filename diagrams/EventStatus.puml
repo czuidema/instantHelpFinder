@@ -1,0 +1,14 @@
+@startuml
+    (*) --> "Anfrage verschickt" as c1
+    c1 --> "Arzt und Anesthesist gefunden" as f1
+    f1 --> "Assistenten gefunden" as f2
+    f2 --> "Termin festgelegt" as f3
+    f3 --> "Umdrehen ausgeführt" as x1
+    if "Kritische Phase überstanden?" then
+        --> [ja] (*)
+    else
+        --> [nein] "Emergency Call"
+        --> "zurückdrehen"
+        --> (*)
+    endif
+@enduml
