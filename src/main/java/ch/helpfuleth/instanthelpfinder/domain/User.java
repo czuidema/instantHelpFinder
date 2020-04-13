@@ -86,7 +86,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @OneToOne
     @JoinColumn(unique =  true)
-    private UserRole role;
+    private UserRole userRole;
 
     @JsonIgnore
     @ManyToMany
@@ -203,12 +203,12 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.authorities = authorities;
     }
 
-    public UserRole getRole() {
-        return role;
+    public UserRole getUserRole() {
+        return userRole;
     }
 
-    public void setRole(UserRole role) {
-        this.role = role;
+    public void setUserRole(UserRole role) {
+        this.userRole = role;
     }
 
     @Override

@@ -15,23 +15,40 @@
     }
 
     abstract class UserRole {
-        Collection<TurnEvent> turnEvents
+        boolean availability
     }
 
     class Doctor {
+        boolean isPreferredDoctor
+        Collection<TurnEvent> turnEvents
     }
     class Anesthesiologist {
+        Collection<TurnEvent> turnEvents
     }
     class Assistant {
+        Collection<TurnEvent> turnEvents
     }
     class ICUNurse {
+        Collection<TurnEvent> turnEvents
     }
 
     class TurnEvent {
+        String patientName
+        String patientInformation
         Doctor doctor
-        Anesthesiologist anesthesiologist
         Collection<Assistant> assistants
         ICUNurse icuNurse
+        EPriority priority
+        String ward
+        String roomNumber
+        Collection<Pair<LocalDateTime, LocalDateTime>> possibleTimeSlots
+        Pair<LocalDateTime, LocalDateTime> definiteTimeSlot
+    }
+
+    enum EPriority {
+        low
+        high
+        urgent
     }
 
     User "1" *-- "1" UserRole

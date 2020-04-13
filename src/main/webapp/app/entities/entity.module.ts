@@ -21,12 +21,12 @@ import { RouterModule } from '@angular/router';
         loadChildren: () => import('./assistant/assistant.module').then(m => m.InstantHelpFinderAssistantModule)
       },
       {
-        path: 'request',
-        loadChildren: () => import('./request/request.module').then(m => m.InstantHelpFinderRequestModule)
-      },
-      {
         path: 'push-subscription',
         loadChildren: () => import('./push-subscription/push-subscription.module').then(m => m.InstantHelpFinderPushSubscriptionModule)
+      },
+      {
+        path: 'turning-event',
+        loadChildren: () => import('./turning-event/turning-event.module').then(m => m.InstantHelpFinderTurningEventModule)
       }
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ])

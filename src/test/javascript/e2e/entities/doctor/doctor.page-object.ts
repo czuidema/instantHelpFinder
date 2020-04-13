@@ -29,8 +29,14 @@ export class DoctorUpdatePage {
   saveButton = element(by.id('save-entity'));
   cancelButton = element(by.id('cancel-save'));
 
+  isPreferredDoctorInput = element(by.id('field_isPreferredDoctor'));
+
   async getPageTitle(): Promise<string> {
     return this.pageTitle.getAttribute('jhiTranslate');
+  }
+
+  getIsPreferredDoctorInput(): ElementFinder {
+    return this.isPreferredDoctorInput;
   }
 
   async save(): Promise<void> {

@@ -4,6 +4,7 @@ import ch.helpfuleth.instanthelpfinder.config.Constants;
 
 import ch.helpfuleth.instanthelpfinder.domain.Authority;
 import ch.helpfuleth.instanthelpfinder.domain.User;
+import ch.helpfuleth.instanthelpfinder.domain.UserRole;
 
 import javax.validation.constraints.*;
 import java.time.Instant;
@@ -49,6 +50,8 @@ public class UserDTO {
     private Instant lastModifiedDate;
 
     private Set<String> authorities;
+
+    private UserRole userRole;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.
@@ -176,6 +179,14 @@ public class UserDTO {
         this.authorities = authorities;
     }
 
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
     @Override
     public String toString() {
         return "UserDTO{" +
@@ -191,6 +202,7 @@ public class UserDTO {
             ", lastModifiedBy='" + lastModifiedBy + '\'' +
             ", lastModifiedDate=" + lastModifiedDate +
             ", authorities=" + authorities +
+            ", userRole=" + userRole.getClass() +
             "}";
     }
 }

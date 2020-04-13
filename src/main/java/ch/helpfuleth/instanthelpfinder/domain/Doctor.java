@@ -1,38 +1,48 @@
 package ch.helpfuleth.instanthelpfinder.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A Doctor.
  */
 @Entity
-@Table(name = "doctor")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Doctor extends UserRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @OneToMany
-    private Collection<Request> requests;
+    @Column(name = "is_preferred_doctor")
+    private Boolean isPreferredDoctor;
+
+    @ManyToMany(mappedBy = "assistants")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JsonIgnore
+    private Set<TurningEvent> turningEvents = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
+    public Boolean isIsPreferredDoctor() {
+        return isPreferredDoctor;
+    }
 
+    public Doctor isPreferredDoctor(Boolean isPreferredDoctor) {
+        this.isPreferredDoctor = isPreferredDoctor;
+        return this;
+    }
+
+    public void setIsPreferredDoctor(Boolean isPreferredDoctor) {
+        this.isPreferredDoctor = isPreferredDoctor;
+    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
-
-    public Collection<Request> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(Collection<Request> requests) {
-        this.requests = requests;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -42,7 +52,7 @@ public class Doctor extends UserRole implements Serializable {
         if (!(o instanceof Doctor)) {
             return false;
         }
-        return false;
+        return getId() != null && getId().equals(((Doctor) o).getId());
     }
 
     @Override
@@ -50,4 +60,11 @@ public class Doctor extends UserRole implements Serializable {
         return 31;
     }
 
+    @Override
+    public String toString() {
+        return "Doctor{" +
+            "id=" + getId() +
+            ", isPreferredDoctor='" + isIsPreferredDoctor() + "'" +
+            "}";
+    }
 }

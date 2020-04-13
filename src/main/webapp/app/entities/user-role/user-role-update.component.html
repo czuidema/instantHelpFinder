@@ -12,10 +12,16 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.userRole.pushSubscrioption" for="field_pushSubscrioption">Push Subscrioption</label>
-                    <select class="form-control" id="field_pushSubscrioption" name="pushSubscrioption" formControlName="pushSubscrioption">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.userRole.availability" for="field_availability">Availability</label>
+                    <input type="checkbox" class="form-control" name="availability" id="field_availability"
+                           formControlName="availability"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.userRole.pushSubscription" for="field_pushSubscription">Push Subscription</label>
+                    <select class="form-control" id="field_pushSubscription" name="pushSubscription" formControlName="pushSubscription">
                         <option [ngValue]="null"></option>
-                        <option [ngValue]="pushSubscriptionOption.id === editForm.get('pushSubscrioption')!.value?.id ? editForm.get('pushSubscrioption')!.value : pushSubscriptionOption" *ngFor="let pushSubscriptionOption of pushsubscrioptions; trackBy: trackById">{{ pushSubscriptionOption.id }}</option>
+                        <option [ngValue]="pushSubscriptionOption.id === editForm.get('pushSubscription')!.value?.id ? editForm.get('pushSubscription')!.value : pushSubscriptionOption" *ngFor="let pushSubscriptionOption of pushsubscriptions; trackBy: trackById">{{ pushSubscriptionOption.id }}</option>
                     </select>
                 </div>
             </div>

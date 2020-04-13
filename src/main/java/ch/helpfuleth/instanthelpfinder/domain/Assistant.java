@@ -15,7 +15,6 @@ import java.util.Set;
  * A Assistant.
  */
 @Entity
-@Table(name = "assistant")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Assistant extends UserRole implements Serializable {
 
@@ -24,36 +23,46 @@ public class Assistant extends UserRole implements Serializable {
     @ManyToMany(mappedBy = "assistants")
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JsonIgnore
-    private Set<Request> requests = new HashSet<>();
+    private Set<TurningEvent> turningEvents = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 
-    public Set<Request> getRequests() {
-        return requests;
+    public Set<TurningEvent> getTurningEvents() {
+        return turningEvents;
     }
 
-    public Assistant requests(Set<Request> requests) {
-        this.requests = requests;
+    public Assistant turningEvents(Set<TurningEvent> turningEvents) {
+        this.turningEvents = turningEvents;
         return this;
     }
 
-    public Assistant addRequests(Request request) {
-        this.requests.add(request);
-        request.getAssistants().add(this);
+    public Assistant addTurningEvents(TurningEvent turningEvent) {
+        this.turningEvents.add(turningEvent);
+        turningEvent.getAssistants().add(this);
         return this;
     }
 
-    public Assistant removeRequests(Request request) {
-        this.requests.remove(request);
-        request.getAssistants().remove(this);
+    public Assistant removeTurningEvents(TurningEvent turningEvent) {
+        this.turningEvents.remove(turningEvent);
+        turningEvent.getAssistants().remove(this);
         return this;
     }
 
-    public void setRequests(Set<Request> requests) {
-        this.requests = requests;
+    public void setTurningEvents(Set<TurningEvent> turningEvents) {
+        this.turningEvents = turningEvents;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Assistant)) {
+            return false;
+        }
+        return getId() != null && getId().equals(((Assistant) o).getId());
+    }
 
     @Override
     public int hashCode() {
@@ -62,7 +71,8 @@ public class Assistant extends UserRole implements Serializable {
 
     @Override
     public String toString() {
-        return super.toString() + "Assistant{" +
+        return "Assistant{" +
+            "id=" + getId() +
             "}";
     }
 }

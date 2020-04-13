@@ -14,7 +14,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "user_role")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "d_type")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserRole implements Serializable {
 
@@ -24,12 +23,15 @@ public class UserRole implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(unique = true)
-    private PushSubscription pushSubscrioption;
+    @Column(name = "availability")
+    private Boolean availability;
 
     @OneToOne
-    @JoinColumn(unique =  true)
+    @JoinColumn(unique = true)
+    private PushSubscription pushSubscription;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(unique = true)
     private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -41,13 +43,34 @@ public class UserRole implements Serializable {
         this.id = id;
     }
 
-    public PushSubscription getPushSubscrioption() {
-        return pushSubscrioption;
+    public Boolean isAvailability() {
+        return availability;
     }
 
-    public UserRole pushSubscrioption(PushSubscription pushSubscription) {
-        this.pushSubscrioption = pushSubscription;
+    public UserRole availability(Boolean availability) {
+        this.availability = availability;
         return this;
+    }
+
+    public void setAvailability(Boolean availability) {
+        this.availability = availability;
+    }
+
+    public PushSubscription getPushSubscription() {
+        return pushSubscription;
+    }
+
+    public UserRole pushSubscription(PushSubscription pushSubscription) {
+        this.pushSubscription = pushSubscription;
+        return this;
+    }
+
+    public void setPushSubscription(PushSubscription pushSubscription) {
+        this.pushSubscription = pushSubscription;
+    }
+
+    public Boolean getAvailability() {
+        return availability;
     }
 
     public User getUser() {
@@ -56,10 +79,6 @@ public class UserRole implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public void setPushSubscrioption(PushSubscription pushSubscription) {
-        this.pushSubscrioption = pushSubscription;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
@@ -83,6 +102,7 @@ public class UserRole implements Serializable {
     public String toString() {
         return "UserRole{" +
             "id=" + getId() +
+            ", availability='" + isAvailability() + "'" +
             "}";
     }
 }

@@ -42,6 +42,15 @@ describe('Doctor e2e test', () => {
 
     await promise.all([]);
 
+    const selectedIsPreferredDoctor = doctorUpdatePage.getIsPreferredDoctorInput();
+    if (await selectedIsPreferredDoctor.isSelected()) {
+      await doctorUpdatePage.getIsPreferredDoctorInput().click();
+      expect(await doctorUpdatePage.getIsPreferredDoctorInput().isSelected(), 'Expected isPreferredDoctor not to be selected').to.be.false;
+    } else {
+      await doctorUpdatePage.getIsPreferredDoctorInput().click();
+      expect(await doctorUpdatePage.getIsPreferredDoctorInput().isSelected(), 'Expected isPreferredDoctor to be selected').to.be.true;
+    }
+
     await doctorUpdatePage.save();
     expect(await doctorUpdatePage.getSaveButton().isPresent(), 'Expected save button disappear').to.be.false;
 

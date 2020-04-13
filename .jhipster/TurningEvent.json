@@ -1,0 +1,61 @@
+{
+    "name": "TurningEvent",
+    "fields": [
+        {
+            "fieldName": "patientName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "patientData",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "ward",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "roomNr",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "priority",
+            "fieldType": "EPriority",
+            "fieldValues": "LOW,HIGH,URGENT"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "doctor",
+            "otherEntityRelationshipName": "turningEvent",
+            "relationshipName": "doctor",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "iCUNurse",
+            "otherEntityRelationshipName": "turningEvent",
+            "relationshipName": "icuNurse",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityName": "assistant",
+            "otherEntityRelationshipName": "turningEvents",
+            "relationshipName": "assistants",
+            "otherEntityField": "id",
+            "ownerSide": true
+        }
+    ],
+    "changelogDate": "20200412153100",
+    "entityTableName": "turning_event",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "readOnly": false,
+    "embedded": false,
+    "clientRootFolder": "",
+    "applications": "*"
+}

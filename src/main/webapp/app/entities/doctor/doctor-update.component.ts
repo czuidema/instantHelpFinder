@@ -16,7 +16,8 @@ export class DoctorUpdateComponent implements OnInit {
   isSaving = false;
 
   editForm = this.fb.group({
-    id: []
+    id: [],
+    isPreferredDoctor: []
   });
 
   constructor(protected doctorService: DoctorService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
@@ -29,7 +30,8 @@ export class DoctorUpdateComponent implements OnInit {
 
   updateForm(doctor: IDoctor): void {
     this.editForm.patchValue({
-      id: doctor.id
+      id: doctor.id,
+      isPreferredDoctor: doctor.isPreferredDoctor
     });
   }
 
@@ -50,7 +52,8 @@ export class DoctorUpdateComponent implements OnInit {
   private createFromForm(): IDoctor {
     return {
       ...new Doctor(),
-      id: this.editForm.get(['id'])!.value
+      id: this.editForm.get(['id'])!.value,
+      isPreferredDoctor: this.editForm.get(['isPreferredDoctor'])!.value
     };
   }
 

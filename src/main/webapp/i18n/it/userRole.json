@@ -16,7 +16,8 @@
       "detail": {
         "title": "User Role"
       },
-      "pushSubscrioption": "Push Subscrioption"
+      "availability": "Availability",
+      "pushSubscription": "Push Subscription"
     }
   }
 }

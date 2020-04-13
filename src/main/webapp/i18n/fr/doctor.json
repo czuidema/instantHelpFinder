@@ -15,7 +15,8 @@
       },
       "detail": {
         "title": "Doctor"
-      }
+      },
+      "isPreferredDoctor": "Is Preferred Doctor"
     }
   }
 }

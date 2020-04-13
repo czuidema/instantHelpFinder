@@ -30,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 public class UserRoleResourceIT {
 
+    private static final Boolean DEFAULT_AVAILABILITY = false;
+    private static final Boolean UPDATED_AVAILABILITY = true;
+
     @Autowired
     private UserRoleRepository userRoleRepository;
 
@@ -48,7 +51,8 @@ public class UserRoleResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static UserRole createEntity(EntityManager em) {
-        UserRole userRole = new UserRole();
+        UserRole userRole = new UserRole()
+            .availability(DEFAULT_AVAILABILITY);
         return userRole;
     }
     /**
@@ -58,7 +62,8 @@ public class UserRoleResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static UserRole createUpdatedEntity(EntityManager em) {
-        UserRole userRole = new UserRole();
+        UserRole userRole = new UserRole()
+            .availability(UPDATED_AVAILABILITY);
         return userRole;
     }
 
@@ -82,6 +87,7 @@ public class UserRoleResourceIT {
         List<UserRole> userRoleList = userRoleRepository.findAll();
         assertThat(userRoleList).hasSize(databaseSizeBeforeCreate + 1);
         UserRole testUserRole = userRoleList.get(userRoleList.size() - 1);
+        assertThat(testUserRole.isAvailability()).isEqualTo(DEFAULT_AVAILABILITY);
     }
 
     @Test
@@ -114,7 +120,8 @@ public class UserRoleResourceIT {
         restUserRoleMockMvc.perform(get("/api/user-roles?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(userRole.getId().intValue())));
+            .andExpect(jsonPath("$.[*].id").value(hasItem(userRole.getId().intValue())))
+            .andExpect(jsonPath("$.[*].availability").value(hasItem(DEFAULT_AVAILABILITY.booleanValue())));
     }
     
     @Test
@@ -127,7 +134,8 @@ public class UserRoleResourceIT {
         restUserRoleMockMvc.perform(get("/api/user-roles/{id}", userRole.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(userRole.getId().intValue()));
+            .andExpect(jsonPath("$.id").value(userRole.getId().intValue()))
+            .andExpect(jsonPath("$.availability").value(DEFAULT_AVAILABILITY.booleanValue()));
     }
 
     @Test
@@ -150,6 +158,8 @@ public class UserRoleResourceIT {
         UserRole updatedUserRole = userRoleRepository.findById(userRole.getId()).get();
         // Disconnect from session so that the updates on updatedUserRole are not directly saved in db
         em.detach(updatedUserRole);
+        updatedUserRole
+            .availability(UPDATED_AVAILABILITY);
 
         restUserRoleMockMvc.perform(put("/api/user-roles")
             .contentType(MediaType.APPLICATION_JSON)
@@ -160,6 +170,7 @@ public class UserRoleResourceIT {
         List<UserRole> userRoleList = userRoleRepository.findAll();
         assertThat(userRoleList).hasSize(databaseSizeBeforeUpdate);
         UserRole testUserRole = userRoleList.get(userRoleList.size() - 1);
+        assertThat(testUserRole.isAvailability()).isEqualTo(UPDATED_AVAILABILITY);
     }
 
     @Test

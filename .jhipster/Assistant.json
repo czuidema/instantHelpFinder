@@ -4,9 +4,9 @@
     "relationships": [
         {
             "relationshipType": "many-to-many",
-            "otherEntityName": "request",
+            "otherEntityName": "turningEvent",
             "otherEntityRelationshipName": "assistants",
-            "relationshipName": "requests",
+            "relationshipName": "turningEvents",
             "otherEntityField": "id",
             "ownerSide": false
         }

@@ -30,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 public class DoctorResourceIT {
 
+    private static final Boolean DEFAULT_IS_PREFERRED_DOCTOR = false;
+    private static final Boolean UPDATED_IS_PREFERRED_DOCTOR = true;
+
     @Autowired
     private DoctorRepository doctorRepository;
 
@@ -48,7 +51,8 @@ public class DoctorResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Doctor createEntity(EntityManager em) {
-        Doctor doctor = new Doctor();
+        Doctor doctor = new Doctor()
+            .isPreferredDoctor(DEFAULT_IS_PREFERRED_DOCTOR);
         return doctor;
     }
     /**
@@ -58,7 +62,8 @@ public class DoctorResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Doctor createUpdatedEntity(EntityManager em) {
-        Doctor doctor = new Doctor();
+        Doctor doctor = new Doctor()
+            .isPreferredDoctor(UPDATED_IS_PREFERRED_DOCTOR);
         return doctor;
     }
 
@@ -82,6 +87,7 @@ public class DoctorResourceIT {
         List<Doctor> doctorList = doctorRepository.findAll();
         assertThat(doctorList).hasSize(databaseSizeBeforeCreate + 1);
         Doctor testDoctor = doctorList.get(doctorList.size() - 1);
+        assertThat(testDoctor.isIsPreferredDoctor()).isEqualTo(DEFAULT_IS_PREFERRED_DOCTOR);
     }
 
     @Test
@@ -114,7 +120,8 @@ public class DoctorResourceIT {
         restDoctorMockMvc.perform(get("/api/doctors?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(doctor.getId().intValue())));
+            .andExpect(jsonPath("$.[*].id").value(hasItem(doctor.getId().intValue())))
+            .andExpect(jsonPath("$.[*].isPreferredDoctor").value(hasItem(DEFAULT_IS_PREFERRED_DOCTOR.booleanValue())));
     }
     
     @Test
@@ -127,7 +134,8 @@ public class DoctorResourceIT {
         restDoctorMockMvc.perform(get("/api/doctors/{id}", doctor.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(doctor.getId().intValue()));
+            .andExpect(jsonPath("$.id").value(doctor.getId().intValue()))
+            .andExpect(jsonPath("$.isPreferredDoctor").value(DEFAULT_IS_PREFERRED_DOCTOR.booleanValue()));
     }
 
     @Test
@@ -150,6 +158,8 @@ public class DoctorResourceIT {
         Doctor updatedDoctor = doctorRepository.findById(doctor.getId()).get();
         // Disconnect from session so that the updates on updatedDoctor are not directly saved in db
         em.detach(updatedDoctor);
+        updatedDoctor
+            .isPreferredDoctor(UPDATED_IS_PREFERRED_DOCTOR);
 
         restDoctorMockMvc.perform(put("/api/doctors")
             .contentType(MediaType.APPLICATION_JSON)
@@ -160,6 +170,7 @@ public class DoctorResourceIT {
         List<Doctor> doctorList = doctorRepository.findAll();
         assertThat(doctorList).hasSize(databaseSizeBeforeUpdate);
         Doctor testDoctor = doctorList.get(doctorList.size() - 1);
+        assertThat(testDoctor.isIsPreferredDoctor()).isEqualTo(UPDATED_IS_PREFERRED_DOCTOR);
     }
 
     @Test

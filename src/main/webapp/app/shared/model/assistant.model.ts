@@ -1,10 +1,10 @@
-import { IRequest } from 'app/shared/model/request.model';
+import { ITurningEvent } from 'app/shared/model/turning-event.model';
 
 export interface IAssistant {
   id?: number;
-  requests?: IRequest[];
+  turningEvents?: ITurningEvent[];
 }
 
 export class Assistant implements IAssistant {
-  constructor(public id?: number, public requests?: IRequest[]) {}
+  constructor(public id?: number, public turningEvents?: ITurningEvent[]) {}
 }

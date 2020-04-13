@@ -1,6 +1,11 @@
 {
     "name": "Doctor",
-    "fields": [],
+    "fields": [
+        {
+            "fieldName": "isPreferredDoctor",
+            "fieldType": "Boolean"
+        }
+    ],
     "relationships": [],
     "changelogDate": "20200407201300",
     "entityTableName": "doctor",

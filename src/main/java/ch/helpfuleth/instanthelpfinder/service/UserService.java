@@ -3,6 +3,7 @@ package ch.helpfuleth.instanthelpfinder.service;
 import ch.helpfuleth.instanthelpfinder.config.Constants;
 import ch.helpfuleth.instanthelpfinder.domain.Authority;
 import ch.helpfuleth.instanthelpfinder.domain.User;
+import ch.helpfuleth.instanthelpfinder.domain.UserRole;
 import ch.helpfuleth.instanthelpfinder.repository.AuthorityRepository;
 import ch.helpfuleth.instanthelpfinder.repository.UserRepository;
 import ch.helpfuleth.instanthelpfinder.security.AuthoritiesConstants;
@@ -162,6 +163,7 @@ public class UserService {
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
         }
+        user.setUserRole(userDTO.getUserRole());
         userRepository.save(user);
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);

@@ -23,16 +23,18 @@
             <thead>
                 <tr>
                     <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.userRole.pushSubscrioption">Push Subscrioption</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.userRole.availability">Availability</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.userRole.pushSubscription">Push Subscription</span></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let userRole of userRoles ;trackBy: trackId">
                     <td><a [routerLink]="['/user-role', userRole.id, 'view']">{{ userRole.id }}</a></td>
+                    <td>{{ userRole.availability }}</td>
                     <td>
-                        <div *ngIf="userRole.pushSubscrioption">
-                            <a [routerLink]="['/push-subscription', userRole.pushSubscrioption?.id, 'view']" >{{ userRole.pushSubscrioption?.id }}</a>
+                        <div *ngIf="userRole.pushSubscription">
+                            <a [routerLink]="['/push-subscription', userRole.pushSubscription?.id, 'view']" >{{ userRole.pushSubscription?.id }}</a>
                         </div>
                     </td>
                     <td class="text-right">

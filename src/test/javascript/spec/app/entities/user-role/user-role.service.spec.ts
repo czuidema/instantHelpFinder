@@ -20,7 +20,7 @@ describe('Service Tests', () => {
       service = injector.get(UserRoleService);
       httpMock = injector.get(HttpTestingController);
 
-      elemDefault = new UserRole(0);
+      elemDefault = new UserRole(0, false);
     });
 
     describe('Service methods', () => {
@@ -52,7 +52,12 @@ describe('Service Tests', () => {
       });
 
       it('should update a UserRole', () => {
-        const returnedFromService = Object.assign({}, elemDefault);
+        const returnedFromService = Object.assign(
+          {
+            availability: true
+          },
+          elemDefault
+        );
 
         const expected = Object.assign({}, returnedFromService);
 
@@ -64,7 +69,12 @@ describe('Service Tests', () => {
       });
 
       it('should return a list of UserRole', () => {
-        const returnedFromService = Object.assign({}, elemDefault);
+        const returnedFromService = Object.assign(
+          {
+            availability: true
+          },
+          elemDefault
+        );
 
         const expected = Object.assign({}, returnedFromService);
 

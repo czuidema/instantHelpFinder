@@ -2,9 +2,12 @@ import { IPushSubscription } from 'app/shared/model/push-subscription.model';
 
 export interface IUserRole {
   id?: number;
-  pushSubscrioption?: IPushSubscription;
+  availability?: boolean;
+  pushSubscription?: IPushSubscription;
 }
 
 export class UserRole implements IUserRole {
-  constructor(public id?: number, public pushSubscrioption?: IPushSubscription) {}
+  constructor(public id?: number, public availability?: boolean, public pushSubscription?: IPushSubscription) {
+    this.availability = this.availability || false;
+  }
 }

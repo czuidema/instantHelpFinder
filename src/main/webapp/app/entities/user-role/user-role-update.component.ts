@@ -17,11 +17,12 @@ import { PushSubscriptionService } from 'app/entities/push-subscription/push-sub
 })
 export class UserRoleUpdateComponent implements OnInit {
   isSaving = false;
-  pushsubscrioptions: IPushSubscription[] = [];
+  pushsubscriptions: IPushSubscription[] = [];
 
   editForm = this.fb.group({
     id: [],
-    pushSubscrioption: []
+    availability: [],
+    pushSubscription: []
   });
 
   constructor(
@@ -43,17 +44,17 @@ export class UserRoleUpdateComponent implements OnInit {
           })
         )
         .subscribe((resBody: IPushSubscription[]) => {
-          if (!userRole.pushSubscrioption || !userRole.pushSubscrioption.id) {
-            this.pushsubscrioptions = resBody;
+          if (!userRole.pushSubscription || !userRole.pushSubscription.id) {
+            this.pushsubscriptions = resBody;
           } else {
             this.pushSubscriptionService
-              .find(userRole.pushSubscrioption.id)
+              .find(userRole.pushSubscription.id)
               .pipe(
                 map((subRes: HttpResponse<IPushSubscription>) => {
                   return subRes.body ? [subRes.body].concat(resBody) : resBody;
                 })
               )
-              .subscribe((concatRes: IPushSubscription[]) => (this.pushsubscrioptions = concatRes));
+              .subscribe((concatRes: IPushSubscription[]) => (this.pushsubscriptions = concatRes));
           }
         });
     });
@@ -62,7 +63,8 @@ export class UserRoleUpdateComponent implements OnInit {
   updateForm(userRole: IUserRole): void {
     this.editForm.patchValue({
       id: userRole.id,
-      pushSubscrioption: userRole.pushSubscrioption
+      availability: userRole.availability,
+      pushSubscription: userRole.pushSubscription
     });
   }
 
@@ -84,7 +86,8 @@ export class UserRoleUpdateComponent implements OnInit {
     return {
       ...new UserRole(),
       id: this.editForm.get(['id'])!.value,
-      pushSubscrioption: this.editForm.get(['pushSubscrioption'])!.value
+      availability: this.editForm.get(['availability'])!.value,
+      pushSubscription: this.editForm.get(['pushSubscription'])!.value
     };
   }
 

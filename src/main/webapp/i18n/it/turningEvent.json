@@ -1,0 +1,29 @@
+{
+  "instantHelpFinderApp": {
+    "turningEvent": {
+      "home": {
+        "title": "TurningEvents",
+        "createLabel": "Genera un nuovo Turning Event",
+        "createOrEditLabel": "Genera o modifica un Turning Event",
+        "notFound": "No Turning Events found"
+      },
+      "created": "&Egrave; stato generato un nuovo Turning Event con identificatore {{ param }}",
+      "updated": "&Egrave; stato aggiornato Turning Event identificato da {{ param }}",
+      "deleted": "&Egrave; stato eliminato Turning Event con identificatore {{ param }}",
+      "delete": {
+        "question": "Sei sicuro di volere eliminare Turning Event {{ id }}?"
+      },
+      "detail": {
+        "title": "Turning Event"
+      },
+      "patientName": "Patient Name",
+      "patientData": "Patient Data",
+      "ward": "Ward",
+      "roomNr": "Room Nr",
+      "priority": "Priority",
+      "doctor": "Doctor",
+      "icuNurse": "Icu Nurse",
+      "assistants": "Assistants"
+    }
+  }
+}

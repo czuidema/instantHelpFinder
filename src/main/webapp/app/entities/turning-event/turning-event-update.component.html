@@ -1,0 +1,82 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-turning-event-heading" jhiTranslate="instantHelpFinderApp.turningEvent.home.createOrEditLabel">Create or edit a Turning Event</h2>
+
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+
+                <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.patientName" for="field_patientName">Patient Name</label>
+                    <input type="text" class="form-control" name="patientName" id="field_patientName"
+                           formControlName="patientName"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.patientData" for="field_patientData">Patient Data</label>
+                    <input type="text" class="form-control" name="patientData" id="field_patientData"
+                           formControlName="patientData"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.ward" for="field_ward">Ward</label>
+                    <input type="text" class="form-control" name="ward" id="field_ward"
+                           formControlName="ward"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.roomNr" for="field_roomNr">Room Nr</label>
+                    <input type="text" class="form-control" name="roomNr" id="field_roomNr"
+                           formControlName="roomNr"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.priority" for="field_priority">Priority</label>
+                    <select class="form-control" name="priority" formControlName="priority" id="field_priority">
+                        <option value="LOW">{{ 'instantHelpFinderApp.EPriority.LOW' | translate }}</option>
+                        <option value="HIGH">{{ 'instantHelpFinderApp.EPriority.HIGH' | translate }}</option>
+                        <option value="URGENT">{{ 'instantHelpFinderApp.EPriority.URGENT' | translate }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.doctor" for="field_doctor">Doctor</label>
+                    <select class="form-control" id="field_doctor" name="doctor" formControlName="doctor">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="doctorOption.id === editForm.get('doctor')!.value?.id ? editForm.get('doctor')!.value : doctorOption" *ngFor="let doctorOption of doctors; trackBy: trackById">{{ doctorOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse" for="field_icuNurse">Icu Nurse</label>
+                    <select class="form-control" id="field_icuNurse" name="icuNurse" formControlName="icuNurse">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="iCUNurseOption.id === editForm.get('icuNurse')!.value?.id ? editForm.get('icuNurse')!.value : iCUNurseOption" *ngFor="let iCUNurseOption of icunurses; trackBy: trackById">{{ iCUNurseOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label jhiTranslate="instantHelpFinderApp.turningEvent.assistants" for="field_assistants">Assistants</label>
+                    <select class="form-control" id="field_assistants" multiple name="assistants" formControlName="assistants">
+                        <option [ngValue]="getSelected(editForm.get('assistants')!.value, assistantOption)" *ngFor="let assistantOption of assistants; trackBy: trackById">{{ assistantOption.id }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                    <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

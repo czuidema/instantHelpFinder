@@ -29,29 +29,35 @@ export class UserRoleUpdatePage {
   saveButton = element(by.id('save-entity'));
   cancelButton = element(by.id('cancel-save'));
 
-  pushSubscrioptionSelect = element(by.id('field_pushSubscrioption'));
+  availabilityInput = element(by.id('field_availability'));
+
+  pushSubscriptionSelect = element(by.id('field_pushSubscription'));
 
   async getPageTitle(): Promise<string> {
     return this.pageTitle.getAttribute('jhiTranslate');
   }
 
-  async pushSubscrioptionSelectLastOption(): Promise<void> {
-    await this.pushSubscrioptionSelect
+  getAvailabilityInput(): ElementFinder {
+    return this.availabilityInput;
+  }
+
+  async pushSubscriptionSelectLastOption(): Promise<void> {
+    await this.pushSubscriptionSelect
       .all(by.tagName('option'))
       .last()
       .click();
   }
 
-  async pushSubscrioptionSelectOption(option: string): Promise<void> {
-    await this.pushSubscrioptionSelect.sendKeys(option);
+  async pushSubscriptionSelectOption(option: string): Promise<void> {
+    await this.pushSubscriptionSelect.sendKeys(option);
   }
 
-  getPushSubscrioptionSelect(): ElementFinder {
-    return this.pushSubscrioptionSelect;
+  getPushSubscriptionSelect(): ElementFinder {
+    return this.pushSubscriptionSelect;
   }
 
-  async getPushSubscrioptionSelectedOption(): Promise<string> {
-    return await this.pushSubscrioptionSelect.element(by.css('option:checked')).getText();
+  async getPushSubscriptionSelectedOption(): Promise<string> {
+    return await this.pushSubscriptionSelect.element(by.css('option:checked')).getText();
   }
 
   async save(): Promise<void> {

@@ -32,7 +32,7 @@ public class PushSubscription implements Serializable {
     @Column(name = "p_256_dh")
     private String p256dh;
 
-    @OneToOne(mappedBy = "pushSubscrioption")
+    @OneToOne(mappedBy = "pushSubscription")
     @JsonIgnore
     private UserRole userRole;
 

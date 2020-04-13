@@ -8,10 +8,14 @@
             <jhi-alert-error></jhi-alert-error>
 
             <dl class="row-md jh-entity-details">
-                <dt><span jhiTranslate="instantHelpFinderApp.userRole.pushSubscrioption">Push Subscrioption</span></dt>
+                <dt><span jhiTranslate="instantHelpFinderApp.userRole.availability">Availability</span></dt>
                 <dd>
-                    <div *ngIf="userRole.pushSubscrioption">
-                        <a [routerLink]="['/push-subscription', userRole.pushSubscrioption?.id, 'view']">{{ userRole.pushSubscrioption?.id }}</a>
+                    <span>{{ userRole.availability }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.userRole.pushSubscription">Push Subscription</span></dt>
+                <dd>
+                    <div *ngIf="userRole.pushSubscription">
+                        <a [routerLink]="['/push-subscription', userRole.pushSubscription?.id, 'view']">{{ userRole.pushSubscription?.id }}</a>
                     </div>
                 </dd>
             </dl>

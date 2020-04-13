@@ -1,7 +1,9 @@
 entity UserRole{
+	availability Boolean
 }
 
 entity Doctor {
+	isPreferredDoctor Boolean
 }
 
 entity ICUNurse {
@@ -10,8 +12,12 @@ entity ICUNurse {
 entity Assistant {
 }
 
-entity Request {
-	location String
+entity TurningEvent {
+	patientName String
+    patientData String
+    ward String
+    roomNr String
+    priority EPriority
 }
 
 entity PushSubscription {
@@ -20,19 +26,25 @@ entity PushSubscription {
     P256dh String
 }
 
-relationship ManyToOne {
-	Request{doctor} to Doctor
+enum EPriority {
+	LOW,
+    HIGH,
+    URGENT
 }
 
 relationship ManyToOne {
-	Request{icuNurse} to ICUNurse
+	TurningEvent{doctor} to Doctor
+}
+
+relationship ManyToOne {
+	TurningEvent{icuNurse} to ICUNurse
 }
 
 relationship ManyToMany {
-	Request{assistants} to Assistant{requests}
+	TurningEvent{assistants} to Assistant{turningEvents}
 }
 
 relationship OneToOne {
-	UserRole{pushSubscrioption} to PushSubscription{userRole}
+	UserRole{pushSubscription} to PushSubscription{userRole}
 }
 

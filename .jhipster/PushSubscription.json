@@ -18,7 +18,7 @@
         {
             "relationshipType": "one-to-one",
             "otherEntityName": "userRole",
-            "otherEntityRelationshipName": "pushSubscrioption",
+            "otherEntityRelationshipName": "pushSubscription",
             "relationshipName": "userRole",
             "ownerSide": false
         }

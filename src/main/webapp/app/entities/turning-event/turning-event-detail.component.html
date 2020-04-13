@@ -1,0 +1,64 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="turningEvent">
+            <h2><span jhiTranslate="instantHelpFinderApp.turningEvent.detail.title">Turning Event</span> {{ turningEvent.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.patientName">Patient Name</span></dt>
+                <dd>
+                    <span>{{ turningEvent.patientName }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.patientData">Patient Data</span></dt>
+                <dd>
+                    <span>{{ turningEvent.patientData }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.ward">Ward</span></dt>
+                <dd>
+                    <span>{{ turningEvent.ward }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.roomNr">Room Nr</span></dt>
+                <dd>
+                    <span>{{ turningEvent.roomNr }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.priority">Priority</span></dt>
+                <dd>
+                    <span jhiTranslate="{{ 'instantHelpFinderApp.EPriority.' + turningEvent.priority }}">{{ turningEvent.priority }}</span>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
+                <dd>
+                    <div *ngIf="turningEvent.doctor">
+                        <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor?.id }}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
+                <dd>
+                    <div *ngIf="turningEvent.icuNurse">
+                        <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse?.id }}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
+                <dd>
+                    <span *ngFor="let assistants of turningEvent.assistants; let last = last">
+                        <a [routerLink]="['/assistant', assistants?.id, 'view']">{{ assistants.id }}</a>{{ last ? '' : ', ' }}
+                    </span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/turning-event', turningEvent.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

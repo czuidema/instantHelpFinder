@@ -23,12 +23,14 @@
             <thead>
                 <tr>
                     <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
+                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.doctor.isPreferredDoctor">Is Preferred Doctor</span></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let doctor of doctors ;trackBy: trackId">
                     <td><a [routerLink]="['/doctor', doctor.id, 'view']">{{ doctor.id }}</a></td>
+                    <td>{{ doctor.isPreferredDoctor }}</td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button type="submit"

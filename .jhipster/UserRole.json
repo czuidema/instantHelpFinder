@@ -1,12 +1,17 @@
 {
     "name": "UserRole",
-    "fields": [],
+    "fields": [
+        {
+            "fieldName": "availability",
+            "fieldType": "Boolean"
+        }
+    ],
     "relationships": [
         {
             "relationshipType": "one-to-one",
             "otherEntityName": "pushSubscription",
             "otherEntityRelationshipName": "userRole",
-            "relationshipName": "pushSubscrioption",
+            "relationshipName": "pushSubscription",
             "otherEntityField": "id",
             "ownerSide": true
         }

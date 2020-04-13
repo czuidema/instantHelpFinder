@@ -40,7 +40,16 @@ describe('UserRole e2e test', () => {
 
     await userRoleComponentsPage.clickOnCreateButton();
 
-    await promise.all([userRoleUpdatePage.pushSubscrioptionSelectLastOption()]);
+    await promise.all([userRoleUpdatePage.pushSubscriptionSelectLastOption()]);
+
+    const selectedAvailability = userRoleUpdatePage.getAvailabilityInput();
+    if (await selectedAvailability.isSelected()) {
+      await userRoleUpdatePage.getAvailabilityInput().click();
+      expect(await userRoleUpdatePage.getAvailabilityInput().isSelected(), 'Expected availability not to be selected').to.be.false;
+    } else {
+      await userRoleUpdatePage.getAvailabilityInput().click();
+      expect(await userRoleUpdatePage.getAvailabilityInput().isSelected(), 'Expected availability to be selected').to.be.true;
+    }
 
     await userRoleUpdatePage.save();
     expect(await userRoleUpdatePage.getSaveButton().isPresent(), 'Expected save button disappear').to.be.false;
