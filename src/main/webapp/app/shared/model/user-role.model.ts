@@ -7,7 +7,11 @@ export interface IUserRole {
 }
 
 export class UserRole implements IUserRole {
-  constructor(public id?: number, public availability?: boolean, public pushSubscription?: IPushSubscription) {
-    this.availability = this.availability || false;
+  constructor(
+    public id?: number,
+    public availability?: boolean,
+    public pushSubscription?: IPushSubscription
+  ) {
+    this.availability = availability || false;
   }
 }
