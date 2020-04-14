@@ -1,20 +1,21 @@
-import {IUserRole, UserRole} from "app/shared/model/user-role.model";
+import {IUserRole} from "app/shared/model/user-role.model";
 import {IPushSubscription} from "app/shared/model/push-subscription.model";
 import {ITurningEvent} from "app/shared/model/turning-event.model";
 
-export interface IDoctor {
+export interface IDoctor extends IUserRole {
   isPreferredDoctor?: boolean;
   turningEvents?: ITurningEvent[];
 }
 
-export class Doctor extends UserRole implements IDoctor {
+export class Doctor implements IDoctor {
   constructor(
-    id?: number,
-    isAvailable?: boolean,
-    pushSubscription?: IPushSubscription,
+    public id?: number,
+    public isAvailable?: boolean,
+    public pushSubscription?: IPushSubscription,
     public isPreferredDoctor?: boolean
   ) {
-    super(id, isAvailable, pushSubscription);
+    this.id = id;
+    this.isAvailable = isAvailable;
     this.isPreferredDoctor = isPreferredDoctor || false;
   }
 }

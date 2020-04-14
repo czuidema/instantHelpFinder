@@ -1,17 +1,18 @@
 import { ITurningEvent } from 'app/shared/model/turning-event.model';
-import {UserRole} from "app/shared/model/user-role.model";
+import {IUserRole, UserRole} from "app/shared/model/user-role.model";
 
-export interface IAssistant {
+export interface IAssistant extends IUserRole{
   turningEvents?: ITurningEvent[];
 }
 
-export class Assistant extends UserRole implements IAssistant {
+export class Assistant implements IAssistant {
   constructor(
-    id?: number,
-    isAvailable?: boolean,
+    public id?: number,
+    public isAvailable?: boolean,
     public turningEvents?: ITurningEvent[]
   ) {
-    super(id, isAvailable);
+    this.id = id;
+    this.isAvailable = isAvailable;
     this.turningEvents = turningEvents || [];
   }
 }
