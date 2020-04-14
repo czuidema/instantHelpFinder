@@ -142,5 +142,5 @@
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
   },
-  "footer": "Erstellt durch Helpful ETH im 2020."
+  "footer": "Erstellt durch Helpful ETH im Jahr 2020."
 }

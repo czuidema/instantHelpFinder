@@ -14,6 +14,12 @@
       "follow": "kontaktieren Sie uns mit @jhipster auf Twitter"
     },
     "like": "Wenn Sie JHipster mögen, vergessen Sie nicht uns einen Stern zu geben auf",
-    "github": "GitHub"
+    "github": "GitHub",
+    "setup": "Setup",
+    "notifications": "Push-Benachrichtigungen",
+    "request": "Anfrage verschicken",
+    "roomName": "Raumbezeichnung",
+    "timeDateTitle": "Zeit und Datum",
+    "requestButtonLabel": "Anfrage senden"
   }
 }
