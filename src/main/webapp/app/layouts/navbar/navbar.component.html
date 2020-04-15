@@ -18,7 +18,7 @@
             </li>
             <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
                 <a  class="nav-link" routerLink="turning-event" (click)="collapseNavbar()">
-                    <fa-icon icon="home"></fa-icon>
+                    <fa-icon [icon]="InboxIcon"></fa-icon>
                     <span jhiTranslate="global.menu.entities.turningEvent">Turning Event</span>
                 </a>
             </li>
@@ -35,19 +35,19 @@
                 <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
                     <li>
                         <a class="dropdown-item" routerLink="doctor" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
-                            <fa-icon icon="asterisk" fixedWidth="true"></fa-icon>
+                            <fa-icon [icon]="DoctorIcon" fixedWidth="true"></fa-icon>
                             <span jhiTranslate="global.menu.entities.doctor">Doctor</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" routerLink="icu-nurse" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
-                            <fa-icon icon="asterisk" fixedWidth="true"></fa-icon>
+                            <fa-icon [icon]="NurseIcon" fixedWidth="true"></fa-icon>
                             <span jhiTranslate="global.menu.entities.icuNurse">Icu Nurse</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" routerLink="assistant" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="collapseNavbar()">
-                            <fa-icon icon="asterisk" fixedWidth="true"></fa-icon>
+                            <fa-icon [icon]="AssistantIcon" fixedWidth="true"></fa-icon>
                             <span jhiTranslate="global.menu.entities.assistant">Assistant</span>
                         </a>
                     </li>
