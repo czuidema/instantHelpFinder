@@ -29,6 +29,23 @@
         <div class="col-md-8">
             <form name="form" role="form" (ngSubmit)="register()" [formGroup]="registerForm" *ngIf="!success">
                 <div class="form-group">
+                    <label class="form-control-label" for="userRoleName" jhiTranslate="global.form.userRole.label">Rolle</label>
+                    <select formControlName="userRoleName"  class="form-control" id="userRoleName" name="userRoleName"
+                            #userRoleName>
+                        // TODO: add translation
+                        <option *ngFor="let option of userRoleNames; let index = index;" [value]="index" [label]="option"></option>
+                    </select>
+
+                    <!--<div *ngIf="registerForm.get('userRoleName')!.invalid && (registerForm.get('login')!.dirty || registerForm.get('login')!.touched)">-->
+                        <!--<small class="form-text text-danger"-->
+                               <!--*ngIf="registerForm.get('userRoleName')?.errors?.required"-->
+                               <!--jhiTranslate="register.messages.validate.login.required">-->
+                            <!--Your role is required.-->
+                        <!--</small>-->
+                    <!--</div>-->
+                </div>
+
+                <div class="form-group">
                     <label class="form-control-label" for="login" jhiTranslate="global.form.username.label">Username</label>
                     <input type="text" class="form-control" id="login" name="login" placeholder="{{ 'global.form.username.placeholder' | translate }}"
                            formControlName="login" #login>

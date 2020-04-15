@@ -41,6 +41,7 @@
       "language": "Lingua"
     },
     "form": {
+      "userRole.label": "Role",
       "username.label": "Utente",
       "username.placeholder": "Il tuo nome utente",
       "currentpassword.label": "Current password",
