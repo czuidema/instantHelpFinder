@@ -1,7 +1,7 @@
 <div class="row justify-content-center">
     <div class="col-8">
         <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-            <h2 id="jhi-turning-event-heading" jhiTranslate="instantHelpFinderApp.turningEvent.home.createOrEditLabel">Create or edit a Turning Event</h2>
+            <h2 id="jhi-turning-event-heading" >Create Turning Event</h2>
 
             <div>
                 <jhi-alert-error></jhi-alert-error>
@@ -17,65 +17,60 @@
                            formControlName="patientName"/>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.patientData" for="field_patientData">Patient Data</label>
-                    <input type="text" class="form-control" name="patientData" id="field_patientData"
-                           formControlName="patientData"/>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.ward" for="field_ward">Ward</label>
+                        <input type="text" class="form-control" name="ward" id="field_ward"
+                            formControlName="ward"/>
+                     </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.roomNr" for="field_roomNr">Room Nr</label>
+                        <input type="text" class="form-control" name="roomNr" id="field_roomNr"
+                            formControlName="roomNr"/>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.priority" for="field_priority">Priority</label>
+                        <select class="form-control" name="priority" formControlName="priority" id="field_priority">
+                            <option value="LOW">{{ 'instantHelpFinderApp.EPriority.LOW' | translate }}</option>
+                            <option value="HIGH">{{ 'instantHelpFinderApp.EPriority.HIGH' | translate }}</option>
+                            <option value="URGENT">{{ 'instantHelpFinderApp.EPriority.URGENT' | translate }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label class="form-control-label" for="field_PreferedTime">Prefered Time for Turning</label>
+                        <input type="text" class="form-control" placeholder="18:00" name="PreferedTime" id="field_PreferedTime"/>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.ward" for="field_ward">Ward</label>
-                    <input type="text" class="form-control" name="ward" id="field_ward"
-                           formControlName="ward"/>
+                    <div class="list-group list-group-horizontal-md">
+                        <button type="button" class="list-group-item list-group-item-action col-md-2">15:00</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2">15:20</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2">15:40</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2">16:00</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2">16:20</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2">16:40</button>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.roomNr" for="field_roomNr">Room Nr</label>
-                    <input type="text" class="form-control" name="roomNr" id="field_roomNr"
-                           formControlName="roomNr"/>
+                    <label class="form-control-label"  for="field_patientData">Comment</label>
+                    <textarea class="form-control" name="patientData" id="field_patientData" rows="3"></textarea>
                 </div>
+                 <div>
+                    <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                        <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                    </button>
 
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.priority" for="field_priority">Priority</label>
-                    <select class="form-control" name="priority" formControlName="priority" id="field_priority">
-                        <option value="LOW">{{ 'instantHelpFinderApp.EPriority.LOW' | translate }}</option>
-                        <option value="HIGH">{{ 'instantHelpFinderApp.EPriority.HIGH' | translate }}</option>
-                        <option value="URGENT">{{ 'instantHelpFinderApp.EPriority.URGENT' | translate }}</option>
-                    </select>
+                    <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                        <fa-icon [icon]="SendIcon"></fa-icon>&nbsp;<span >Send</span>
+                    </button>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.doctor" for="field_doctor">Doctor</label>
-                    <select class="form-control" id="field_doctor" name="doctor" formControlName="doctor">
-                        <option [ngValue]="null"></option>
-                        <option [ngValue]="doctorOption.id === editForm.get('doctor')!.value?.id ? editForm.get('doctor')!.value : doctorOption" *ngFor="let doctorOption of doctors; trackBy: trackById">{{ doctorOption.id }}</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse" for="field_icuNurse">Icu Nurse</label>
-                    <select class="form-control" id="field_icuNurse" name="icuNurse" formControlName="icuNurse">
-                        <option [ngValue]="null"></option>
-                        <option [ngValue]="iCUNurseOption.id === editForm.get('icuNurse')!.value?.id ? editForm.get('icuNurse')!.value : iCUNurseOption" *ngFor="let iCUNurseOption of icunurses; trackBy: trackById">{{ iCUNurseOption.id }}</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label jhiTranslate="instantHelpFinderApp.turningEvent.assistants" for="field_assistants">Assistants</label>
-                    <select class="form-control" id="field_assistants" multiple name="assistants" formControlName="assistants">
-                        <option [ngValue]="getSelected(editForm.get('assistants')!.value, assistantOption)" *ngFor="let assistantOption of assistants; trackBy: trackById">{{ assistantOption.id }}</option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
-                    <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
-                </button>
-
-                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
-                    <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
-                </button>
             </div>
         </form>
     </div>

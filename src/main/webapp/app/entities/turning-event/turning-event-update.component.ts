@@ -5,6 +5,8 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+
 import { ITurningEvent, TurningEvent } from 'app/shared/model/turning-event.model';
 import { TurningEventService } from './turning-event.service';
 import { IDoctor } from 'app/shared/model/doctor.model';
@@ -25,6 +27,8 @@ export class TurningEventUpdateComponent implements OnInit {
   doctors: IDoctor[] = [];
   icunurses: IICUNurse[] = [];
   assistants: IAssistant[] = [];
+
+  SendIcon = faPaperPlane;
 
   editForm = this.fb.group({
     id: [],
