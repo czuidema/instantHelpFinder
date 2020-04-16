@@ -5,8 +5,6 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-
 import { ITurningEvent, TurningEvent } from 'app/shared/model/turning-event.model';
 import { TurningEventService } from './turning-event.service';
 import { IDoctor } from 'app/shared/model/doctor.model';
@@ -15,6 +13,7 @@ import { IICUNurse } from 'app/shared/model/icu-nurse.model';
 import { ICUNurseService } from 'app/entities/icu-nurse/icu-nurse.service';
 import { IAssistant } from 'app/shared/model/assistant.model';
 import { AssistantService } from 'app/entities/assistant/assistant.service';
+import * as moment from 'moment';
 
 type SelectableEntity = IDoctor | IICUNurse | IAssistant;
 
@@ -28,9 +27,10 @@ export class TurningEventUpdateComponent implements OnInit {
   icunurses: IICUNurse[] = [];
   assistants: IAssistant[] = [];
   timeConditions: boolean[] = [false, false, false, false, false, false];
-  date: Date = new Date();
 
-  SendIcon = faPaperPlane;
+  preferredTime = moment();
+
+  date: Date = new Date();
 
   editForm = this.fb.group({
     id: [],
@@ -41,7 +41,8 @@ export class TurningEventUpdateComponent implements OnInit {
     priority: [],
     doctor: [],
     icuNurse: [],
-    assistants: []
+    assistants: [],
+    preferredTimeCtrl: [this.preferredTime]
   });
 
   constructor(

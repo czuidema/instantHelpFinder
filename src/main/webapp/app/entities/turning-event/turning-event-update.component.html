@@ -42,8 +42,10 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="form-control-label" for="field_PreferedTime">Prefered Time for Turning</label>
-                        <input type="text" class="form-control" placeholder="{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}" name="PreferedTime" id="field_PreferedTime"/>
+                        <label class="form-control-label" for="preferredTime">Prefered Time for Turning</label>
+                        <div class="ngx-timepicker-field-example">
+                            <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" id="preferredTime" formControlName="preferredTimeCtrl"></ngx-timepicker-field>
+                        </div>
                     </div>
                 </div>
 
@@ -68,7 +70,7 @@
                     </button>
 
                     <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
-                        <fa-icon [icon]="SendIcon"></fa-icon>&nbsp;<span >Send</span>
+                        <span >Send</span>
                     </button>
                 </div>
             </div>
