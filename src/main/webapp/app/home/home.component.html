@@ -15,59 +15,7 @@
                 <span jhiTranslate="global.messages.info.register.noaccount">You don't have an account yet?</span>&nbsp;
                 <a class="alert-link" routerLink="account/register" jhiTranslate="global.messages.info.register.link">Register a new account</a>
             </div>
-            <h1 jhiTranslate="home.setup" *ngSwitchCase="true">Setup</h1>
-            <div class="row" *ngSwitchCase="true">
-                <div class="col-6 vcenter" >  <h4 jhiTranslate="home.notifications">Notifications</h4> </div>
-                <div class="col-6 vcenter">
-                    <label class="switch float-right vcenter">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="col-6">  </div>
-            </div>
-            <h1 jhiTranslate="home.request" *ngSwitchCase="true">Submit a request</h1>
-            <div class="row top-buffer" *ngSwitchCase="true">
-                <div class="col">
-                    <label jhiTranslate="home.roomName" for="room">Room Name</label>
-                    <input type="text" class="form-control" id="room" placeholder="Name" >
-                </div>
-            </div>
-            <div *ngSwitchCase="true">
-                <h3 jhiTranslate="home.timeDateTitle">Time and Date</h3>
-            </div>
-            <div class="row" *ngSwitchCase="true">
-                <div class="col-6">
-                    <label for="hours">hh</label>
-                    <input type="text" class="form-control" id="hours" placeholder="HH" >
-                </div>
-                <div class="col-6">
-                    <label for="minutes">mm</label>
-                    <input type="text" class="form-control" id="minutes" placeholder="MM" >
-                </div>
 
-            </div>
-
-            <div class="row top-buffer" *ngSwitchCase="true">
-                <div class="col-4">
-                    <label for="day">DD</label>
-                    <input type="text" class="form-control" id="day" placeholder="DD" >
-                </div>
-                <div class="col-4">
-                    <label for="month">MM</label>
-                    <input type="text" class="form-control" id="month" placeholder="MM" >
-                </div>
-                <div class="col-4">
-                    <label for="year">YYYY</label>
-                    <input type="text" class="form-control" id="year" placeholder="YYYY" >
-                </div>
-            </div>
-
-            <div class="row" *ngSwitchCase="true">
-                <div class="col">
-                    <button type="button" class="btn btn-secondary top-buffer float-right" jhiTranslate="home.requestButtonLabel" >Submit Request</button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
