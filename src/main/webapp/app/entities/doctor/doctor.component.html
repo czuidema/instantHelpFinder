@@ -22,14 +22,16 @@
         <table class="table table-striped" aria-describedby="page-heading">
             <thead>
                 <tr>
-                    <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
+                    <th scope="col" ><span jhiTranslate="userManagement.firstName">First Name</span></th>
+                    <th scope="col" ><span jhiTranslate="userManagement.lastName">Last Name</span></th>
                     <th scope="col" ><span jhiTranslate="instantHelpFinderApp.doctor.isPreferredDoctor">Is Preferred Doctor</span></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let doctor of doctors ;trackBy: trackId">
-                    <td><a [routerLink]="['/doctor', doctor.id, 'view']">{{ doctor.id }}</a></td>
+                    <td><a [routerLink]="['/doctor', doctor.id, 'view']">{{ doctor.user ? doctor.user.firstName : ''}}</a></td>
+                    <td><a [routerLink]="['/doctor', doctor.id, 'view']">{{ doctor.user? doctor.user.lastName : ''}}</a></td>
                     <td>{{ doctor.isPreferredDoctor }}</td>
                     <td class="text-right">
                         <div class="btn-group">

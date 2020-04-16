@@ -1,4 +1,7 @@
+import { IUserRole } from 'app/shared/model/user-role.model';
+
 export interface IUser {
+  userRole?: IUserRole;
   id?: any;
   login?: string;
   firstName?: string;
@@ -16,6 +19,7 @@ export interface IUser {
 
 export class User implements IUser {
   constructor(
+    public userRole?: IUserRole,
     public id?: any,
     public login?: string,
     public firstName?: string,
