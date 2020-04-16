@@ -39,6 +39,12 @@ public class TurningEvent implements Serializable {
     @Column(name = "room_nr")
     private String roomNr;
 
+    @Column(name = "final_slot_set")
+    private boolean finalSlotSet;
+
+    @Column(name ="final_slot_id")
+    private Long finalSlotId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "priority")
     private EPriority priority;
@@ -57,6 +63,10 @@ public class TurningEvent implements Serializable {
                joinColumns = @JoinColumn(name = "turning_event_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "assistants_id", referencedColumnName = "id"))
     private Set<Assistant> assistants = new HashSet<>();
+
+    @OneToMany
+    @JsonIgnoreProperties
+    private Set<TimeSlot> potentialTimeSlots = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
