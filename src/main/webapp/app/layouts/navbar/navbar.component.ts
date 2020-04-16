@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { JhiLanguageService } from 'ng-jhipster';
 import { SessionStorageService } from 'ngx-webstorage';
 
+import { faUserMd, faInbox, faUserNurse, faUser } from '@fortawesome/free-solid-svg-icons';
+
 import { VERSION } from 'app/app.constants';
 import { LANGUAGES } from 'app/core/language/language.constants';
 import { AccountService } from 'app/core/auth/account.service';
@@ -21,6 +23,11 @@ export class NavbarComponent implements OnInit {
   languages = LANGUAGES;
   swaggerEnabled?: boolean;
   version: string;
+
+  DoctorIcon = faUserMd;
+  InboxIcon = faInbox;
+  NurseIcon = faUserNurse;
+  AssistantIcon = faUser;
 
   constructor(
     private loginService: LoginService,
