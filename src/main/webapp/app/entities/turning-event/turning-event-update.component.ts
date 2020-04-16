@@ -27,6 +27,8 @@ export class TurningEventUpdateComponent implements OnInit {
   doctors: IDoctor[] = [];
   icunurses: IICUNurse[] = [];
   assistants: IAssistant[] = [];
+  timeConditions: boolean[] = [false, false, false, false, false, false];
+  date: Date = new Date();
 
   SendIcon = faPaperPlane;
 
@@ -79,6 +81,31 @@ export class TurningEventUpdateComponent implements OnInit {
 
   previousState(): void {
     window.history.back();
+  }
+
+  ChooseTime1(): void {
+    this.timeConditions = [false, false, false, false, false, false];
+    this.timeConditions[0] = true;
+  }
+  ChooseTime2(): void {
+    this.timeConditions = [false, false, false, false, false, false];
+    this.timeConditions[1] = true;
+  }
+  ChooseTime3(): void {
+    this.timeConditions = [false, false, false, false, false, false];
+    this.timeConditions[2] = true;
+  }
+  ChooseTime4(): void {
+    this.timeConditions = [false, false, false, false, false, false];
+    this.timeConditions[3] = true;
+  }
+  ChooseTime5(): void {
+    this.timeConditions = [false, false, false, false, false, false];
+    this.timeConditions[4] = true;
+  }
+  ChooseTime6(): void {
+    this.timeConditions = [false, false, false, false, false, false];
+    this.timeConditions[5] = true;
   }
 
   save(): void {

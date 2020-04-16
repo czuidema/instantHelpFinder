@@ -43,18 +43,18 @@
 
                     <div class="form-group col-md-6">
                         <label class="form-control-label" for="field_PreferedTime">Prefered Time for Turning</label>
-                        <input type="text" class="form-control" placeholder="18:00" name="PreferedTime" id="field_PreferedTime"/>
+                        <input type="text" class="form-control" placeholder="{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}" name="PreferedTime" id="field_PreferedTime"/>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="list-group list-group-horizontal-md">
-                        <button type="button" class="list-group-item list-group-item-action col-md-2">15:00</button>
-                        <button type="button" class="list-group-item list-group-item-action col-md-2">15:20</button>
-                        <button type="button" class="list-group-item list-group-item-action col-md-2">15:40</button>
-                        <button type="button" class="list-group-item list-group-item-action col-md-2">16:00</button>
-                        <button type="button" class="list-group-item list-group-item-action col-md-2">16:20</button>
-                        <button type="button" class="list-group-item list-group-item-action col-md-2">16:40</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[0]" (click)="ChooseTime1()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[1]" (click)="ChooseTime2()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[2]" (click)="ChooseTime3()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[3]" (click)="ChooseTime4()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[4]" (click)="ChooseTime5()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>
+                        <button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[5]" (click)="ChooseTime6()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>
                     </div>
                 </div>
 
