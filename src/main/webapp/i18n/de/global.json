@@ -56,9 +56,9 @@
     "messages": {
       "info": {
         "authenticated": {
-          "prefix": "Wenn Sie sich ",
-          "link": "anmelden",
-          "suffix": " möchten, versuchen Sie es mit <br/>- Administrator (Name=\"admin\" und Passwort=\"admin\")<br/>- Benutzer (Name=\"user\" und Passwort=\"user\")."
+          "prefix": "Melden Sie sich ",
+          "link": "hier",
+          "suffix": " an."
         },
         "register": {
           "noaccount": "Sie haben noch keinen Zugang?",
@@ -143,5 +143,5 @@
       "not.image": "File was expected to be an image but was found to be \"{{ fileType }}\""
     }
   },
-  "footer": "Dies ist Ihre Fußzeile"
+  "footer": "Erstellt durch Helpful ETH im Jahr 2020."
 }
