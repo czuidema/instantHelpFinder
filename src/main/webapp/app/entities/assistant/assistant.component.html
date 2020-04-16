@@ -22,13 +22,15 @@
         <table class="table table-striped" aria-describedby="page-heading">
             <thead>
                 <tr>
-                    <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
+                    <th scope="col" ><span jhiTranslate="userManagement.firstName">First Name</span></th>
+                    <th scope="col" ><span jhiTranslate="userManagement.lastName">Last Name</span></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let assistant of assistants ;trackBy: trackId">
-                    <td><a [routerLink]="['/assistant', assistant.id, 'view']">{{ assistant.id }}</a></td>
+                    <td><a [routerLink]="['/assistant', assistant.id, 'view']">{{ assistant.user ? assistant.user.firstName : '' }}</a></td>
+                    <td><a [routerLink]="['/assistant', assistant.id, 'view']">{{ assistant.user ? assistant.user.lastName : '' }}</a></td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button type="submit"

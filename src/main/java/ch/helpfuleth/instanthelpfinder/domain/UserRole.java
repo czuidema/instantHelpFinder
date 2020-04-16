@@ -1,5 +1,7 @@
 package ch.helpfuleth.instanthelpfinder.domain;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -11,9 +13,16 @@ import java.util.Objects;
 /**
  * A UserRole.
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes(value = {
+    @JsonSubTypes.Type(name = "Doctor", value = Doctor.class),
+    @JsonSubTypes.Type(name = "ICUNurse", value = ICUNurse.class),
+    @JsonSubTypes.Type(name = "Assistant", value = Assistant.class),
+})
 @Entity
 @Table(name = "user_role")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class UserRole implements Serializable {
 

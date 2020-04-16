@@ -202,7 +202,6 @@ public class UserDTO {
             ", lastModifiedBy='" + lastModifiedBy + '\'' +
             ", lastModifiedDate=" + lastModifiedDate +
             ", authorities=" + authorities +
-            ", userRole=" + userRole.getClass() +
             "}";
     }
 }

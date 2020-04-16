@@ -6,6 +6,7 @@ import ch.helpfuleth.instanthelpfinder.domain.User;
 import ch.helpfuleth.instanthelpfinder.domain.UserRole;
 import ch.helpfuleth.instanthelpfinder.repository.AuthorityRepository;
 import ch.helpfuleth.instanthelpfinder.repository.UserRepository;
+import ch.helpfuleth.instanthelpfinder.repository.UserRoleRepository;
 import ch.helpfuleth.instanthelpfinder.security.AuthoritiesConstants;
 import ch.helpfuleth.instanthelpfinder.security.SecurityUtils;
 import ch.helpfuleth.instanthelpfinder.service.dto.UserDTO;
@@ -38,17 +39,26 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UserRoleRepository userRoleRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private final AuthorityRepository authorityRepository;
 
     private final CacheManager cacheManager;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository, CacheManager cacheManager) {
+    public UserService(
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        AuthorityRepository authorityRepository,
+        UserRoleRepository userRoleRepository,
+        CacheManager cacheManager
+        ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.userRoleRepository = userRoleRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -120,7 +130,12 @@ public class UserService {
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
+        newUser.setUserRole(userDTO.getUserRole());
+        newUser = userRepository.save(newUser);
+        UserRole newUserRole = newUser.getUserRole();
+        newUser.setUserRole(null);
+        newUserRole.setUser(newUser);
+        userRoleRepository.save(newUserRole);
         this.clearUserCaches(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
@@ -165,6 +180,10 @@ public class UserService {
         }
         user.setUserRole(userDTO.getUserRole());
         userRepository.save(user);
+        UserRole newUserRole = user.getUserRole();
+        user.setUserRole(null);
+        newUserRole.setUser(user);
+        userRoleRepository.save(newUserRole);
         this.clearUserCaches(user);
         log.debug("Created Information for User: {}", user);
         return user;

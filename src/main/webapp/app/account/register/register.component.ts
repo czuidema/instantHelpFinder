@@ -6,6 +6,10 @@ import { JhiLanguageService } from 'ng-jhipster';
 import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/shared/constants/error.constants';
 import { LoginModalService } from 'app/core/login/login-modal.service';
 import { RegisterService } from './register.service';
+import { IUserRole } from 'app/shared/model/user-role.model';
+import { Doctor } from 'app/shared/model/doctor.model';
+import { ICUNurse } from 'app/shared/model/icu-nurse.model';
+import { Assistant } from 'app/shared/model/assistant.model';
 
 @Component({
   selector: 'jhi-register',
@@ -20,12 +24,14 @@ export class RegisterComponent implements AfterViewInit {
   errorEmailExists = false;
   errorUserExists = false;
   success = false;
+  userRoleNames = ['Doctor', 'ICUNurse', 'Assistant'];
 
   registerForm = this.fb.group({
     login: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
     email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-    confirmPassword: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]]
+    confirmPassword: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+    userRoleName: ['', [Validators.required]]
   });
 
   constructor(
@@ -53,7 +59,22 @@ export class RegisterComponent implements AfterViewInit {
     } else {
       const login = this.registerForm.get(['login'])!.value;
       const email = this.registerForm.get(['email'])!.value;
-      this.registerService.save({ login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
+      const userRoleIndex = +this.registerForm.get(['userRoleName'])!.value;
+      let userRole: IUserRole;
+      switch (userRoleIndex) {
+        case 0:
+          userRole = new Doctor(undefined, true);
+          break;
+        case 1:
+          userRole = new ICUNurse(undefined, true);
+          break;
+        case 2:
+          userRole = new Assistant(undefined, true);
+          break;
+        default:
+          userRole = new Assistant();
+      }
+      this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
         () => (this.success = true),
         response => this.processError(response)
       );
