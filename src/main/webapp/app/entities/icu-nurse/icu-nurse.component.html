@@ -22,13 +22,17 @@
         <table class="table table-striped" aria-describedby="page-heading">
             <thead>
                 <tr>
-                    <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
+                    <th scope="col" ><span jhiTranslate="userManagement.firstName">Vorname</span></th>
+                    <th scope="col" ><span jhiTranslate="userManagement.lastName">Nachname</span></th>
+                    <th scope="col" ><span >Verfügabar</span></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let iCUNurse of iCUNurses ;trackBy: trackId">
-                    <td><a [routerLink]="['/icu-nurse', iCUNurse.id, 'view']">{{ iCUNurse.id }}</a></td>
+                    <td><a [routerLink]="['/icu-nurse', iCUNurse.id, 'view']">{{ iCUNurse.user? iCUNurse.user.firstName : ''}}</a></td>
+                    <td><a [routerLink]="['/icu-nurse', iCUNurse.id, 'view']">{{ iCUNurse.user? iCUNurse.user.lastName : ''}}</a></td>
+                    <td><a [routerLink]="['/icu-nurse', iCUNurse.id, 'view']">{{ iCUNurse.availability }}</a></td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button type="submit"
