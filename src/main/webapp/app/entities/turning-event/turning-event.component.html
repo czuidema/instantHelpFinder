@@ -1,13 +1,6 @@
 <div>
     <h2 id="page-heading">
         <span jhiTranslate="instantHelpFinderApp.turningEvent.home.title">Turning Events</span>
-
-        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-turning-event" [routerLink]="['/turning-event/new']">
-            <fa-icon icon="plus"></fa-icon>
-            <span  jhiTranslate="instantHelpFinderApp.turningEvent.home.createLabel">
-            Create a new Turning Event
-            </span>
-        </button>
     </h2>
 
     <jhi-alert-error></jhi-alert-error>
@@ -18,70 +11,51 @@
         <span jhiTranslate="instantHelpFinderApp.turningEvent.home.notFound">No turningEvents found</span>
     </div>
 
-    <div class="table-responsive" id="entities" *ngIf="turningEvents?.length > 0">
-        <table class="table table-striped" aria-describedby="page-heading">
-            <thead>
-                <tr>
-                    <th scope="col" ><span jhiTranslate="global.field.id">ID</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.patientName">Patient Name</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.patientData">Patient Data</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.ward">Ward</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.roomNr">Room Nr</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.priority">Priority</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></th>
-                    <th scope="col" ><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let turningEvent of turningEvents ;trackBy: trackId">
-                    <td><a [routerLink]="['/turning-event', turningEvent.id, 'view']">{{ turningEvent.id }}</a></td>
-                    <td>{{ turningEvent.patientName }}</td>
-                    <td>{{ turningEvent.patientData }}</td>
-                    <td>{{ turningEvent.ward }}</td>
-                    <td>{{ turningEvent.roomNr }}</td>
-                    <td jhiTranslate="{{ 'instantHelpFinderApp.EPriority.' + turningEvent.priority }}">{{ turningEvent.priority }}</td>
-                    <td>
-                        <div *ngIf="turningEvent.doctor">
-                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']" >{{ turningEvent.doctor?.id }}</a>
-                        </div>
-                    </td>
-                    <td>
-                        <div *ngIf="turningEvent.icuNurse">
-                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']" >{{ turningEvent.icuNurse?.id }}</a>
-                        </div>
-                    </td>
-                    <td>
-                        <span *ngFor="let assistants of turningEvent.assistants; let last = last">
-                            <a class="form-control-static" [routerLink]="['/assistant', assistants?.id, 'view']">{{ assistants.id }}</a>{{ last ? '' : ', ' }}
-                        </span>
-                    </td>
-                    <td class="text-right">
-                        <div class="btn-group">
-                            <button type="submit"
-                                    [routerLink]="['/turning-event', turningEvent.id, 'view']"
-                                    class="btn btn-info btn-sm">
-                                <fa-icon icon="eye"></fa-icon>
-                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
-                            </button>
+    <ul class="nav nav-pills m-2">
+        <li class="nav-item">
+            <a class="nav-link" [class.active] = "tabToggle" (click)="tabToggleTrue()">Your Tasks</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"  [class.active] = "!tabToggle" (click)="tabToggleFalse()">Open Tasks</a>
+        </li>
+    </ul>
 
-                            <button type="submit"
-                                    [routerLink]="['/turning-event', turningEvent.id, 'edit']"
-                                    class="btn btn-primary btn-sm">
-                                <fa-icon icon="pencil-alt"></fa-icon>
-                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-                            </button>
+    <div class="list-group">
+        <a *ngFor="let turningEvent of turningEvents ;trackBy: trackId" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">18:20 - 18:30</h5>
+                <small><span class="badge badge-success">Enough people</span> Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</small>
+            </div>
+            <p class="mb-1"><strong>Patient name: {{ turningEvent.patientName }}</strong></p>
+            <p class="mb-1">Hier kann man noch zusätzliche wichtige Informationen nennen.</p>
+            <p class="mb-1"><small>Doctor: {{ turningEvent.doctor?.user.firstName + ' ' + turningEvent.doctor?.user.lastName}}</small></p>
+            <p class="mb-1"><small>Assistance: <span *ngFor="let assistants of turningEvent.assistants; let last = last">
+                            {{ assistants.user.firstName + ' ' +  assistants.user.lastName}}{{ last ? '' : ', ' }}
+                        </span></small></p>
+            <div class="btn-group float-right">
+                <button type="submit"
+                        [routerLink]="['/turning-event', turningEvent.id, 'edit']"
+                        class="btn btn-primary btn-sm">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                </button>
 
-                            <button type="submit" (click)="delete(turningEvent)"
-                                    class="btn btn-danger btn-sm">
-                                <fa-icon icon="times"></fa-icon>
-                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                <button type="submit" (click)="delete(turningEvent)"
+                        class="btn btn-danger btn-sm">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                </button>
+            </div>
+        </a>
+        <a class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">18:50 - 19:10</h5>
+                <small><span class="badge badge-danger">1 more person needed</span> Ward: A, Room: 230</small>
+            </div>
+            <p class="mb-1"><strong>Patient name: Christoph Kramer</strong></p>
+            <p class="mb-1">Hier kann man noch zusätzliche wichtige Informationen nennen.</p>
+            <p class="mb-1"><small>Doctor: Frank Walter</small></p>
+            <p class="mb-1"><small>Assistance: Ute Hahn</small></p>
+        </a>
     </div>
 </div>
