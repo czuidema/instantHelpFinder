@@ -46,6 +46,14 @@
                         <div class="ngx-timepicker-field-example">
                             <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" id="preferredTime" formControlName="preferredTimeCtrl"></ngx-timepicker-field>
                         </div>
+                        <!-- working <input [ngxTimepicker]="picker">
+                        <ngx-material-timepicker #picker id="preferredTime"></ngx-material-timepicker>-->
+
+                        <!-- working as well <div class="toggle-example">
+                            <input [ngxTimepicker]="toggleTimepicker" [disableClick]="true" readonly>
+                            <ngx-material-timepicker-toggle [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
+                            <ngx-material-timepicker id="preferredTime" #toggleTimepicker></ngx-material-timepicker>
+                        </div>-->
                     </div>
                 </div>
 

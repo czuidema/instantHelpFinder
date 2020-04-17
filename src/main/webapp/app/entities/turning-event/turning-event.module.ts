@@ -8,9 +8,10 @@ import { TurningEventUpdateComponent } from './turning-event-update.component';
 import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog.component';
 import { turningEventRoute } from './turning-event.route';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
-  imports: [InstantHelpFinderSharedModule, RouterModule.forChild(turningEventRoute), NgxMaterialTimepickerModule],
+  imports: [InstantHelpFinderSharedModule, RouterModule.forChild(turningEventRoute), NgxMaterialTimepickerModule, CommonModule],
   declarations: [TurningEventComponent, TurningEventDetailComponent, TurningEventUpdateComponent, TurningEventDeleteDialogComponent],
   entryComponents: [TurningEventDeleteDialogComponent]
 })
