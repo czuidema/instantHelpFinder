@@ -1,5 +1,6 @@
 package ch.helpfuleth.instanthelpfinder.domain;
 
+import ch.helpfuleth.instanthelpfinder.domain.enumeration.ETurningEventStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -7,9 +8,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.*;
 
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import ch.helpfuleth.instanthelpfinder.domain.enumeration.EPriority;
 
@@ -39,15 +38,13 @@ public class TurningEvent implements Serializable {
     @Column(name = "room_nr")
     private String roomNr;
 
-    @Column(name = "final_slot_set")
-    private boolean finalSlotSet;
-
-    @Column(name ="final_slot_id")
-    private Long finalSlotId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "priority")
     private EPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ETurningEventStatus status;
 
     @ManyToOne
     @JsonIgnoreProperties("turningEvents")
@@ -64,11 +61,40 @@ public class TurningEvent implements Serializable {
                inverseJoinColumns = @JoinColumn(name = "assistants_id", referencedColumnName = "id"))
     private Set<Assistant> assistants = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JsonIgnoreProperties
-    private Set<TimeSlot> potentialTimeSlots = new HashSet<>();
+    private Collection<TimeSlot> potentialTimeSlots;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    private TimeSlot definiteTimeSlot;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+
+
+    public ETurningEventStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ETurningEventStatus status) {
+        this.status = status;
+    }
+
+    public TimeSlot getDefiniteTimeSlot() {
+        return definiteTimeSlot;
+    }
+
+    public void setDefiniteTimeSlot(TimeSlot definiteTimeSlot) {
+        this.definiteTimeSlot = definiteTimeSlot;
+    }
+
+    public Collection<TimeSlot> getPotentialTimeSlots() {
+        return potentialTimeSlots;
+    }
+
+    public void setPotentialTimeSlots(Collection<TimeSlot> potentialTimeSlots) {
+        this.potentialTimeSlots = potentialTimeSlots;
+    }
+
     public Long getId() {
         return id;
     }

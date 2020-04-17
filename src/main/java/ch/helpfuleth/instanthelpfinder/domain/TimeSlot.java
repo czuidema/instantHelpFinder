@@ -1,14 +1,12 @@
 package ch.helpfuleth.instanthelpfinder.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
 import java.io.Serializable;
-import java.util.*;
-
+import java.time.ZonedDateTime;
 
 
 @Entity
@@ -21,11 +19,45 @@ public class TimeSlot implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long turningEventId;
+    @Column(name = "start")
+    private ZonedDateTime start;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date slotStart;
+    @Column(name = "end")
+    private ZonedDateTime end;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date slotEnd;
+    @Column(name = "is_selected")
+    private boolean isSelected;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ZonedDateTime getStart() {
+        return start;
+    }
+
+    public void setStart(ZonedDateTime start) {
+        this.start = start;
+    }
+
+    public ZonedDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(ZonedDateTime end) {
+        this.end = end;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
 }
