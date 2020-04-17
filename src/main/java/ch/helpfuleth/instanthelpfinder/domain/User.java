@@ -86,6 +86,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(unique =  true)
+    @JsonIgnore
     private UserRole userRole;
 
     @JsonIgnore
