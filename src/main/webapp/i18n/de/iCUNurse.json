@@ -2,19 +2,19 @@
   "instantHelpFinderApp": {
     "iCUNurse": {
       "home": {
-        "title": "ICU Nurses",
-        "createLabel": "ICU Nurse erstellen",
-        "createOrEditLabel": "ICU Nurse erstellen oder bearbeiten",
-        "notFound": "No ICU Nurses found"
+        "title": "ICU Pflegende",
+        "createLabel": "ICU Pflegende/r erstellen",
+        "createOrEditLabel": "ICU Pflegende/r erstellen oder bearbeiten",
+        "notFound": "Keine ICU Pflegende gefunden"
       },
-      "created": "ICU Nurse erstellt mit ID {{ param }}",
-      "updated": "ICU Nurse aktualisiert mit ID {{ param }}",
-      "deleted": "ICU Nurse gelöscht mit ID {{ param }}",
+      "created": "ICU Pflegende/r erstellt mit ID {{ param }}",
+      "updated": "ICU Pflegende/r aktualisiert mit ID {{ param }}",
+      "deleted": "ICU Pflegende/r gelöscht mit ID {{ param }}",
       "delete": {
-        "question": "Soll ICU Nurse {{ id }} wirklich dauerhaft gelöscht werden?"
+        "question": "Soll ICU Pflegende/r {{ id }} wirklich dauerhaft gelöscht werden?"
       },
       "detail": {
-        "title": "ICU Nurse"
+        "title": "ICU Pflegende/r"
       }
     }
   }

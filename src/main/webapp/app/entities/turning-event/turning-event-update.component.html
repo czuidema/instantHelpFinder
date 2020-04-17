@@ -1,7 +1,7 @@
 <div class="row justify-content-center">
     <div class="col-8">
         <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-            <h2 id="jhi-turning-event-heading" >Create Turning Event</h2>
+            <h2 jhiTranslate="instantHelpFinderApp.turningEvent.home.createLabel" id="jhi-turning-event-heading" >Create Turning Event</h2>
 
             <div>
                 <jhi-alert-error></jhi-alert-error>
@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label class="form-control-label" for="preferredTime">Prefered Time for Turning</label>
+                        <label jhiTranslate="instantHelpFinderApp.turningEvent.earliestTime" class="form-control-label" for="preferredTime">Prefered Time for Turning</label>
                         <div class="ngx-timepicker-field-example">
                             <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" id="preferredTime" formControlName="preferredTimeCtrl"></ngx-timepicker-field>
                         </div>
@@ -69,7 +69,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label"  for="field_patientData">Comment</label>
+                    <label jhiTranslate="instantHelpFinderApp.turningEvent.comment" class="form-control-label"  for="field_patientData">Comment</label>
                     <textarea class="form-control" name="patientData" id="field_patientData" rows="3"></textarea>
                 </div>
                  <div>
@@ -78,7 +78,7 @@
                     </button>
 
                     <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
-                        <span >Send</span>
+                        <span jhiTranslate="entity.action.send">Send</span>
                     </button>
                 </div>
             </div>
