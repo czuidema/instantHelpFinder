@@ -41,7 +41,7 @@
         EPriority priority
         String ward
         String roomNumber
-        Collection<Pair<LocalDateTime, LocalDateTime>> possibleTimeSlots
+        Collection<Pair<LocalDateTime, LocalDateTime>> potentialTimeSlots
         Pair<LocalDateTime, LocalDateTime> definiteTimeSlot
     }
 

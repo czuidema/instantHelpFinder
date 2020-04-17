@@ -16,7 +16,7 @@ export interface ITurningEvent {
   icuNurse?: IICUNurse;
   assistants?: IAssistant[];
   status?: ETurningEventStatus;
-  possibleTimeSlots?: TimeSlot[];
+  potentialTimeSlots?: TimeSlot[];
   definiteTimeSlot?: TimeSlot;
 }
 
@@ -32,7 +32,7 @@ export class TurningEvent implements ITurningEvent {
     public icuNurse?: IICUNurse,
     public assistants?: IAssistant[],
     public status?: ETurningEventStatus,
-    public possibleTimeSlots?: TimeSlot[],
+    public potentialTimeSlots?: TimeSlot[],
     public definiteTimeSlot?: TimeSlot
   ) {}
 }

@@ -4,6 +4,7 @@ import ch.helpfuleth.instanthelpfinder.InstantHelpFinderApp;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 
+import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -58,6 +59,12 @@ public class TurningEventResourceIT {
 
     @Mock
     private TurningEventRepository turningEventRepositoryMock;
+
+    @Autowired
+    private TurningEventService turningEventService;
+
+    @Mock
+    private TurningEventService turningEventServiceMock;
 
     @Autowired
     private EntityManager em;
@@ -165,7 +172,7 @@ public class TurningEventResourceIT {
     
     @SuppressWarnings({"unchecked"})
     public void getAllTurningEventsWithEagerRelationshipsIsEnabled() throws Exception {
-        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock);
+        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock);
         when(turningEventRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         restTurningEventMockMvc.perform(get("/api/turning-events?eagerload=true"))
@@ -176,7 +183,7 @@ public class TurningEventResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllTurningEventsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock);
+        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock);
         when(turningEventRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         restTurningEventMockMvc.perform(get("/api/turning-events?eagerload=true"))

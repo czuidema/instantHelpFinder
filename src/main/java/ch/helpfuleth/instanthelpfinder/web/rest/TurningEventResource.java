@@ -2,6 +2,7 @@ package ch.helpfuleth.instanthelpfinder.web.rest;
 
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
+import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
 import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -35,8 +36,14 @@ public class TurningEventResource {
 
     private final TurningEventRepository turningEventRepository;
 
-    public TurningEventResource(TurningEventRepository turningEventRepository) {
+    private final TurningEventService turningEventService;
+
+    public TurningEventResource(
+        TurningEventRepository turningEventRepository,
+        TurningEventService turningEventService
+        ) {
         this.turningEventRepository = turningEventRepository;
+        this.turningEventService = turningEventService;
     }
 
     /**
@@ -52,7 +59,7 @@ public class TurningEventResource {
         if (turningEvent.getId() != null) {
             throw new BadRequestAlertException("A new turningEvent cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        TurningEvent result = turningEventRepository.save(turningEvent);
+        TurningEvent result = this.turningEventService.createNew(turningEvent);
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -73,7 +80,7 @@ public class TurningEventResource {
         if (turningEvent.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        TurningEvent result = turningEventRepository.save(turningEvent);
+        TurningEvent result = turningEventService.update(turningEvent);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
             .body(result);

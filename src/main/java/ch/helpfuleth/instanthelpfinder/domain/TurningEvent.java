@@ -61,7 +61,7 @@ public class TurningEvent implements Serializable {
                inverseJoinColumns = @JoinColumn(name = "assistants_id", referencedColumnName = "id"))
     private Set<Assistant> assistants = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnoreProperties
     private Collection<TimeSlot> potentialTimeSlots;
 
