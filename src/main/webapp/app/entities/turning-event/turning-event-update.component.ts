@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { FormBuilder, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
@@ -14,6 +14,7 @@ import { ICUNurseService } from 'app/entities/icu-nurse/icu-nurse.service';
 import { IAssistant } from 'app/shared/model/assistant.model';
 import { AssistantService } from 'app/entities/assistant/assistant.service';
 import * as moment from 'moment';
+import { ITimeSlot, TimeSlot } from 'app/shared/model/time-slot.model';
 
 type SelectableEntity = IDoctor | IICUNurse | IAssistant;
 
@@ -29,20 +30,22 @@ export class TurningEventUpdateComponent implements OnInit {
   timeConditions: boolean[] = [false, false, false, false, false, false];
 
   preferredTime = moment();
+  potentialTimeSlots: ITimeSlot[] = [];
 
   date: Date = new Date();
 
   editForm = this.fb.group({
     id: [],
-    patientName: [],
+    patientName: ['', [Validators.required]],
     patientData: [],
-    ward: [],
-    roomNr: [],
-    priority: [],
+    ward: ['', [Validators.required]],
+    roomNr: ['', [Validators.required]],
+    priority: ['', [Validators.required]],
     doctor: [],
     icuNurse: [],
     assistants: [],
-    preferredTimeCtrl: [this.preferredTime]
+    preferredTimeCtrl: [this.preferredTime, [Validators.required]],
+    potentialTimeSlotsCtrl: this.fb.array([])
   });
 
   constructor(
@@ -57,12 +60,30 @@ export class TurningEventUpdateComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ turningEvent }) => {
       this.updateForm(turningEvent);
+      this.potentialTimeSlots = turningEvent.potentialTimeSlots
+        ? turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
+            pts.start = new Date(pts.start ? pts.start : '');
+            pts.end = new Date(pts.end ? pts.end : '');
+            return pts;
+          })
+        : [];
 
       this.doctorService.query().subscribe((res: HttpResponse<IDoctor[]>) => (this.doctors = res.body || []));
 
       this.iCUNurseService.query().subscribe((res: HttpResponse<IICUNurse[]>) => (this.icunurses = res.body || []));
 
       this.assistantService.query().subscribe((res: HttpResponse<IAssistant[]>) => (this.assistants = res.body || []));
+    });
+    this.editForm.get('preferredTimeCtrl')!.valueChanges.subscribe(value => {
+      const time = value.split(':');
+      const preferredTime = moment()
+        .hour(+time[0])
+        .minute(+time[1])
+        .second(0);
+      for (let i = 0; i < 5; i++) {
+        this.potentialTimeSlots.push(new TimeSlot(preferredTime.toDate(), preferredTime.add(10, 'minute').toDate(), false));
+        (this.editForm.get('potentialTimeSlotsCtrl') as FormArray).push(new FormControl(false));
+      }
     });
   }
 
@@ -78,6 +99,11 @@ export class TurningEventUpdateComponent implements OnInit {
       icuNurse: turningEvent.icuNurse,
       assistants: turningEvent.assistants
     });
+    turningEvent.potentialTimeSlots
+      ? turningEvent.potentialTimeSlots.map(pts => {
+          (this.editForm.get('potentialTimeSlotsCtrl')! as FormArray).push(new FormControl(pts.isSelected));
+        })
+      : [];
   }
 
   previousState(): void {
@@ -112,6 +138,7 @@ export class TurningEventUpdateComponent implements OnInit {
   save(): void {
     this.isSaving = true;
     const turningEvent = this.createFromForm();
+    turningEvent.potentialTimeSlots = this.potentialTimeSlots;
     if (turningEvent.id !== undefined) {
       this.subscribeToSaveResponse(this.turningEventService.update(turningEvent));
     } else {
@@ -148,6 +175,10 @@ export class TurningEventUpdateComponent implements OnInit {
 
   protected onSaveError(): void {
     this.isSaving = false;
+  }
+
+  getTimeSlotCtrl(i: number): AbstractControl {
+    return (this.editForm.get('potentialTimeSlotsCtrl') as FormArray).at(i);
   }
 
   trackById(index: number, item: SelectableEntity): any {
