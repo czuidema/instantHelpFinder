@@ -7,6 +7,7 @@ import { Authority } from 'app/shared/constants/authority.constants';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.model';
 import { SERVER_API_URL } from 'app/app.constants';
+import { UserRole } from 'app/shared/model/user-role.model';
 
 describe('Service Tests', () => {
   describe('User Service', () => {
@@ -44,7 +45,7 @@ describe('Service Tests', () => {
         });
 
         const req = httpMock.expectOne({ method: 'GET' });
-        req.flush(new User(1, 'user'));
+        req.flush(new User(new UserRole(), 1, 'user'));
         expect(expectedResult).toEqual('user');
       });
 

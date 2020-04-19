@@ -9,6 +9,7 @@ import { InstantHelpFinderTestModule } from '../../../test.module';
 import { UserManagementUpdateComponent } from 'app/admin/user-management/user-management-update.component';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.model';
+import { UserRole } from 'app/shared/model/user-role.model';
 
 describe('Component Tests', () => {
   describe('User Management Update Component', () => {
@@ -16,7 +17,9 @@ describe('Component Tests', () => {
     let fixture: ComponentFixture<UserManagementUpdateComponent>;
     let service: UserService;
     const route: ActivatedRoute = ({
-      data: of({ user: new User(1, 'user', 'first', 'last', 'first@last.com', true, 'en', [Authority.USER], 'admin') })
+      data: of({
+        user: new User(new UserRole(), 'user', 'first', 'last', 'first@last.com', 'email@mail.com', true, 'en', [Authority.USER], 'admin')
+      })
     } as any) as ActivatedRoute;
 
     beforeEach(async(() => {
@@ -63,7 +66,7 @@ describe('Component Tests', () => {
         [],
         fakeAsync(() => {
           // GIVEN
-          const entity = new User(123);
+          const entity = new User(new UserRole(), 123);
           spyOn(service, 'update').and.returnValue(
             of(
               new HttpResponse({

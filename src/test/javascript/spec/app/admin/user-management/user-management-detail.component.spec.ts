@@ -6,13 +6,16 @@ import { Authority } from 'app/shared/constants/authority.constants';
 import { InstantHelpFinderTestModule } from '../../../test.module';
 import { UserManagementDetailComponent } from 'app/admin/user-management/user-management-detail.component';
 import { User } from 'app/core/user/user.model';
+import { Doctor } from 'app/shared/model/doctor.model';
 
 describe('Component Tests', () => {
   describe('User Management Detail Component', () => {
     let comp: UserManagementDetailComponent;
     let fixture: ComponentFixture<UserManagementDetailComponent>;
     const route: ActivatedRoute = ({
-      data: of({ user: new User(1, 'user', 'first', 'last', 'first@last.com', true, 'en', [Authority.USER], 'admin') })
+      data: of({
+        user: new User(new Doctor(), 'user', 'first', 'last', 'first@last.com', 'mail@mail.com', true, 'en', [Authority.USER], 'admin')
+      })
     } as any) as ActivatedRoute;
 
     beforeEach(async(() => {

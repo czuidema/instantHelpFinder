@@ -6,6 +6,7 @@ import { InstantHelpFinderTestModule } from '../../../test.module';
 import { UserManagementComponent } from 'app/admin/user-management/user-management.component';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.model';
+import { UserRole } from 'app/shared/model/user-role.model';
 
 describe('Component Tests', () => {
   describe('User Management Component', () => {
@@ -37,7 +38,7 @@ describe('Component Tests', () => {
           spyOn(service, 'query').and.returnValue(
             of(
               new HttpResponse({
-                body: [new User(123)],
+                body: [new User(new UserRole(), 123)],
                 headers
               })
             )
@@ -60,7 +61,7 @@ describe('Component Tests', () => {
         fakeAsync(() => {
           // GIVEN
           const headers = new HttpHeaders().append('link', 'link;link');
-          const user = new User(123);
+          const user = new User(new UserRole(), 123);
           spyOn(service, 'query').and.returnValue(
             of(
               new HttpResponse({
