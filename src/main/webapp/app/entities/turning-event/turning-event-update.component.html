@@ -35,8 +35,28 @@
                             <option value="URGENT">{{ 'instantHelpFinderApp.EPriority.URGENT' | translate }}</option>
                         </select>
                     </div>
+                </div>
 
+                <div class="form-row" *ngIf="!isDoctor">
                     <div class="form-group col-md-6">
+                        <label class="form-control-label" for="field_priority">Doctor</label>
+                        <select class="form-control" name="doctor" formControlName="doctor" id="field_doctor" >
+                            <option *ngFor="let doctor of doctors;" [ngValue]="doctor" [label]="doctor.user.firstName + ' ' + doctor.user.lastName"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row" *ngIf="isDoctor">
+                    <div class="form-group col-md-6">
+                        <label class="form-control-label" for="field_icuNurse">ICUNurse</label>
+                        <select class="form-control" name="icuNurse" formControlName="icuNurse" id="field_icuNurse" >
+                            <option *ngFor="let nurse of icuNurses;" [ngValue]="nurse" [label]="nurse.user.firstName + ' ' + nurse.user.lastName"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6" *ngIf="!editForm.get('id')!.value">
                         <label class="form-control-label" for="preferredTime">Prefered Time for Turning</label>
                         <div class="ngx-timepicker-field-example">
                             <ngx-timepicker-field [format]="24" [defaultTime]="'23:11'" id="preferredTime" formControlName="preferredTimeCtrl"></ngx-timepicker-field>

@@ -46,15 +46,15 @@ public class TurningEvent implements Serializable {
     @Column(name = "status")
     private ETurningEventStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("turningEvents")
     private Doctor doctor;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("turningEvents")
     private ICUNurse icuNurse;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @JoinTable(name = "turning_event_assistants",
                joinColumns = @JoinColumn(name = "turning_event_id", referencedColumnName = "id"),

@@ -1,5 +1,7 @@
 package ch.helpfuleth.instanthelpfinder.service;
 
+import ch.helpfuleth.instanthelpfinder.domain.Doctor;
+import ch.helpfuleth.instanthelpfinder.domain.ICUNurse;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.domain.UserRole;
 import ch.helpfuleth.instanthelpfinder.domain.enumeration.ETurningEventStatus;
@@ -27,6 +29,15 @@ public class TurningEventService {
 
     public TurningEvent createNew(TurningEvent turningEvent) {
         turningEvent.setStatus(ETurningEventStatus.PENDING);
+
+        String currentUserLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new RuntimeException("Could not get the logged in user."));
+        UserRole userRole = userRoleRepository.findOneByUserLogin(currentUserLogin).orElseThrow(() -> new RuntimeException("UserRole for user with login " + currentUserLogin + " not found."));
+
+        if (userRole instanceof Doctor) {
+            turningEvent.setDoctor((Doctor) userRole);
+        } else if (userRole instanceof ICUNurse) {
+            turningEvent.setIcuNurse((ICUNurse) userRole);
+        }
         return turningEventRepository.save(turningEvent);
     }
 

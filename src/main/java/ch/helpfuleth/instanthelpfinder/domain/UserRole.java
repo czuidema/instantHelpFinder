@@ -39,7 +39,7 @@ public class UserRole implements Serializable {
     @JoinColumn(unique = true)
     private PushSubscription pushSubscription;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(unique = true)
     private User user;
 

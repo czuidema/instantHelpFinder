@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 
 import { ITurningEvent, TurningEvent } from 'app/shared/model/turning-event.model';
 import { TurningEventService } from './turning-event.service';
-import { IDoctor } from 'app/shared/model/doctor.model';
+import { Doctor, IDoctor } from 'app/shared/model/doctor.model';
 import { DoctorService } from 'app/entities/doctor/doctor.service';
 import { IICUNurse } from 'app/shared/model/icu-nurse.model';
 import { ICUNurseService } from 'app/entities/icu-nurse/icu-nurse.service';
@@ -15,6 +15,9 @@ import { IAssistant } from 'app/shared/model/assistant.model';
 import { AssistantService } from 'app/entities/assistant/assistant.service';
 import * as moment from 'moment';
 import { ITimeSlot, TimeSlot } from 'app/shared/model/time-slot.model';
+import { AccountService } from 'app/core/auth/account.service';
+import { IUserRole, UserRole } from 'app/shared/model/user-role.model';
+import { UserRoleService } from 'app/entities/user-role/user-role.service';
 
 type SelectableEntity = IDoctor | IICUNurse | IAssistant;
 
@@ -25,14 +28,17 @@ type SelectableEntity = IDoctor | IICUNurse | IAssistant;
 export class TurningEventUpdateComponent implements OnInit {
   isSaving = false;
   doctors: IDoctor[] = [];
-  icunurses: IICUNurse[] = [];
+  icuNurses: IICUNurse[] = [];
   assistants: IAssistant[] = [];
   timeConditions: boolean[] = [false, false, false, false, false, false];
 
   preferredTime = moment();
   potentialTimeSlots: ITimeSlot[] = [];
 
-  date: Date = new Date();
+  login: String = '';
+  currentUserRole: IUserRole = new UserRole();
+
+  isDoctor = false;
 
   editForm = this.fb.group({
     id: [],
@@ -54,10 +60,20 @@ export class TurningEventUpdateComponent implements OnInit {
     protected iCUNurseService: ICUNurseService,
     protected assistantService: AssistantService,
     protected activatedRoute: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private accountService: AccountService,
+    private userRoleService: UserRoleService
   ) {}
 
   ngOnInit(): void {
+    this.accountService.identity().subscribe(account => {
+      this.userRoleService.findByUserLogin(account!.login).subscribe((res: HttpResponse<IUserRole>) => {
+        this.currentUserRole = res.body || new UserRole();
+        if (this.currentUserRole instanceof Doctor) {
+          this.isDoctor = true;
+        }
+      });
+    });
     this.activatedRoute.data.subscribe(({ turningEvent }) => {
       this.updateForm(turningEvent);
       this.potentialTimeSlots = turningEvent.potentialTimeSlots
@@ -70,7 +86,7 @@ export class TurningEventUpdateComponent implements OnInit {
 
       this.doctorService.query().subscribe((res: HttpResponse<IDoctor[]>) => (this.doctors = res.body || []));
 
-      this.iCUNurseService.query().subscribe((res: HttpResponse<IICUNurse[]>) => (this.icunurses = res.body || []));
+      this.iCUNurseService.query().subscribe((res: HttpResponse<IICUNurse[]>) => (this.icuNurses = res.body || []));
 
       this.assistantService.query().subscribe((res: HttpResponse<IAssistant[]>) => (this.assistants = res.body || []));
     });
@@ -82,7 +98,9 @@ export class TurningEventUpdateComponent implements OnInit {
         .second(0);
       for (let i = 0; i < 5; i++) {
         this.potentialTimeSlots.push(new TimeSlot(preferredTime.toDate(), preferredTime.add(10, 'minute').toDate(), false));
-        (this.editForm.get('potentialTimeSlotsCtrl') as FormArray).push(new FormControl(false));
+        (this.editForm.get('potentialTimeSlotsCtrl') as FormArray).push(
+          new FormControl({ value: false, disabled: !this.editForm.get('id')!.value })
+        );
       }
     });
   }
@@ -194,5 +212,12 @@ export class TurningEventUpdateComponent implements OnInit {
       }
     }
     return option;
+  }
+
+  compareFn(obj1: IUserRole, obj2: IUserRole): boolean {
+    if (obj1 != null && obj2 != null) {
+      return obj1.id === obj2.id;
+    }
+    return false;
   }
 }
