@@ -15,6 +15,7 @@ import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog
 export class TurningEventComponent implements OnInit, OnDestroy {
   turningEvents?: ITurningEvent[];
   eventSubscriber?: Subscription;
+  tabToggle: boolean = true;
 
   constructor(
     protected turningEventService: TurningEventService,
@@ -35,6 +36,14 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     if (this.eventSubscriber) {
       this.eventManager.destroy(this.eventSubscriber);
     }
+  }
+
+  // Toggle for the tabs
+  tabToggleTrue(): void {
+    this.tabToggle = true;
+  }
+  tabToggleFalse(): void {
+    this.tabToggle = false;
   }
 
   trackId(index: number, item: ITurningEvent): number {

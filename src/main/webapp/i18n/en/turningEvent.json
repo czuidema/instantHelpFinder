@@ -23,7 +23,9 @@
       "priority": "Priority",
       "doctor": "Doctor",
       "icuNurse": "Icu Nurse",
-      "assistants": "Assistants"
+      "assistants": "Assistants",
+      "earliestTime": "Earliest time possible",
+      "comment": "Comment"
     }
   }
 }

@@ -2,21 +2,21 @@
   "instantHelpFinderApp": {
     "doctor": {
       "home": {
-        "title": "Doctors",
-        "createLabel": "Doctor erstellen",
-        "createOrEditLabel": "Doctor erstellen oder bearbeiten",
-        "notFound": "No Doctors found"
+        "title": "Doktoren",
+        "createLabel": "Doktor erstellen",
+        "createOrEditLabel": "Doktor erstellen oder bearbeiten",
+        "notFound": "Keine Doktoren gefunden"
       },
       "created": "Doctor erstellt mit ID {{ param }}",
       "updated": "Doctor aktualisiert mit ID {{ param }}",
       "deleted": "Doctor gelöscht mit ID {{ param }}",
       "delete": {
-        "question": "Soll Doctor {{ id }} wirklich dauerhaft gelöscht werden?"
+        "question": "Soll Doktor {{ id }} wirklich dauerhaft gelöscht werden?"
       },
       "detail": {
-        "title": "Doctor"
+        "title": "Doktor"
       },
-      "isPreferredDoctor": "Is Preferred Doctor"
+      "isPreferredDoctor": "Ist bevorzugter Doktor"
     }
   }
 }

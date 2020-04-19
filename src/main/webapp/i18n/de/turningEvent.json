@@ -5,7 +5,7 @@
         "title": "Turning Events",
         "createLabel": "Turning Event erstellen",
         "createOrEditLabel": "Turning Event erstellen oder bearbeiten",
-        "notFound": "No Turning Events found"
+        "notFound": "Keine Turning Events gefunden"
       },
       "created": "Turning Event erstellt mit ID {{ param }}",
       "updated": "Turning Event aktualisiert mit ID {{ param }}",
@@ -16,14 +16,16 @@
       "detail": {
         "title": "Turning Event"
       },
-      "patientName": "Patient Name",
-      "patientData": "Patient Data",
-      "ward": "Ward",
-      "roomNr": "Room Nr",
-      "priority": "Priority",
-      "doctor": "Doctor",
-      "icuNurse": "Icu Nurse",
-      "assistants": "Assistants"
+      "patientName": "Patientenname",
+      "patientData": "Patientennummer",
+      "ward": "Abteilung",
+      "roomNr": "Raumnummer",
+      "priority": "Priorität",
+      "doctor": "Doktor",
+      "icuNurse": "ICU Pflegende/r",
+      "assistants": "Assistenten",
+      "earliestTime": "Frühest mögliche Zeit",
+      "comment": "Kommentar"
     }
   }
 }
