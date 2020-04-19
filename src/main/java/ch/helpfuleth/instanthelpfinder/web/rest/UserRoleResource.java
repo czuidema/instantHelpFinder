@@ -104,6 +104,19 @@ public class UserRoleResource {
     }
 
     /**
+     * {@code GET  /user-roles/user-login/:login} : get the "user login" userRole.
+     *
+     * @param login
+     * @return
+     */
+    @GetMapping("/user-roles/user-login/{login}")
+    public ResponseEntity<UserRole> getUserRoleByUserLogin(@PathVariable String login) {
+        log.debug("REST request to get UserRole : {}", login);
+        Optional<UserRole> userRole = userRoleRepository.findOneByUserLogin(login);
+        return ResponseUtil.wrapOrNotFound(userRole);
+    }
+
+    /**
      * {@code DELETE  /user-roles/:id} : delete the "id" userRole.
      *
      * @param id the id of the userRole to delete.

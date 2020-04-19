@@ -27,6 +27,10 @@ export class UserRoleService {
     return this.http.get<IUserRole>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  findByUserLogin(login: string): Observable<EntityResponseType> {
+    return this.http.get<IUserRole>(`${this.resourceUrl}/user-login/${login}`, { observe: 'response' });
+  }
+
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<IUserRole[]>(this.resourceUrl, { params: options, observe: 'response' });
