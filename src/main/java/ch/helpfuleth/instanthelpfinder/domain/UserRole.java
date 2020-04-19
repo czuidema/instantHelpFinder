@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * A UserRole.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "dtype")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "Doctor", value = Doctor.class),
     @JsonSubTypes.Type(name = "ICUNurse", value = ICUNurse.class),

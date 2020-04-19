@@ -14,13 +14,13 @@ export class Doctor implements IDoctor {
     public isAvailable?: boolean,
     public pushSubscription?: IPushSubscription,
     public isPreferredDoctor?: boolean,
-    public type?: string,
+    public dtype?: string,
     public user?: User
   ) {
     this.id = id;
     this.isAvailable = isAvailable;
     this.isPreferredDoctor = isPreferredDoctor || false;
-    this.type = 'Doctor';
+    this.dtype = 'Doctor';
     this.user = user;
   }
 }

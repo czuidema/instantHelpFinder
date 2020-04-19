@@ -994,17 +994,17 @@
                                     <arguments>install</arguments>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>webpack build test</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <phase>test</phase>
-                                <configuration>
-                                    <arguments>run webpack:test</arguments>
-                                    <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
-                                </configuration>
-                            </execution>
+                            <!--<execution>-->
+                                <!--<id>webpack build test</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>npm</goal>-->
+                                <!--</goals>-->
+                                <!--<phase>test</phase>-->
+                                <!--<configuration>-->
+                                    <!--<arguments>run webpack:test</arguments>-->
+                                    <!--<npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
                             <execution>
                                 <id>webpack build staging</id>
                                 <goals>
@@ -1086,17 +1086,17 @@
                                     <arguments>install</arguments>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>webpack build test</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <phase>test</phase>
-                                <configuration>
-                                    <arguments>run webpack:test</arguments>
-                                    <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
-                                </configuration>
-                            </execution>
+                            <!--<execution>-->
+                                <!--<id>webpack build test</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>npm</goal>-->
+                                <!--</goals>-->
+                                <!--<phase>test</phase>-->
+                                <!--<configuration>-->
+                                    <!--<arguments>run webpack:test</arguments>-->
+                                    <!--<npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>-->
+                                <!--</configuration>-->
+                            <!--</execution>-->
                             <execution>
                                 <id>webpack build prod</id>
                                 <goals>

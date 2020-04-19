@@ -5,7 +5,7 @@ export interface IUserRole {
   id?: number;
   availability?: boolean;
   pushSubscription?: IPushSubscription;
-  type?: string;
+  dtype?: string;
   user?: User;
 }
 
