@@ -39,6 +39,8 @@
             <h5>Inbox <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon></h5>
 
             <div class="accordion" id="accordionExample">
+                <panel title="test" [opened]="isOpen" (toggle)="isOpen = !isOpen">test</panel>
+
                 <div class="card">
                     <div class="card-header" id="headingOne">
                         <h2 class="mb-0">

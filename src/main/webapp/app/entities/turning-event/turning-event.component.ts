@@ -19,6 +19,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   eventSubscriber?: Subscription;
   tabToggle: boolean = true;
   accordionInboxToggle: boolean = false;
+  isOpen: boolean = true;
 
   InboxIcon = faInbox;
 

@@ -13,12 +13,13 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
             data-target="#collapseOne"
             aria-expanded="true"
             aria-controls="collapseOne"
+            (click)="toggle.emit()"
           >
             {{ title }}
           </button>
         </h2>
       </div>
-      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div id="collapseOne" class="collapse " [class.show]="opened" aria-labelledby="headingOne" data-parent="#accordionExample">
         <div class="card-body">
           Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non
           cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird
