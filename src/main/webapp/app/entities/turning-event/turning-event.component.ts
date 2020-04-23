@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { JhiEventManager } from 'ng-jhipster';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { faInbox } from '@fortawesome/free-solid-svg-icons';
+
 import { ITurningEvent } from 'app/shared/model/turning-event.model';
 import { TurningEventService } from './turning-event.service';
 import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog.component';
@@ -16,6 +18,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   turningEvents?: ITurningEvent[];
   eventSubscriber?: Subscription;
   tabToggle: boolean = true;
+  accordionInboxToggle: boolean = false;
+
+  InboxIcon = faInbox;
 
   constructor(
     protected turningEventService: TurningEventService,
@@ -44,6 +49,10 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   }
   tabToggleFalse(): void {
     this.tabToggle = false;
+  }
+
+  toggleAccordion($event: any): void {
+    $event.target.classList.toggle('show');
   }
 
   trackId(index: number, item: ITurningEvent): number {
