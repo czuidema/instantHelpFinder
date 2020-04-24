@@ -38,21 +38,24 @@
         <div class="col"  [class.d-none]="tabToggle" [class.d-md-block]="tabToggle">
             <h5>Inbox <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon></h5>
 
-            <div class="accordion" id="accordionExample">
+            <div class="card">
+                <div class="list-group list-group-flush  accordion" id="accordionExample">
 
-                <div *ngFor="let turningEvent of turningEvents ;trackBy: trackId"  class="card">
-                    <div class="card-header" [id]="'heading' + turningEvent.id">
-                        <h2 class="mb-0">
-                            <button class="btn btn-link" type="button" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
-                                Collapsible Group Item #1
-                            </button>
-                        </h2>
-                    </div>
-                    <div [id]="'collapse' + turningEvent.id" class="collapse show" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionExample">
-                        <div class="card-body">
-                            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. {{turningEvent.id}}
+                    <div *ngFor="let turningEvent of turningEvents ;trackBy: trackId">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">18:20 - 18:30</h5>
+                                <small><span class="badge badge-pill badge-warning">2</span></small>
+                            </div>
+                            <p class="mb-1">Bed: 489, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
+                        </a>
+                        <div [id]="'collapse' + turningEvent.id" class="collapse" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionExample">
+                            <div class="card-body">
+                               TEST
+                            </div>
                         </div>
                     </div>
+
                 </div>
 
 
