@@ -1,0 +1,5 @@
+dtype;id;availability;is_preferredDoctor;push_subscription_id;user_id
+Doctor;1;1;1;null;1
+ICUNurse;1;1;null;null;2
+Doctor;1;1;null;null;3
+ICUNurse;1;1;null;null;4
