@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-// import { SwPush } from '@angular/service-worker';
 import { JhiLanguageService } from 'ng-jhipster';
 
 import { AccountService } from 'app/core/auth/account.service';
@@ -24,8 +23,6 @@ export class SettingsComponent implements OnInit {
     langKey: [undefined]
   });
 
-  readonly VAPID_PUBLIC_KEY = 'BPZALa9BQDUe9o0wHgWN4-ahHH-tnRJRrSvMOMUqyNA-EQYfEVojN0JMK6HL8_4_orR5qdzlvIUO7XZX_CYF5EE';
-
   constructor(
     private accountService: AccountService,
     private fb: FormBuilder,
@@ -48,15 +45,6 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  subscribeToNotification(): void {
-    console.log('Clicked!');
-    /* this.swPush.requestSubscription({
-      serverPublicKey: this.VAPID_PUBLIC_KEY
-    })
-      .then(sub => console.log('We can create a push subscription'))
-      .catch(err => console.error("Could not subscribe to notifications", err));*/
-  }
-
   displayConfirmNotification(): void {
     if ('serviceWorker' in navigator) {
       console.log('Has serviceWorker');
@@ -65,13 +53,42 @@ export class SettingsComponent implements OnInit {
         tag: 'confirm-notification'
       };
       // Notification through Service Worker
-      /*navigator.serviceWorker.ready.then(swreg => {
-        swreg.showNotification('Successfully subscribed', options);
-        console.log('A serviceWorker is active', swreg.active);
-      });*/
+      navigator.serviceWorker.ready.then(swreg => {
+        swreg.showNotification('Successfully subscribed (with SW)', options);
+      });
       // Notification without Service Worker
-      new Notification('Successfully subscribed');
+      // new Notification('Successfully subscribed');
     }
+  }
+
+  configurePushSub(): void {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    let reg: ServiceWorkerRegistration;
+    navigator.serviceWorker.ready
+      .then(swreg => {
+        reg = swreg;
+        return swreg.pushManager.getSubscription();
+      })
+      .then(sub => {
+        if (sub === null) {
+          // Create new subscription
+          const VAPID_PUBLIC_KEY = 'BPZALa9BQDUe9o0wHgWN4-ahHH-tnRJRrSvMOMUqyNA-EQYfEVojN0JMK6HL8_4_orR5qdzlvIUO7XZX_CYF5EE';
+          const CONV_VAPID_PUBLIC_KEY = this.urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+          return reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: CONV_VAPID_PUBLIC_KEY
+          });
+        } else {
+          // We have a subscription
+          return;
+        }
+      })
+      .then(newSub => {
+        console.log('Send subscription to Backend-Server');
+      });
   }
 
   askForNotificationPermission(): void {
@@ -81,9 +98,25 @@ export class SettingsComponent implements OnInit {
         console.log('No notification permission granted!');
       } else {
         // Maybe hide button
-        this.displayConfirmNotification();
+        this.configurePushSub();
+        // this.displayConfirmNotification();
       }
     });
+  }
+
+  // Web-Push
+  // Public base64 to Uint
+  urlBase64ToUint8Array(base64String: string): any {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+
+    let rawData = window.atob(base64);
+    let outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
   }
 
   save(): void {
