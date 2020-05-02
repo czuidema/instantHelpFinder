@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { SwPush } from '@angular/service-worker';
+// import { SwPush } from '@angular/service-worker';
 import { JhiLanguageService } from 'ng-jhipster';
 
 import { AccountService } from 'app/core/auth/account.service';
@@ -64,10 +64,13 @@ export class SettingsComponent implements OnInit {
         body: 'You successfully subscribed to our Notification service!',
         tag: 'confirm-notification'
       };
-      navigator.serviceWorker.ready.then(swreg => {
+      // Notification through Service Worker
+      /*navigator.serviceWorker.ready.then(swreg => {
         swreg.showNotification('Successfully subscribed', options);
         console.log('A serviceWorker is active', swreg.active);
-      });
+      });*/
+      // Notification without Service Worker
+      new Notification('Successfully subscribed');
     }
   }
 
@@ -79,7 +82,6 @@ export class SettingsComponent implements OnInit {
       } else {
         // Maybe hide button
         this.displayConfirmNotification();
-        console.log('Button clicked while granted.');
       }
     });
   }
