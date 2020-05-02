@@ -2,6 +2,7 @@ package ch.helpfuleth.instanthelpfinder.web.rest;
 
 import ch.helpfuleth.instanthelpfinder.InstantHelpFinderApp;
 import ch.helpfuleth.instanthelpfinder.domain.Authority;
+import ch.helpfuleth.instanthelpfinder.domain.Doctor;
 import ch.helpfuleth.instanthelpfinder.domain.User;
 import ch.helpfuleth.instanthelpfinder.repository.UserRepository;
 import ch.helpfuleth.instanthelpfinder.security.AuthoritiesConstants;
@@ -22,12 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -127,6 +131,7 @@ public class UserResourceIT {
         managedUserVM.setImageUrl(DEFAULT_IMAGEURL);
         managedUserVM.setLangKey(DEFAULT_LANGKEY);
         managedUserVM.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
+        managedUserVM.setUserRole(new Doctor());
 
         restUserMockMvc.perform(post("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
