@@ -9,6 +9,12 @@
 
             <jhi-alert-error></jhi-alert-error>
 
+            <button id="jh-enable-notifications" class="btn btn-primary float-right jh-create-entity enable-notifications" (click)="subscribeToNotification()">
+                <span >
+                    Enable Notifications
+                </span>
+            </button>
+
             <form name="form" role="form" (ngSubmit)="save()" [formGroup]="settingsForm" *ngIf="account" novalidate>
                 <div class="form-group">
                     <label class="form-control-label" for="firstName" jhiTranslate="settings.form.firstname">First Name</label>

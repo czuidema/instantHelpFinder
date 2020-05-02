@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { SwPush } from '@angular/service-worker';
 import { JhiLanguageService } from 'ng-jhipster';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/user/account.model';
 import { LANGUAGES } from 'app/core/language/language.constants';
+import { PushSubscriptionService } from 'app/entities/push-subscription/push-subscription.service';
+import { collectAllDependants } from 'ts-loader/dist/utils';
 
 @Component({
   selector: 'jhi-settings',
@@ -21,7 +24,14 @@ export class SettingsComponent implements OnInit {
     langKey: [undefined]
   });
 
-  constructor(private accountService: AccountService, private fb: FormBuilder, private languageService: JhiLanguageService) {}
+  readonly VAPID_PUBLIC_KEY = 'BPZALa9BQDUe9o0wHgWN4-ahHH-tnRJRrSvMOMUqyNA-EQYfEVojN0JMK6HL8_4_orR5qdzlvIUO7XZX_CYF5EE';
+
+  constructor(
+    private accountService: AccountService,
+    private fb: FormBuilder,
+    private languageService: JhiLanguageService,
+    private pushSubscriptionService: PushSubscriptionService
+  ) {}
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => {
@@ -34,6 +44,42 @@ export class SettingsComponent implements OnInit {
         });
 
         this.account = account;
+      }
+    });
+  }
+
+  subscribeToNotification(): void {
+    console.log('Clicked!');
+    /* this.swPush.requestSubscription({
+      serverPublicKey: this.VAPID_PUBLIC_KEY
+    })
+      .then(sub => console.log('We can create a push subscription'))
+      .catch(err => console.error("Could not subscribe to notifications", err));*/
+  }
+
+  displayConfirmNotification(): void {
+    if ('serviceWorker' in navigator) {
+      console.log('Has serviceWorker');
+      const options = {
+        body: 'You successfully subscribed to our Notification service!',
+        tag: 'confirm-notification'
+      };
+      navigator.serviceWorker.ready.then(swreg => {
+        swreg.showNotification('Successfully subscribed', options);
+        console.log('A serviceWorker is active', swreg.active);
+      });
+    }
+  }
+
+  askForNotificationPermission(): void {
+    Notification.requestPermission(result => {
+      console.log('User Choice', result);
+      if (result !== 'granted') {
+        console.log('No notification permission granted!');
+      } else {
+        // Maybe hide button
+        this.displayConfirmNotification();
+        console.log('Button clicked while granted.');
       }
     });
   }
