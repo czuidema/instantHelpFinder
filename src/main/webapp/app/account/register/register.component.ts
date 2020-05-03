@@ -20,6 +20,8 @@ export class RegisterComponent implements AfterViewInit {
   @ViewChild('login', { static: false })
   login?: ElementRef;
 
+  @ViewChild('enableNotInput', { static: false }) enableNotInput?: ElementRef;
+
   doNotMatch = false;
   error = false;
   errorEmailExists = false;
@@ -33,7 +35,8 @@ export class RegisterComponent implements AfterViewInit {
     email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
     confirmPassword: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-    userRoleName: ['', [Validators.required]]
+    userRoleName: ['', [Validators.required]],
+    enablePushNotifications: ['', [Validators.requiredTrue]]
   });
 
   constructor(
@@ -86,7 +89,9 @@ export class RegisterComponent implements AfterViewInit {
         userRole
       );
       console.log('You registered with endpoint:' + this.newSubString.endpoint);
-      userRole.pushSubscription = pushSubscription;
+
+      // Backend is still not ready, it fails if this is uncommented
+      // userRole.pushSubscription = pushSubscription;
 
       this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
         () => (this.success = true),
@@ -104,7 +109,7 @@ export class RegisterComponent implements AfterViewInit {
       };
       // Notification through Service Worker
       navigator.serviceWorker.ready.then(swreg => {
-        swreg.showNotification('Successfully subscribed (with SW)', options);
+        swreg.showNotification('You successfully subscribed!', options);
       });
       // Notification without Service Worker
       // new Notification('Successfully subscribed');
@@ -161,9 +166,17 @@ export class RegisterComponent implements AfterViewInit {
         console.log('No notification permission granted!');
       } else {
         // Maybe hide button
-        // this.displayConfirmNotification();
-        this.configurePushSub();
-        console.log(this.newSubString);
+        if ('serviceWorker' in navigator) {
+          console.log('Has serviceWorker');
+          const options = {
+            body: 'You successfully subscribed to our Notification service!',
+            tag: 'confirm-notification'
+          };
+          // Notification through Service Worker
+          navigator.serviceWorker.ready.then(swreg => {
+            swreg.showNotification('You successfully subscribed!', options);
+          });
+        }
       }
     });
   }
