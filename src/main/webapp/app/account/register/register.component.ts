@@ -10,6 +10,7 @@ import { IUserRole } from 'app/shared/model/user-role.model';
 import { Doctor } from 'app/shared/model/doctor.model';
 import { ICUNurse } from 'app/shared/model/icu-nurse.model';
 import { Assistant } from 'app/shared/model/assistant.model';
+import { PushSubscription } from 'app/shared/model/push-subscription.model';
 
 @Component({
   selector: 'jhi-register',
@@ -25,6 +26,10 @@ export class RegisterComponent implements AfterViewInit {
   errorUserExists = false;
   success = false;
   userRoleNames = ['Doctor', 'ICUNurse', 'Assistant'];
+
+  endpoint: string = '';
+  p265dh: string = '';
+  auth: string = '';
 
   registerForm = this.fb.group({
     login: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
@@ -61,6 +66,7 @@ export class RegisterComponent implements AfterViewInit {
       const email = this.registerForm.get(['email'])!.value;
       const userRoleIndex = +this.registerForm.get(['userRoleName'])!.value;
       let userRole: IUserRole;
+      let pushSubscription: PushSubscription;
       switch (userRoleIndex) {
         case 0:
           userRole = new Doctor(undefined, true);
@@ -74,11 +80,98 @@ export class RegisterComponent implements AfterViewInit {
         default:
           userRole = new Assistant();
       }
+      this.configurePushSub();
+      pushSubscription = new PushSubscription(undefined, '', '', '', userRole);
+      userRole.pushSubscription = pushSubscription;
       this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
         () => (this.success = true),
         response => this.processError(response)
       );
     }
+  }
+
+  displayConfirmNotification(): void {
+    if ('serviceWorker' in navigator) {
+      console.log('Has serviceWorker');
+      const options = {
+        body: 'You successfully subscribed to our Notification service!',
+        tag: 'confirm-notification'
+      };
+      // Notification through Service Worker
+      navigator.serviceWorker.ready.then(swreg => {
+        swreg.showNotification('Successfully subscribed (with SW)', options);
+      });
+      // Notification without Service Worker
+      // new Notification('Successfully subscribed');
+    }
+  }
+
+  configurePushSub(): any {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    let reg: ServiceWorkerRegistration;
+    navigator.serviceWorker.ready
+      .then(swreg => {
+        reg = swreg;
+        return swreg.pushManager.getSubscription();
+      })
+      .then(sub => {
+        if (sub === null) {
+          // Create new subscription
+          const VAPID_PUBLIC_KEY = 'BPZALa9BQDUe9o0wHgWN4-ahHH-tnRJRrSvMOMUqyNA-EQYfEVojN0JMK6HL8_4_orR5qdzlvIUO7XZX_CYF5EE';
+          const CONV_VAPID_PUBLIC_KEY = this.urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+          return reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: CONV_VAPID_PUBLIC_KEY
+          });
+        } else {
+          // We have a subscription
+          console.log('We have a subscription already.');
+          return;
+        }
+      })
+      .then(newSub => {
+        if (newSub !== undefined) {
+          let endpoint = newSub.endpoint;
+          let auth = newSub.getKey('auth');
+          let p256dh = newSub.getKey('p256dh');
+          console.log(JSON.stringify(newSub));
+          return { endpoint: endpoint, auth: auth, p256dh: p256dh };
+        }
+        return { endpoint: '', auth: null, p256dh: null };
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  askForNotificationPermission(): void {
+    Notification.requestPermission(result => {
+      console.log('User Choice', result);
+      if (result !== 'granted') {
+        console.log('No notification permission granted!');
+      } else {
+        // Maybe hide button
+        this.displayConfirmNotification();
+      }
+    });
+  }
+
+  // Web-Push
+  // Public base64 to Uint
+  urlBase64ToUint8Array(base64String: string): any {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+
+    let rawData = window.atob(base64);
+    let outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
   }
 
   openLogin(): void {

@@ -3,6 +3,12 @@
         <div class="col-md-8">
             <h1 jhiTranslate="register.title">Registration</h1>
 
+            <button id="jh-enable-notifications" class="btn btn-primary float-right jh-create-entity enable-notifications" (click)="askForNotificationPermission()">
+                <span >
+                    Enable Notifications
+                </span>
+            </button>
+
             <div class="alert alert-success" *ngIf="success" jhiTranslate="register.messages.success">
                 <strong>Registration saved!</strong> Please check your email for confirmation.
             </div>

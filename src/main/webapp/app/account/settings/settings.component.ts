@@ -98,8 +98,8 @@ export class SettingsComponent implements OnInit {
         console.log('No notification permission granted!');
       } else {
         // Maybe hide button
-        this.configurePushSub();
-        // this.displayConfirmNotification();
+        // this.configurePushSub();
+        this.displayConfirmNotification();
       }
     });
   }
