@@ -26,10 +26,7 @@ export class RegisterComponent implements AfterViewInit {
   errorUserExists = false;
   success = false;
   userRoleNames = ['Doctor', 'ICUNurse', 'Assistant'];
-
-  endpoint: string = '';
-  p265dh: string = '';
-  auth: string = '';
+  newSubString = { endpoint: '', auth: '', p256dh: '' };
 
   registerForm = this.fb.group({
     login: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
@@ -81,8 +78,16 @@ export class RegisterComponent implements AfterViewInit {
           userRole = new Assistant();
       }
       this.configurePushSub();
-      pushSubscription = new PushSubscription(undefined, '', '', '', userRole);
+      pushSubscription = new PushSubscription(
+        undefined,
+        this.newSubString.endpoint,
+        this.newSubString.auth,
+        this.newSubString.p256dh,
+        userRole
+      );
+      console.log('You registered with endpoint:' + this.newSubString.endpoint);
       userRole.pushSubscription = pushSubscription;
+
       this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
         () => (this.success = true),
         response => this.processError(response)
@@ -106,7 +111,7 @@ export class RegisterComponent implements AfterViewInit {
     }
   }
 
-  configurePushSub(): any {
+  configurePushSub(): void {
     if (!('serviceWorker' in navigator)) {
       return;
     }
@@ -134,13 +139,15 @@ export class RegisterComponent implements AfterViewInit {
       })
       .then(newSub => {
         if (newSub !== undefined) {
-          let endpoint = newSub.endpoint;
-          let auth = newSub.getKey('auth');
-          let p256dh = newSub.getKey('p256dh');
+          // some hack to get auth: ArrayBuffer to auth: String (same for p256)
+          let newSubAsString = JSON.parse(JSON.stringify(newSub));
+
+          this.newSubString.endpoint = newSub.endpoint;
+          this.newSubString.auth = newSubAsString['keys']['auth'];
+          this.newSubString.p256dh = newSubAsString['keys']['p256dh'];
+
           console.log(JSON.stringify(newSub));
-          return { endpoint: endpoint, auth: auth, p256dh: p256dh };
         }
-        return { endpoint: '', auth: null, p256dh: null };
       })
       .catch(err => {
         console.log(err);
@@ -154,7 +161,9 @@ export class RegisterComponent implements AfterViewInit {
         console.log('No notification permission granted!');
       } else {
         // Maybe hide button
-        this.displayConfirmNotification();
+        // this.displayConfirmNotification();
+        this.configurePushSub();
+        console.log(this.newSubString);
       }
     });
   }
