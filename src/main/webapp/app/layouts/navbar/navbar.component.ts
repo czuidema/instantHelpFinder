@@ -11,6 +11,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { LoginModalService } from 'app/core/login/login-modal.service';
 import { LoginService } from 'app/core/login/login.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
   selector: 'jhi-navbar',
@@ -23,6 +24,8 @@ export class NavbarComponent implements OnInit {
   languages = LANGUAGES;
   swaggerEnabled?: boolean;
   version: string;
+  notificationBrowserSupport?: boolean;
+  notificationPermissionStatus?: boolean;
 
   DoctorIcon = faUserMd;
   InboxIcon = faInbox;
@@ -36,7 +39,8 @@ export class NavbarComponent implements OnInit {
     private accountService: AccountService,
     private loginModalService: LoginModalService,
     private profileService: ProfileService,
-    private router: Router
+    private router: Router,
+    private alertService: AlertService
   ) {
     this.version = VERSION ? (VERSION.toLowerCase().startsWith('v') ? VERSION : 'v' + VERSION) : '';
   }
@@ -45,6 +49,8 @@ export class NavbarComponent implements OnInit {
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
       this.swaggerEnabled = profileInfo.swaggerEnabled;
+      this.notificationBrowserSupport = this.alertService.notificationBrowserSupport;
+      this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
     });
   }
 
