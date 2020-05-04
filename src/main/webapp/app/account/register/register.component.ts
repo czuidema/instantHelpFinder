@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
 import { JhiLanguageService } from 'ng-jhipster';
@@ -17,10 +17,10 @@ import { PushSubscription } from 'app/shared/model/push-subscription.model';
   templateUrl: './register.component.html'
 })
 export class RegisterComponent implements AfterViewInit {
-  @ViewChild('login', { static: false })
-  login?: ElementRef;
+  @ViewChild('login', { static: false }) login?: ElementRef;
 
-  @ViewChild('enableNotInput', { static: false }) enableNotInput?: ElementRef;
+  @ViewChild('enableNotificationsCheckbox', { static: false }) enableNotificationsCheckbox?: ElementRef;
+  @ViewChild('deviceName', { static: false }) deviceName?: ElementRef;
 
   doNotMatch = false;
   error = false;
@@ -29,17 +29,23 @@ export class RegisterComponent implements AfterViewInit {
   success = false;
   userRoleNames = ['Doctor', 'ICUNurse', 'Assistant'];
   newSubString = { endpoint: '', auth: '', p256dh: '' };
+  notificationsAllowed: boolean = false;
+  notificationsRejected: boolean = false;
 
   registerForm = this.fb.group({
+    firstName: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
+    lastName: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
     login: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
     email: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
     confirmPassword: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
     userRoleName: ['', [Validators.required]],
-    enablePushNotifications: ['', [Validators.requiredTrue]]
+    enablePushNotifications: [''],
+    deviceName: ['']
   });
 
   constructor(
+    private renderer: Renderer2,
     private languageService: JhiLanguageService,
     private loginModalService: LoginModalService,
     private registerService: RegisterService,
@@ -80,39 +86,24 @@ export class RegisterComponent implements AfterViewInit {
         default:
           userRole = new Assistant();
       }
-      this.configurePushSub();
-      pushSubscription = new PushSubscription(
-        undefined,
-        this.newSubString.endpoint,
-        this.newSubString.auth,
-        this.newSubString.p256dh,
-        userRole
-      );
-      console.log('You registered with endpoint:' + this.newSubString.endpoint);
 
-      // Backend is still not ready, it fails if this is uncommented
-      // userRole.pushSubscription = pushSubscription;
+      if (this.notificationsAllowed) {
+        this.configurePushSub();
+        pushSubscription = new PushSubscription(
+          undefined,
+          this.newSubString.endpoint,
+          this.newSubString.auth,
+          this.newSubString.p256dh,
+          userRole
+        );
+        console.log('You registered with endpoint:' + this.newSubString.endpoint);
+        userRole.pushSubscription = pushSubscription;
+      }
 
       this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
         () => (this.success = true),
         response => this.processError(response)
       );
-    }
-  }
-
-  displayConfirmNotification(): void {
-    if ('serviceWorker' in navigator) {
-      console.log('Has serviceWorker');
-      const options = {
-        body: 'You successfully subscribed to our Notification service!',
-        tag: 'confirm-notification'
-      };
-      // Notification through Service Worker
-      navigator.serviceWorker.ready.then(swreg => {
-        swreg.showNotification('You successfully subscribed!', options);
-      });
-      // Notification without Service Worker
-      // new Notification('Successfully subscribed');
     }
   }
 
@@ -159,23 +150,24 @@ export class RegisterComponent implements AfterViewInit {
       });
   }
 
-  askForNotificationPermission(): void {
+  askForNotificationPermission(event: any): void {
     Notification.requestPermission(result => {
       console.log('User Choice', result);
       if (result !== 'granted') {
-        console.log('No notification permission granted!');
+        this.renderer.setAttribute(this.deviceName?.nativeElement, 'disabled', 'true');
+        this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
+        this.notificationsRejected = true;
+        this.notificationsAllowed = false;
       } else {
         // Maybe hide button
-        if ('serviceWorker' in navigator) {
-          console.log('Has serviceWorker');
-          const options = {
-            body: 'You successfully subscribed to our Notification service!',
-            tag: 'confirm-notification'
-          };
-          // Notification through Service Worker
-          navigator.serviceWorker.ready.then(swreg => {
-            swreg.showNotification('You successfully subscribed!', options);
-          });
+        this.notificationsRejected = false;
+        this.notificationsAllowed = !this.notificationsAllowed;
+        if (this.notificationsAllowed) {
+          this.renderer.removeAttribute(this.deviceName?.nativeElement, 'disabled');
+          this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
+        } else {
+          this.renderer.setAttribute(this.deviceName?.nativeElement, 'disabled', 'true');
+          this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
         }
       }
     });
