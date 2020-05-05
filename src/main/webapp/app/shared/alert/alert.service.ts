@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import has = Reflect.has;
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
@@ -27,24 +28,26 @@ export class AlertService {
     }
   }
 
-  /* hasSubscription(): boolean {
+  // TODO: this function is supposed to return true if subscription exists false otherwise. The else if part it broken.
+  hasSubscription(): boolean {
     if (!('Notification' in window)) {
       console.log('This browser does not support desktop notifications!');
       return false;
     } else if (Notification.permission === 'granted') {
-      navigator.serviceWorker.ready.then( swreg => {
-        swreg.pushManager.getSubscription()
-          .then( sub => {
-            if (sub === undefined) {
-              return false;
-            } else {
-              return sub !== null;
-            }
-          })
-      })
+      let hasSub: boolean = true;
+      navigator.serviceWorker.ready.then(swreg => {
+        swreg.pushManager.getSubscription().then(sub => {
+          if (sub === undefined) {
+            hasSub = false;
+          } else {
+            hasSub = sub !== null;
+          }
+        });
+      });
+      return hasSub;
     } else {
       console.log('This browser has no permission to send push notifications!');
       return false;
     }
-  }*/
+  }
 }

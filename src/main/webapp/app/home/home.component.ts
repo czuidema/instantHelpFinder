@@ -19,10 +19,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
-    this.alertService.notificationBrowserSupport = this.alertService.hasNotificationBrowserSupport();
-    this.alertService.notificationPermissionStatus = this.alertService.hasNotificationPermission();
-    console.log(this.alertService.notificationBrowserSupport);
-    console.log(this.alertService.notificationPermissionStatus);
   }
 
   isAuthenticated(): boolean {

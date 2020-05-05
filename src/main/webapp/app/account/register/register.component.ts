@@ -154,6 +154,7 @@ export class RegisterComponent implements AfterViewInit {
     Notification.requestPermission(result => {
       console.log('User Choice', result);
       if (result !== 'granted') {
+        // TODO: Using renderer to transform elements of a reactive component is bad practice.
         this.renderer.setAttribute(this.deviceName?.nativeElement, 'disabled', 'true');
         this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
         this.notificationsRejected = true;
@@ -163,9 +164,11 @@ export class RegisterComponent implements AfterViewInit {
         this.notificationsRejected = false;
         this.notificationsAllowed = !this.notificationsAllowed;
         if (this.notificationsAllowed) {
+          // TODO: Using renderer to transform elements of a reactive component is bad practice.
           this.renderer.removeAttribute(this.deviceName?.nativeElement, 'disabled');
           this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
         } else {
+          // TODO: Using renderer to transform elements of a reactive component is bad practice.
           this.renderer.setAttribute(this.deviceName?.nativeElement, 'disabled', 'true');
           this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
         }

@@ -9,12 +9,6 @@
 
             <jhi-alert-error></jhi-alert-error>
 
-            <button id="jh-enable-notifications" class="btn btn-primary float-right jh-create-entity enable-notifications" (click)="askForNotificationPermission()">
-                <span >
-                    Enable Notifications
-                </span>
-            </button>
-
             <form name="form" role="form" (ngSubmit)="save()" [formGroup]="settingsForm" *ngIf="account" novalidate>
                 <div class="form-group">
                     <label class="form-control-label" for="firstName" jhiTranslate="settings.form.firstname">First Name</label>
@@ -109,9 +103,9 @@
 
                 <div class="custom-control custom-checkbox mb-3">
                     <input type="checkbox" class="custom-control-input" id="enablePushNotifications" name="enablePushNotifications" formControlName="enablePushNotifications" (change)="askForNotificationPermission($event)" #enableNotificationsCheckbox>
-                    <label class="custom-control-label" for="enablePushNotifications">Send me push notifications to this device</label>
+                    <label class="custom-control-label" for="enablePushNotifications">Grant this browser permission to send push notifications</label>
                     <div *ngIf="settingsForm.get('enablePushNotifications')!.dirty || settingsForm.get('enablePushNotifications')!.touched">
-                        <small class="form-text text-danger">
+                        <small class="form-text text-danger" *ngIf="!notificationPermissionStatus">
                             To enable notifications go to the settings of this browser and remove this page from the list of blocked websites. Then reload this page.
                         </small>
                     </div>

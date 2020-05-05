@@ -49,6 +49,8 @@ export class NavbarComponent implements OnInit {
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
       this.swaggerEnabled = profileInfo.swaggerEnabled;
+      this.alertService.notificationBrowserSupport = this.alertService.hasNotificationBrowserSupport();
+      this.alertService.notificationPermissionStatus = this.alertService.hasNotificationPermission();
       this.notificationBrowserSupport = this.alertService.notificationBrowserSupport;
       this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
     });

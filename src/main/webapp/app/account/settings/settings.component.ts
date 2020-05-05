@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { JhiLanguageService } from 'ng-jhipster';
 
@@ -13,12 +13,14 @@ import { AlertService } from 'app/shared/alert/alert.service';
   selector: 'jhi-settings',
   templateUrl: './settings.component.html'
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, AfterViewInit {
   @ViewChild('enableNotificationsCheckbox', { static: false }) enableNotificationsCheckbox?: ElementRef;
 
   account!: Account;
   success = false;
   languages = LANGUAGES;
+  notificationBrowserSupport?: boolean;
+  notificationPermissionStatus?: boolean;
 
   settingsForm = this.fb.group({
     firstName: [undefined, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
@@ -48,10 +50,17 @@ export class SettingsComponent implements OnInit {
         });
 
         this.account = account;
+        this.notificationBrowserSupport = this.alertService.notificationBrowserSupport;
+        this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
       }
     });
-    this.alertService.notificationBrowserSupport = this.alertService.hasNotificationBrowserSupport();
-    this.alertService.notificationPermissionStatus = this.alertService.hasNotificationPermission();
+  }
+
+  ngAfterViewInit() {
+    // should be changed to this.notificationSubscriptionStatus
+    if (this.notificationPermissionStatus) {
+      this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
+    }
   }
 
   displayConfirmNotification(): void {
@@ -104,11 +113,15 @@ export class SettingsComponent implements OnInit {
     Notification.requestPermission(result => {
       console.log('User Choice', result);
       if (result !== 'granted') {
+        // TODO: Using renderer to transform elements of a reactive component is bad practice.
         this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
         this.alertService.notificationPermissionStatus = false;
+        this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
       } else {
         // Maybe hide button
         this.alertService.notificationPermissionStatus = true;
+        this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
+        // TODO: Using renderer to transform elements of a reactive component is bad practice.
         this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
       }
     });
