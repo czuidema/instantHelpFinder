@@ -29,8 +29,8 @@ export class RegisterComponent implements AfterViewInit {
   success = false;
   userRoleNames = ['Doctor', 'ICUNurse', 'Assistant'];
   newSubString = { endpoint: '', auth: '', p256dh: '' };
-  notificationsAllowed: boolean = false;
-  notificationsRejected: boolean = false;
+  notificationsAllowed = false;
+  notificationsRejected = false;
 
   registerForm = this.fb.group({
     firstName: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), Validators.pattern('^[_.@A-Za-z0-9-]*$')]],
@@ -72,7 +72,6 @@ export class RegisterComponent implements AfterViewInit {
       const email = this.registerForm.get(['email'])!.value;
       const userRoleIndex = +this.registerForm.get(['userRoleName'])!.value;
       let userRole: IUserRole;
-      let pushSubscription: PushSubscription;
       switch (userRoleIndex) {
         case 0:
           userRole = new Doctor(undefined, true);
@@ -86,34 +85,31 @@ export class RegisterComponent implements AfterViewInit {
         default:
           userRole = new Assistant();
       }
+      this.configurePushSub()?.then(sub => {
+        const newSubAsString = JSON.parse(JSON.stringify(sub));
 
-      if (this.notificationsAllowed) {
-        this.configurePushSub();
-        pushSubscription = new PushSubscription(
+        userRole.pushSubscription = new PushSubscription(
           undefined,
-          this.newSubString.endpoint,
-          this.newSubString.auth,
-          this.newSubString.p256dh,
-          userRole
+          sub.endpoint,
+          newSubAsString['keys']['auth'],
+          newSubAsString['keys']['p256dh']
         );
-        console.log('You registered with endpoint:' + this.newSubString.endpoint);
-        userRole.pushSubscription = pushSubscription;
-      }
 
-      this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
-        () => (this.success = true),
-        response => this.processError(response)
-      );
+        this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
+          () => (this.success = true),
+          response => this.processError(response)
+        );
+      });
     }
   }
 
-  configurePushSub(): void {
+  configurePushSub() {
     if (!('serviceWorker' in navigator)) {
       return;
     }
 
     let reg: ServiceWorkerRegistration;
-    navigator.serviceWorker.ready
+    return navigator.serviceWorker.ready
       .then(swreg => {
         reg = swreg;
         return swreg.pushManager.getSubscription();
@@ -128,49 +124,9 @@ export class RegisterComponent implements AfterViewInit {
             applicationServerKey: CONV_VAPID_PUBLIC_KEY
           });
         } else {
-          // We have a subscription
-          console.log('We have a subscription already.');
-          return;
+          return sub;
         }
-      })
-      .then(newSub => {
-        if (newSub !== undefined) {
-          // some hack to get auth: ArrayBuffer to auth: String (same for p256)
-          let newSubAsString = JSON.parse(JSON.stringify(newSub));
-
-          this.newSubString.endpoint = newSub.endpoint;
-          this.newSubString.auth = newSubAsString['keys']['auth'];
-          this.newSubString.p256dh = newSubAsString['keys']['p256dh'];
-
-          console.log(JSON.stringify(newSub));
-        }
-      })
-      .catch(err => {
-        console.log(err);
       });
-  }
-
-  askForNotificationPermission(event: any): void {
-    Notification.requestPermission(result => {
-      console.log('User Choice', result);
-      if (result !== 'granted') {
-        this.renderer.setAttribute(this.deviceName?.nativeElement, 'disabled', 'true');
-        this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
-        this.notificationsRejected = true;
-        this.notificationsAllowed = false;
-      } else {
-        // Maybe hide button
-        this.notificationsRejected = false;
-        this.notificationsAllowed = !this.notificationsAllowed;
-        if (this.notificationsAllowed) {
-          this.renderer.removeAttribute(this.deviceName?.nativeElement, 'disabled');
-          this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
-        } else {
-          this.renderer.setAttribute(this.deviceName?.nativeElement, 'disabled', 'true');
-          this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
-        }
-      }
-    });
   }
 
   // Web-Push
