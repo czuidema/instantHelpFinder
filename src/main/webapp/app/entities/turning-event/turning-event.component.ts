@@ -15,7 +15,7 @@ import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog
 export class TurningEventComponent implements OnInit, OnDestroy {
   turningEvents?: ITurningEvent[];
   eventSubscriber?: Subscription;
-  tabToggle: boolean = true;
+  tabToggle = true;
 
   constructor(
     protected turningEventService: TurningEventService,
