@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { JhiLanguageService } from 'ng-jhipster';
 
@@ -7,27 +7,36 @@ import { Account } from 'app/core/user/account.model';
 import { LANGUAGES } from 'app/core/language/language.constants';
 import { PushSubscriptionService } from 'app/entities/push-subscription/push-subscription.service';
 import { collectAllDependants } from 'ts-loader/dist/utils';
+import { AlertService } from 'app/shared/alert/alert.service';
 
 @Component({
   selector: 'jhi-settings',
   templateUrl: './settings.component.html'
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, AfterViewInit {
+  @ViewChild('enableNotificationsCheckbox', { static: false }) enableNotificationsCheckbox?: ElementRef;
+
   account!: Account;
   success = false;
   languages = LANGUAGES;
+  notificationBrowserSupport?: boolean;
+  notificationPermissionStatus?: boolean;
+
   settingsForm = this.fb.group({
     firstName: [undefined, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
     lastName: [undefined, [Validators.required, Validators.minLength(1), Validators.maxLength(50)]],
     email: [undefined, [Validators.required, Validators.minLength(5), Validators.maxLength(254), Validators.email]],
-    langKey: [undefined]
+    langKey: [undefined],
+    enablePushNotifications: ['']
   });
 
   constructor(
     private accountService: AccountService,
     private fb: FormBuilder,
     private languageService: JhiLanguageService,
-    private pushSubscriptionService: PushSubscriptionService
+    private pushSubscriptionService: PushSubscriptionService,
+    private renderer: Renderer2,
+    private alertService: AlertService
   ) {}
 
   ngOnInit(): void {
@@ -41,8 +50,17 @@ export class SettingsComponent implements OnInit {
         });
 
         this.account = account;
+        this.notificationBrowserSupport = this.alertService.notificationBrowserSupport;
+        this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
       }
     });
+  }
+
+  ngAfterViewInit() {
+    // should be changed to this.notificationSubscriptionStatus
+    if (this.notificationPermissionStatus) {
+      this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
+    }
   }
 
   displayConfirmNotification(): void {
@@ -91,15 +109,20 @@ export class SettingsComponent implements OnInit {
       });
   }
 
-  askForNotificationPermission(): void {
+  askForNotificationPermission(event: any): void {
     Notification.requestPermission(result => {
       console.log('User Choice', result);
       if (result !== 'granted') {
-        console.log('No notification permission granted!');
+        // TODO: Using renderer to transform elements of a reactive component is bad practice.
+        this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', '');
+        this.alertService.notificationPermissionStatus = false;
+        this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
       } else {
         // Maybe hide button
-        // this.configurePushSub();
-        this.displayConfirmNotification();
+        this.alertService.notificationPermissionStatus = true;
+        this.notificationPermissionStatus = this.alertService.notificationPermissionStatus;
+        // TODO: Using renderer to transform elements of a reactive component is bad practice.
+        this.renderer.setProperty(this.enableNotificationsCheckbox?.nativeElement, 'checked', 'true');
       }
     });
   }

@@ -179,3 +179,5 @@
         </ul>
     </div>
 </nav>
+<div *ngIf="!notificationBrowserSupport" class="alert alert-danger" role="alert">Your browser does not support notifications!</div>
+<div *ngIf="notificationBrowserSupport && !notificationPermissionStatus" class="alert alert-danger" role="alert">You have not granted this browser permission to send you push notifications. You can do this in the settings.</div>
