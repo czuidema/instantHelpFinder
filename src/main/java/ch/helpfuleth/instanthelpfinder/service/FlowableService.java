@@ -20,7 +20,7 @@ public class FlowableService {
     @Autowired
     private TaskService taskService;
 
-    public void startProcess() {
+    public void startProcess(String assignee) {
         runtimeService.startProcessInstanceByKey("oneTaskProcess");
     }
 
