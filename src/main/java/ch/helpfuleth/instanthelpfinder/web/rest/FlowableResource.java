@@ -29,7 +29,7 @@ public class FlowableResource {
         }
         return dtos;
     }
-    
+
     static class TaskRepresentation {
 
         private String id;

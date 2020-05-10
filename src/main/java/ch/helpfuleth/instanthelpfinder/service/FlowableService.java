@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -24,8 +25,19 @@ public class FlowableService {
         runtimeService.startProcessInstanceByKey("oneTaskProcess");
     }
 
-    public List<Task> getTasks(String assignee) {
-        return taskService.createTaskQuery().taskAssignee(assignee).list();
+    // Get tasks by userId
+    public List<Task> getUserTasks(String userId) {
+        return taskService.createTaskQuery().taskCandidateUser(userId).list();
+    }
+
+    // Get tasks for a user group (Doctors, Assistants)
+    public List<Task> getGroupTasks(String groupName) {
+        return taskService.createTaskQuery().taskCandidateGroup(groupName).list();
+    }
+
+    public List<String> setCandidateUsers(Long turnEventId) {
+        // use TurnEventId to get NurseId, DoctorId, AssistantsId
+        return Arrays.asList("NurseId", "DoctorId", "AssistantId");
     }
 
 }
