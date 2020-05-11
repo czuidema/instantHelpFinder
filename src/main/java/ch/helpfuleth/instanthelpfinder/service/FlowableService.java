@@ -37,6 +37,11 @@ public class FlowableService {
     }
 
     // Get tasks by userId
+    public List<Task> getAssigneeTasks(String assignee) {
+        return taskService.createTaskQuery().taskAssignee(assignee).list();
+    }
+
+    // Get tasks by userId
     public List<Task> getUserTasks(String userId) {
         return taskService.createTaskQuery().taskCandidateUser(userId).list();
     }
