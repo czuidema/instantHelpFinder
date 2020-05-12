@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -32,8 +33,8 @@ public class FlowableService {
         this.doctorRepository = doctorRepository;
     }
 
-    public void startProcess(String assignee) {
-        runtimeService.startProcessInstanceByKey("oneTaskProcess");
+    public void startProcess(Map<String, Object> variables) {
+        runtimeService.startProcessInstanceByKey("Process_8d5a44bd-f0e4-46a9-a3fd-d152466922a6", variables);
     }
 
     // Get tasks by userId

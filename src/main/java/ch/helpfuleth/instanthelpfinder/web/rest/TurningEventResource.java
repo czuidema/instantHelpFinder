@@ -2,6 +2,7 @@ package ch.helpfuleth.instanthelpfinder.web.rest;
 
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
+import ch.helpfuleth.instanthelpfinder.service.FlowableService;
 import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
 import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,13 +40,16 @@ public class TurningEventResource {
     private final TurningEventRepository turningEventRepository;
 
     private final TurningEventService turningEventService;
+    private final FlowableService flowableService;
 
     public TurningEventResource(
         TurningEventRepository turningEventRepository,
-        TurningEventService turningEventService
+        TurningEventService turningEventService,
+        FlowableService flowableService
         ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
+        this.flowableService = flowableService;
     }
 
     /**
@@ -59,6 +65,10 @@ public class TurningEventResource {
         if (turningEvent.getId() != null) {
             throw new BadRequestAlertException("A new turningEvent cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("turningEventId",turningEvent.getId());
+        // The processKey could be ICUNurseProcess or DoctorProcess depending on who triggers the process
+        flowableService.startProcess(variables);
         TurningEvent result = this.turningEventService.createNew(turningEvent);
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
