@@ -39,14 +39,14 @@
     <sequenceFlow id="Flow_0xpteu6" sourceRef="StartEvent_1" targetRef="Activity_03cnjq4"/>
 
     <serviceTask id="Activity_03cnjq4" name="Send push notification to all available doctors"
-                 flowable:class="ch.helpfuleth.instanthelpfinder.service.FlowableService.SendPushNotToAllDoc">
+                 flowable:class="ch.helpfuleth.instanthelpfinder.service.SendPushNotToAllDoc">
       <incoming>Flow_0xpteu6</incoming>
       <outgoing>Flow_101hdy3</outgoing>
     </serviceTask>
 
     <sequenceFlow id="Flow_101hdy3" sourceRef="Activity_03cnjq4" targetRef="Activity_0vk7l8u"/>
 
-    <userTask id="Activity_0vk7l8u" name="Pick one time slot" flowable:candidateUsers="${ch.helpfuleth.instanthelpfinder.service.FlowableService.setCandidateUsers(turnEventId)}" flowable:candidateGroups="Doctors">
+    <userTask id="Activity_0vk7l8u" name="Pick one time slot" flowable:candidateGroups="Doctors">
       <incoming>Flow_101hdy3</incoming>
       <outgoing>Flow_1yqvohe</outgoing>
     </userTask>
@@ -54,14 +54,14 @@
     <sequenceFlow id="Flow_1yqvohe" sourceRef="Activity_0vk7l8u" targetRef="Activity_0ihbqbl"/>
 
     <serviceTask id="Activity_0ihbqbl" name="Send push notification to all available assistants"
-                 flowable:class="ch.helpfuleth.instanthelpfinder.service.FlowableService.SendPushNotToAllAss">
+                 flowable:class="ch.helpfuleth.instanthelpfinder.service.SendPushNotToAllAss">
       <incoming>Flow_1yqvohe</incoming>
       <outgoing>Flow_1ivt4cj</outgoing>
     </serviceTask>
 
     <sequenceFlow id="Flow_1ivt4cj" sourceRef="Activity_0ihbqbl" targetRef="Activity_0lruncs"/>
 
-    <userTask id="Activity_0lruncs" name="Three assistants accepted" flowable:candidateUsers="${ch.helpfuleth.instanthelpfinder.service.FlowableService.setCandidateUsers(turnEventId)}" flowable:candidateGroups="Assistants">
+    <userTask id="Activity_0lruncs" name="Find three assistants to participate" flowable:candidateGroups="Assistants">
       <incoming>Flow_1ivt4cj</incoming>
       <outgoing>Flow_1drg8p8</outgoing>
     </userTask>
@@ -69,19 +69,12 @@
     <sequenceFlow id="Flow_1drg8p8" sourceRef="Activity_0lruncs" targetRef="Activity_0dab7q2"/>
 
     <serviceTask id="Activity_0dab7q2" name="Send success notification to involved assistants, doctor, nurse"
-                 flowable:class="ch.helpfuleth.instanthelpfinder.service.FlowableService.SendPushNotToParticipants">
+                 flowable:class="ch.helpfuleth.instanthelpfinder.service.SendPushNotToParticipants">
       <incoming>Flow_1drg8p8</incoming>
       <outgoing>Flow_005atu4</outgoing>
     </serviceTask>
 
-    <sequenceFlow id="Flow_005atu4" sourceRef="Activity_0dab7q2" targetRef="Activity_1exvy88"/>
-
-    <userTask id="Activity_1exvy88" name="Turn the patient" flowable:candidateUsers="${ch.helpfuleth.instanthelpfinder.service.FlowableService.setCandidateUsers(turnEventId)}">
-      <incoming>Flow_005atu4</incoming>
-      <outgoing>Flow_164mwmw</outgoing>
-    </userTask>
-
-    <sequenceFlow id="Flow_164mwmw" sourceRef="Activity_1exvy88" targetRef="Event_1iyvwnl"/>
+    <sequenceFlow id="Flow_005atu4" sourceRef="Activity_0dab7q2" targetRef="Event_1iyvwnl"/>
 
     <endEvent id="Event_1iyvwnl">
       <incoming>Flow_164mwmw</incoming>

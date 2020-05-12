@@ -70,11 +70,58 @@ public class FlowableResource {
             .body(result);
     }
 
-    // this is only for testing, the final post method should look like the one above
+    // start a ICUNurseProcess on the command line
     @PostMapping(value="/process")
+    public void createTurningEventSimple() {
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("turningEventId","turningEvent.getId()");
+        // The processKey could be ICUNurseProcess or DoctorProcess depending on who triggers the process
+        runtimeService.startProcessInstanceByKey("Process_8d5a44bd-f0e4-46a9-a3fd-d152466922a6", variables);
+    }
+
+    /*@PostMapping(value="/process")
     public void startProcessInstance(@RequestBody StartProcessRepresentation startProcessRepresentation) {
         flowableService.startProcess(startProcessRepresentation.getAssignee());
+    }*/
+
+    // get tasks for a candidate group, candidateGroupName can be Doctors or Assistants
+    @RequestMapping(value="/tasks/candidateGroup/{candidateGroupName}", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Optional<TurningEvent>> getCandidateGroupTasks(@PathVariable String candidateGroupName) {
+        log.debug("REST request to get TurningEvents for a specific user : {}", candidateGroupName);
+
+        List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
+        Map<String, Optional<TurningEvent>> taskMap = new HashMap<String, Optional<TurningEvent>>();
+        for (Task task : tasks) {
+            Map<String,Object> processVariables = task.getProcessVariables();
+            // get turningEventId from task
+            Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString());
+            Optional<TurningEvent> turningEvent = turningEventRepository.findOneWithEagerRelationships(turningEventId);
+            taskMap.put(task.getId(), turningEvent);
+        }
+        return taskMap;
     }
+
+    // get tasks for candidate group on the command line
+    @RequestMapping(value="/tasks/candidateGroup", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
+    public List<TaskRepresentation> getCandidateGroupTasksSimple(@RequestParam String candidateGroupName) {
+        List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
+        List<TaskRepresentation> dtos = new ArrayList<TaskRepresentation>();
+        for (Task task : tasks) {
+            dtos.add(new TaskRepresentation(task.getId(), task.getName()));
+        }
+        return dtos;
+    }
+
+    // complete task on the command line
+    @PutMapping("/tasks/candidateGroup")
+    public void completeCandidateGroupTasksSimple(@RequestParam String taskId) throws URISyntaxException {
+        log.debug("REST request to complete task : {}", taskId);
+        if (taskId == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        taskService.complete(taskId);
+    }
+
 
     @RequestMapping(value="/tasks/assignee", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
     public List<TaskRepresentation> getAssigneeTasks(@RequestParam String assignee) {

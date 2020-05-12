@@ -47,37 +47,13 @@ public class FlowableService {
     }
 
     // Get tasks for a user group (Doctors, Assistants)
-    public List<Task> getGroupTasks(String groupName) {
+    public List<Task> getCandidateGroupTasks(String groupName) {
         return taskService.createTaskQuery().taskCandidateGroup(groupName).list();
     }
 
     public List<String> setCandidateUsers(Long turnEventId) {
         // use TurnEventId to get NurseId, DoctorId, AssistantsId
         return Arrays.asList("NurseId", "DoctorId", "AssistantId");
-    }
-
-    static class SendPushNotToAllDoc implements JavaDelegate  {
-
-        public void execute(DelegateExecution execution) {
-            System.out.println("Sending push notification to all doctors...");
-        }
-
-    }
-
-    static class SendPushNotToAllAss implements JavaDelegate  {
-
-        public void execute(DelegateExecution execution) {
-            System.out.println("Sending push notification to all assistants...");
-        }
-
-    }
-
-    static class SendPushNotToParticipants implements JavaDelegate  {
-
-        public void execute(DelegateExecution execution) {
-            System.out.println("Sending push notification to all participants of the turing event...");
-        }
-
     }
 
 }
