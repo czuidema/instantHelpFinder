@@ -8,6 +8,7 @@ import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,11 +66,14 @@ public class TurningEventResource {
         if (turningEvent.getId() != null) {
             throw new BadRequestAlertException("A new turningEvent cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Map<String, Object> variables = new HashMap<String, Object>();
-        variables.put("turningEventId",turningEvent.getId());
-        // The processKey could be ICUNurseProcess or DoctorProcess depending on who triggers the process
-        flowableService.startProcess(variables);
+
+        // start Process instance (currently ICUNurse)
+        ProcessInstance processInstance = flowableService.startProcess();
+        String processInstanceId = processInstance.getId();
+        turningEvent.setProcessInstanceId(processInstanceId);
+
         TurningEvent result = this.turningEventService.createNew(turningEvent);
+
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -95,6 +99,15 @@ public class TurningEventResource {
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
             .body(result);
     }
+
+   /* @PutMapping("/turning-events/{id}")
+    public void completeTask(@PathVariable String id) throws URISyntaxException {
+        log.debug("REST request to complete task : {}", id);
+        if (id == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        taskService.complete(id);
+    }*/
 
     /**
      * {@code GET  /turning-events} : get all the turningEvents.
@@ -130,7 +143,13 @@ public class TurningEventResource {
     @DeleteMapping("/turning-events/{id}")
     public ResponseEntity<Void> deleteTurningEvent(@PathVariable Long id) {
         log.debug("REST request to delete TurningEvent : {}", id);
+
+        TurningEvent turningEvent = turningEventRepository.getOne(id);
+        String processInstanceId = turningEvent.getProcessInstanceId();
+
         turningEventRepository.deleteById(id);
+        flowableService.deleteProcessInstance(processInstanceId);
+
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }

@@ -11,6 +11,7 @@ export interface ITurningEvent {
   patientData?: string;
   ward?: string;
   roomNr?: string;
+  processInstanceId?: string;
   priority?: EPriority;
   doctor?: IDoctor;
   icuNurse?: IICUNurse;
@@ -27,6 +28,7 @@ export class TurningEvent implements ITurningEvent {
     public patientData?: string,
     public ward?: string,
     public roomNr?: string,
+    public processInstanceId?: string,
     public priority?: EPriority,
     public doctor?: IDoctor,
     public icuNurse?: IICUNurse,
