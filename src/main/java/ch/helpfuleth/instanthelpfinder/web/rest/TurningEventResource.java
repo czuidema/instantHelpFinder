@@ -67,12 +67,15 @@ public class TurningEventResource {
             throw new BadRequestAlertException("A new turningEvent cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        // start Process instance (currently ICUNurse)
+        // start process instance (currently ICUNurse)
         ProcessInstance processInstance = flowableService.startProcess();
         String processInstanceId = processInstance.getId();
         turningEvent.setProcessInstanceId(processInstanceId);
 
         TurningEvent result = this.turningEventService.createNew(turningEvent);
+
+        // give process instance as variable the turningEventId
+        flowableService.setVariable(processInstanceId, "turningEventId", result.getId());
 
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -100,14 +103,23 @@ public class TurningEventResource {
             .body(result);
     }
 
-   /* @PutMapping("/turning-events/{id}")
-    public void completeTask(@PathVariable String id) throws URISyntaxException {
-        log.debug("REST request to complete task : {}", id);
-        if (id == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+    /**
+     * {@code PUT  /tasks} : Completes an existing task.
+     *
+     * @param turningEvent the turningEvent to which the task belongs.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PutMapping("/tasks")
+    public void completeTask(@RequestBody TurningEvent turningEvent) throws URISyntaxException {
+        log.debug("REST request to update TurningEvent : {}", turningEvent);
+        if (turningEvent.getProcessInstanceId() == null) {
+            throw new BadRequestAlertException("Invalid processInstanceId", ENTITY_NAME, "idnull");
         }
-        taskService.complete(id);
-    }*/
+        String processInstanceId = turningEvent.getProcessInstanceId();
+        ProcessInstance processInstance = flowableService.getProcessInstanceById(processInstanceId);
+        String taskId = processInstance.getActivityId();
+        flowableService.completeTask(taskId);
+    }
 
     /**
      * {@code GET  /turning-events} : get all the turningEvents.

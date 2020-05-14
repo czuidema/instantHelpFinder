@@ -62,4 +62,17 @@ public class FlowableService {
         runtimeService.deleteProcessInstance(processInstanceId, "None" );
     }
 
+    public void completeTask(String taskId) {
+        taskService.complete(taskId);
+    }
+
+    public void setVariable(String executionId, String variableName, Object value) {
+        runtimeService.setVariable(executionId,variableName,value);
+    }
+
+    // TODO: carefully check this query!
+    public ProcessInstance getProcessInstanceById(String processInstanceId) {
+        return runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
 }

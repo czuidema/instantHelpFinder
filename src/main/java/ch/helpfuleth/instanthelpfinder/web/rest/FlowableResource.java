@@ -85,7 +85,7 @@ public class FlowableResource {
     }*/
 
     // get tasks for a candidate group, candidateGroupName can be Doctors or Assistants
-    @RequestMapping(value="/tasks/candidateGroup/{candidateGroupName}", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/tasks/{candidateGroupName}", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Optional<TurningEvent>> getCandidateGroupTasks(@PathVariable String candidateGroupName) {
         log.debug("REST request to get TurningEvents for a specific user : {}", candidateGroupName);
 
