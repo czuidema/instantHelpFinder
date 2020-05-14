@@ -1,0 +1,120 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-1">
+        <createTable tableName="push_subscription">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="push_subscriptionPK"/>
+            </column>
+            <column name="auth" type="VARCHAR(255)"/>
+            <column name="endpoint" type="VARCHAR(255)"/>
+            <column name="p_256_dh" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-2">
+        <createTable tableName="time_slot">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="time_slotPK"/>
+            </column>
+            <column name="end" type="datetime(6)"/>
+            <column name="is_selected" type="BIT"/>
+            <column name="start" type="datetime(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-3">
+        <createTable tableName="turning_event">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="turning_eventPK"/>
+            </column>
+            <column name="patient_data" type="VARCHAR(255)"/>
+            <column name="patient_name" type="VARCHAR(255)"/>
+            <column name="priority" type="VARCHAR(255)"/>
+            <column name="room_nr" type="VARCHAR(255)"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="ward" type="VARCHAR(255)"/>
+            <column name="definite_time_slot_id" type="BIGINT"/>
+            <column name="doctor_id" type="BIGINT"/>
+            <column name="icu_nurse_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-4">
+        <createTable tableName="turning_event_assistants">
+            <column name="turning_event_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="assistants_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-5">
+        <createTable tableName="turning_event_potential_time_slots">
+            <column name="turning_event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="potential_time_slots_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-6">
+        <createTable tableName="user_role">
+            <column name="dtype" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_rolePK"/>
+            </column>
+            <column name="availability" type="BIT"/>
+            <column name="is_preferred_doctor" type="BIT"/>
+            <column name="push_subscription_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-7">
+        <addColumn tableName="jhi_user">
+            <column name="user_role_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-8">
+        <addUniqueConstraint columnNames="user_role_id" constraintName="UC_JHI_USERUSER_ROLE_ID_COL" tableName="jhi_user"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-9">
+        <addUniqueConstraint columnNames="push_subscription_id" constraintName="UC_USER_ROLEPUSH_SUBSCRIPTION_ID_COL" tableName="user_role"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-10">
+        <addUniqueConstraint columnNames="user_id" constraintName="UC_USER_ROLEUSER_ID_COL" tableName="user_role"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-11">
+        <addUniqueConstraint columnNames="potential_time_slots_id" constraintName="UK_s1c71mbb3rmvgcgsvem3ma36" tableName="turning_event_potential_time_slots"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-12">
+        <addForeignKeyConstraint baseColumnNames="icu_nurse_id" baseTableName="turning_event" constraintName="FK5420tg53nvaaqixet4j7airxc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_role" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-13">
+        <addForeignKeyConstraint baseColumnNames="potential_time_slots_id" baseTableName="turning_event_potential_time_slots" constraintName="FK7o0v2ytd4t0bdy59ihfu572f6" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="time_slot" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-14">
+        <addForeignKeyConstraint baseColumnNames="assistants_id" baseTableName="turning_event_assistants" constraintName="FK81la08c2imu7xh6u1b09ope7p" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_role" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-15">
+        <addForeignKeyConstraint baseColumnNames="turning_event_id" baseTableName="turning_event_assistants" constraintName="FKaqgxqkm8bwd316lr2v2s0h5ox" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="turning_event" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-16">
+        <addForeignKeyConstraint baseColumnNames="turning_event_id" baseTableName="turning_event_potential_time_slots" constraintName="FKb3w1wj3j2jlb2t107qk5ybdlw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="turning_event" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-17">
+        <addForeignKeyConstraint baseColumnNames="definite_time_slot_id" baseTableName="turning_event" constraintName="FKd1lai0we6y401pfoq12qdkl10" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="time_slot" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-18">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role" constraintName="FKj4gut3u2pbw4de78dpit0ssvl" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="jhi_user" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-19">
+        <addForeignKeyConstraint baseColumnNames="user_role_id" baseTableName="jhi_user" constraintName="FKkqjgpix1v7t7bewugxmiyq16k" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_role" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-20">
+        <addForeignKeyConstraint baseColumnNames="push_subscription_id" baseTableName="user_role" constraintName="FKmvbisulifavjy0dpyx07ph8wx" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="push_subscription" validate="true"/>
+    </changeSet>
+    <changeSet author="parrapbanzz (generated)" id="1587890017883-21">
+        <addForeignKeyConstraint baseColumnNames="doctor_id" baseTableName="turning_event" constraintName="FKtd6ibagjo0rbaasmdbn9iingj" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user_role" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

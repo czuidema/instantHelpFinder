@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:flowable="http://flowable.org/bpmn"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.flowable.org/processdef">
+
+  <!--<collaboration id="Collaboration_0v4bzj8">
+    <participant id="Participant_1ym8ozg" name="Hospital staff" processRef="Process_8d5a44bd-f0e4-46a9-a3fd-d152466922a6"/>
+  </collaboration>-->
+
+  <process id="Process_8d5a44bd-f0e4-46a9-a3fd-d152466922a6" name="ICUNurseRequest" isExecutable="true">
+    <laneSet id="LaneSet_0fw385s">
+      <lane id="Lane_0aqr0jm" name="ICU Nurse">
+        <flowNodeRef>StartEvent_1</flowNodeRef>
+        <childLaneSet id="LaneSet_1mz712q"/>
+      </lane>
+      <lane id="Lane_19t960y" name="Doctors">
+        <flowNodeRef>Activity_03cnjq4</flowNodeRef>
+        <flowNodeRef>Activity_0vk7l8u</flowNodeRef>
+      </lane>
+      <lane id="Lane_1m9v8op" name="Assistants">
+        <flowNodeRef>Activity_0ihbqbl</flowNodeRef>
+        <flowNodeRef>Activity_0lruncs</flowNodeRef>
+        <flowNodeRef>Activity_0dab7q2</flowNodeRef>
+        <flowNodeRef>Event_1iyvwnl</flowNodeRef>
+      </lane>
+    </laneSet>
+
+    <startEvent id="StartEvent_1" name="ICU Nurse creates turning event">
+      <outgoing>Flow_0xpteu6</outgoing>
+    </startEvent>
+
+    <sequenceFlow id="Flow_0xpteu6" sourceRef="StartEvent_1" targetRef="Activity_03cnjq4"/>
+
+    <serviceTask id="Activity_03cnjq4" name="Send push notification to all available doctors"
+                 flowable:class="ch.helpfuleth.instanthelpfinder.service.SendPushNotToAllDoc">
+      <incoming>Flow_0xpteu6</incoming>
+      <outgoing>Flow_101hdy3</outgoing>
+    </serviceTask>
+
+    <sequenceFlow id="Flow_101hdy3" sourceRef="Activity_03cnjq4" targetRef="Activity_0vk7l8u"/>
+
+    <userTask id="Activity_0vk7l8u" name="Pick one time slot" flowable:candidateGroups="Doctors">
+      <incoming>Flow_101hdy3</incoming>
+      <outgoing>Flow_1yqvohe</outgoing>
+    </userTask>
+
+    <sequenceFlow id="Flow_1yqvohe" sourceRef="Activity_0vk7l8u" targetRef="Activity_0ihbqbl"/>
+
+    <serviceTask id="Activity_0ihbqbl" name="Send push notification to all available assistants"
+                 flowable:class="ch.helpfuleth.instanthelpfinder.service.SendPushNotToAllAss">
+      <incoming>Flow_1yqvohe</incoming>
+      <outgoing>Flow_1ivt4cj</outgoing>
+    </serviceTask>
+
+    <sequenceFlow id="Flow_1ivt4cj" sourceRef="Activity_0ihbqbl" targetRef="Activity_0lruncs"/>
+
+    <userTask id="Activity_0lruncs" name="Find three assistants to participate" flowable:candidateGroups="Assistants">
+      <incoming>Flow_1ivt4cj</incoming>
+      <outgoing>Flow_1drg8p8</outgoing>
+    </userTask>
+
+    <sequenceFlow id="Flow_1drg8p8" sourceRef="Activity_0lruncs" targetRef="Activity_0dab7q2"/>
+
+    <serviceTask id="Activity_0dab7q2" name="Send success notification to involved assistants, doctor, nurse"
+                 flowable:class="ch.helpfuleth.instanthelpfinder.service.SendPushNotToParticipants">
+      <incoming>Flow_1drg8p8</incoming>
+      <outgoing>Flow_005atu4</outgoing>
+    </serviceTask>
+
+    <sequenceFlow id="Flow_005atu4" sourceRef="Activity_0dab7q2" targetRef="Event_1iyvwnl"/>
+
+    <endEvent id="Event_1iyvwnl">
+      <incoming>Flow_164mwmw</incoming>
+    </endEvent>
+  </process>
+</definitions>
