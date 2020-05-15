@@ -93,6 +93,13 @@
                             console.log('Service Worker Registered');
                         });
                 });
+                window.addEventListener('push', function(event) {
+
+                    var myNotif = event.data.json();
+                    const promiseChain = window.registration.showNotification(myNotif.title);
+
+                    event.waitUntil(promiseChain);
+                });
             }
         </script>
     <!-- Google Analytics: uncomment and change UA-XXXXX-X to be your site's ID.

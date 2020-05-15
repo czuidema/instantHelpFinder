@@ -101,16 +101,6 @@
                     </select>
                 </div>
 
-                <div class="custom-control custom-checkbox mb-3">
-                    <input type="checkbox" class="custom-control-input" id="enablePushNotifications" name="enablePushNotifications" formControlName="enablePushNotifications" (change)="askForNotificationPermission($event)" #enableNotificationsCheckbox>
-                    <label class="custom-control-label" for="enablePushNotifications">Grant this browser permission to send push notifications</label>
-                    <div *ngIf="settingsForm.get('enablePushNotifications')!.dirty || settingsForm.get('enablePushNotifications')!.touched">
-                        <small class="form-text text-danger" *ngIf="!notificationPermissionStatus">
-                            To enable notifications go to the settings of this browser and remove this page from the list of blocked websites. Then reload this page.
-                        </small>
-                    </div>
-                </div>
-
                 <button type="submit" [disabled]="settingsForm.invalid" class="btn btn-primary" jhiTranslate="settings.form.button">Save</button>
             </form>
         </div>

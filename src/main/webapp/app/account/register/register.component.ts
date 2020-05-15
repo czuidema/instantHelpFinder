@@ -103,11 +103,7 @@ export class RegisterComponent implements AfterViewInit {
     }
   }
 
-  configurePushSub() {
-    if (!('serviceWorker' in navigator)) {
-      return;
-    }
-
+  configurePushSub(): Promise<PushSubscription> {
     let reg: ServiceWorkerRegistration;
     return navigator.serviceWorker.ready
       .then(swreg => {
@@ -117,7 +113,7 @@ export class RegisterComponent implements AfterViewInit {
       .then(sub => {
         if (sub === null) {
           // Create new subscription
-          const VAPID_PUBLIC_KEY = 'BPZALa9BQDUe9o0wHgWN4-ahHH-tnRJRrSvMOMUqyNA-EQYfEVojN0JMK6HL8_4_orR5qdzlvIUO7XZX_CYF5EE';
+          const VAPID_PUBLIC_KEY = 'BKfZe7R6OIe5qTogynU5WCkzqZyaIppcYNh_qvWlvM0x235FJEz1KhH2rHXsK0l_QA-TX6H3eLQRjY9jv-EdgjU';
           const CONV_VAPID_PUBLIC_KEY = this.urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
           return reg.pushManager.subscribe({
             userVisibleOnly: true,
@@ -133,10 +129,10 @@ export class RegisterComponent implements AfterViewInit {
   // Public base64 to Uint
   urlBase64ToUint8Array(base64String: string): any {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
-    let rawData = window.atob(base64);
-    let outputArray = new Uint8Array(rawData.length);
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
 
     for (let i = 0; i < rawData.length; ++i) {
       outputArray[i] = rawData.charCodeAt(i);
