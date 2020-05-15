@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import has = Reflect.has;
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
