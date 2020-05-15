@@ -38,9 +38,6 @@ public class TurningEvent implements Serializable {
     @Column(name = "room_nr")
     private String roomNr;
 
-    @Column(name="process_instance_id")
-    private String processInstanceId;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "priority")
     private EPriority priority;
@@ -156,19 +153,6 @@ public class TurningEvent implements Serializable {
 
     public void setRoomNr(String roomNr) {
         this.roomNr = roomNr;
-    }
-
-    public String getProcessInstanceId() {
-        return processInstanceId;
-    }
-
-    public TurningEvent processInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
-        return this;
-    }
-
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
     }
 
     public EPriority getPriority() {

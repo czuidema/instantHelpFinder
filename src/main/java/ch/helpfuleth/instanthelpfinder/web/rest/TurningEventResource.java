@@ -66,12 +66,11 @@ public class TurningEventResource {
             throw new BadRequestAlertException("A new turningEvent cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
+        TurningEvent result = this.turningEventService.createNew(turningEvent);
+
         // start process instance (currently ICUNurse)
         ProcessInstance processInstance = flowableService.startProcess();
         String processInstanceId = processInstance.getId();
-        turningEvent.setProcessInstanceId(processInstanceId);
-
-        TurningEvent result = this.turningEventService.createNew(turningEvent);
 
         // give process instance as variable the turningEventId
         flowableService.setVariable(processInstanceId, "turningEventId", result.getId());
@@ -114,8 +113,7 @@ public class TurningEventResource {
         if (turningEvent.getProcessInstanceId() == null) {
             throw new BadRequestAlertException("Invalid processInstanceId", ENTITY_NAME, "idnull");
         }
-        String processInstanceId = turningEvent.getProcessInstanceId();
-        ProcessInstance processInstance = flowableService.getProcessInstanceById(processInstanceId);
+        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEvent.getId());
         String taskId = processInstance.getActivityId();
         flowableService.completeTask(taskId);
     }
@@ -178,11 +176,10 @@ public class TurningEventResource {
     public ResponseEntity<Void> deleteTurningEvent(@PathVariable Long id) {
         log.debug("REST request to delete TurningEvent : {}", id);
 
-        TurningEvent turningEvent = turningEventRepository.getOne(id);
-        String processInstanceId = turningEvent.getProcessInstanceId();
+        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
+        flowableService.deleteProcessInstance(processInstance.getId());
 
         turningEventRepository.deleteById(id);
-        flowableService.deleteProcessInstance(processInstanceId);
 
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
