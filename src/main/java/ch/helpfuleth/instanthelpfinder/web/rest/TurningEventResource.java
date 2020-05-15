@@ -110,8 +110,8 @@ public class TurningEventResource {
     @PutMapping("/tasks")
     public void completeTask(@RequestBody TurningEvent turningEvent) throws URISyntaxException {
         log.debug("REST request to update TurningEvent : {}", turningEvent);
-        if (turningEvent.getProcessInstanceId() == null) {
-            throw new BadRequestAlertException("Invalid processInstanceId", ENTITY_NAME, "idnull");
+        if (turningEvent.getId() == null) {
+            throw new BadRequestAlertException("Invalid TurningEventId", ENTITY_NAME, "idnull");
         }
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEvent.getId());
         String taskId = processInstance.getActivityId();
