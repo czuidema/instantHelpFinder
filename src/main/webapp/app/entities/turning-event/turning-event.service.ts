@@ -12,7 +12,6 @@ type EntityArrayResponseType = HttpResponse<ITurningEvent[]>;
 @Injectable({ providedIn: 'root' })
 export class TurningEventService {
   public resourceUrl = SERVER_API_URL + 'api/turning-events';
-  public resourceUrlTasks = SERVER_API_URL + 'api/tasks';
 
   constructor(protected http: HttpClient) {}
 
@@ -24,8 +23,8 @@ export class TurningEventService {
     return this.http.put<ITurningEvent>(this.resourceUrl, turningEvent, { observe: 'response' });
   }
 
-  completeTask(turningEvent: ITurningEvent): Observable<EntityResponseType> {
-    return this.http.put<ITurningEvent>(this.resourceUrlTasks, turningEvent, { observe: 'response' });
+  acceptTurningEventDoctor(doctorId: number, turningEventId: number): Observable<EntityResponseType> {
+    return this.http.put<ITurningEvent>(`${this.resourceUrl}/${turningEventId}/accept/doctor`, doctorId, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {
@@ -39,7 +38,7 @@ export class TurningEventService {
 
   queryTasks(candidateGroupName: string, req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
-    return this.http.get<ITurningEvent[]>(`${this.resourceUrlTasks}/${candidateGroupName}`, { params: options, observe: 'response' });
+    return this.http.get<ITurningEvent[]>(`${this.resourceUrl}/open/${candidateGroupName}`, { params: options, observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {

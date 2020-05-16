@@ -71,8 +71,8 @@ public class FlowableService {
     }
 
     // TODO: carefully check this query!
-    public ProcessInstance getProcessInstanceById(String processInstanceId) {
-        return runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+    public ProcessInstance getProcessInstanceByTurningEventId(Long turningEventId) {
+        return runtimeService.createProcessInstanceQuery().variableValueEquals("turningEventId",turningEventId).singleResult();
     }
 
 }

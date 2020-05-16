@@ -335,6 +335,16 @@
             <artifactId>flowable-spring-boot-starter-process</artifactId>
             <version>6.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>nl.martijndwars</groupId>
+            <artifactId>web-push</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.64</version>
+        </dependency>
     </dependencies>
 
     <build>

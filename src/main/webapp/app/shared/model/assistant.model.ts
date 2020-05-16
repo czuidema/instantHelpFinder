@@ -11,13 +11,13 @@ export class Assistant implements IAssistant {
     public id?: number,
     public isAvailable?: boolean,
     public turningEvents?: ITurningEvent[],
-    public type?: string,
+    public dtype?: string,
     public user?: User
   ) {
     this.id = id;
     this.isAvailable = isAvailable;
     this.turningEvents = turningEvents || [];
-    this.type = 'Assistant';
+    this.dtype = 'Assistant';
     this.user = user;
   }
 }

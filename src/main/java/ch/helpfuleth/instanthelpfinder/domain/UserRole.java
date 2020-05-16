@@ -35,7 +35,7 @@ public class UserRole implements Serializable {
     @Column(name = "availability")
     private Boolean availability;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(unique = true)
     private PushSubscription pushSubscription;
 
