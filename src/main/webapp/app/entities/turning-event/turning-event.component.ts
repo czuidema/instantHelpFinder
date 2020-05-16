@@ -9,6 +9,11 @@ import { faInbox } from '@fortawesome/free-solid-svg-icons';
 import { ITurningEvent } from 'app/shared/model/turning-event.model';
 import { TurningEventService } from './turning-event.service';
 import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog.component';
+import { Account } from 'app/core/user/account.model';
+import { AccountService } from 'app/core/auth/account.service';
+import { IUser } from 'app/core/user/user.model';
+import { UserService } from 'app/core/user/user.service';
+import { combineAll } from 'rxjs/operators';
 
 @Component({
   selector: 'jhi-turning-event',
@@ -16,7 +21,13 @@ import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog
 })
 export class TurningEventComponent implements OnInit, OnDestroy {
   turningEvents?: ITurningEvent[];
+  turningEventsDoctors?: ITurningEvent[];
   eventSubscriber?: Subscription;
+  account: Account | null = null;
+  authSubscription?: Subscription;
+  user?: IUser;
+  userSubscription?: Subscription;
+
   tabToggle: boolean = true;
   accordionInboxToggle: boolean = false;
   isOpen: boolean = true;
@@ -26,7 +37,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   constructor(
     protected turningEventService: TurningEventService,
     protected eventManager: JhiEventManager,
-    protected modalService: NgbModal
+    protected modalService: NgbModal,
+    protected accountService: AccountService,
+    protected userService: UserService
   ) {}
 
   loadAll(): void {
@@ -36,11 +49,28 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadAll();
     this.registerChangeInTurningEvents();
+
+    this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
+    // TODO: needs to be simplified!
+    let userName: string = '';
+    if (this.account?.login != undefined) {
+      userName = this.account?.login;
+    }
+    this.userSubscription = this.userService.find(userName).subscribe(user => (this.user = user));
+    this.turningEventService
+      .queryTasks('Doctors')
+      .subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEventsDoctors = res.body || []));
   }
 
   ngOnDestroy(): void {
     if (this.eventSubscriber) {
       this.eventManager.destroy(this.eventSubscriber);
+    }
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
