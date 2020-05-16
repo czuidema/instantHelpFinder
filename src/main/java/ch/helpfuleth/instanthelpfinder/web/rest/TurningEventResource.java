@@ -74,12 +74,11 @@ public class TurningEventResource {
 
         TurningEvent result = this.turningEventService.createNew(turningEvent);
 
-        // start process instance (currently ICUNurse)
-        ProcessInstance processInstance = flowableService.startProcess();
-        String processInstanceId = processInstance.getId();
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("turningEventId", result.getId());
 
-        // give process instance as variable the turningEventId
-        flowableService.setVariable(processInstanceId, "turningEventId", result.getId());
+        // start process instance (currently ICUNurse)
+        ProcessInstance processInstance = flowableService.startProcess(variables);
 
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

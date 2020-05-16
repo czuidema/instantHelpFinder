@@ -34,8 +34,8 @@ public class FlowableService {
         this.doctorRepository = doctorRepository;
     }
 
-    public ProcessInstance startProcess() {
-        return runtimeService.startProcessInstanceByKey("Process_8d5a44bd-f0e4-46a9-a3fd-d152466922a6");
+    public ProcessInstance startProcess(Map<String, Object> variables) {
+        return runtimeService.startProcessInstanceByKey("Process_8d5a44bd-f0e4-46a9-a3fd-d152466922a6", variables);
     }
 
     // Get tasks by userId
@@ -66,7 +66,7 @@ public class FlowableService {
         taskService.complete(taskId);
     }
 
-    public void setVariable(String executionId, String variableName, Object value) {
+    public void setVariable(String executionId, String variableName, Long value) {
         runtimeService.setVariable(executionId,variableName,value);
     }
 
