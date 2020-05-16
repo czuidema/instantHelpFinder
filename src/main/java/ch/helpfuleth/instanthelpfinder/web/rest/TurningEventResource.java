@@ -1,6 +1,8 @@
 package ch.helpfuleth.instanthelpfinder.web.rest;
 
+import ch.helpfuleth.instanthelpfinder.domain.Doctor;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
+import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.service.FlowableService;
 import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.Doc;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -41,15 +44,18 @@ public class TurningEventResource {
 
     private final TurningEventService turningEventService;
     private final FlowableService flowableService;
+    private final DoctorRepository doctorRepository;
 
     public TurningEventResource(
         TurningEventRepository turningEventRepository,
         TurningEventService turningEventService,
-        FlowableService flowableService
+        FlowableService flowableService,
+        DoctorRepository doctorRepository
         ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
         this.flowableService = flowableService;
+        this.doctorRepository = doctorRepository;
     }
 
     /**
@@ -102,18 +108,22 @@ public class TurningEventResource {
     }
 
     /**
-     * {@code PUT  /tasks} : Completes an existing task.
+     * {@code PUT  /turning-events/:id/accept/doctor} : Accepts a TurningEvent of a doctor.
      *
-     * @param turningEvent the turningEvent to which the task belongs.
+     * @param id of the turningEvent that the doctor accepts.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/tasks")
-    public void completeTask(@RequestBody TurningEvent turningEvent) throws URISyntaxException {
-        log.debug("REST request to update TurningEvent : {}", turningEvent);
-        if (turningEvent.getId() == null) {
-            throw new BadRequestAlertException("Invalid TurningEventId", ENTITY_NAME, "idnull");
-        }
-        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEvent.getId());
+    @PutMapping("/turning-events/{id}/accept/doctor")
+    public void acceptTurningEventDoctor(@PathVariable Long id, @RequestBody Long userId) throws URISyntaxException {
+        log.debug("REST request to update TurningEvent : {}", id);
+
+        // TODO: if TurningEvent does not exist, return not found.
+        TurningEvent turningEvent = turningEventRepository.getOne(id);
+
+        Doctor doctor = doctorRepository.getOne(userId);
+        turningEvent.setDoctor(doctor);
+
+        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
         String taskId = processInstance.getActivityId();
         flowableService.completeTask(taskId);
     }
@@ -145,13 +155,13 @@ public class TurningEventResource {
 
     // get tasks for a candidate group, candidateGroupName can be Doctors or Assistants
     /**
-     * {@code GET  /tasks/:candidateGroupName} : get all the turningEvents associated to candidateGroupName.
+     * {@code GET  /turning-events/open/:candidateGroupName} : get all the turningEvents associated to candidateGroupName.
      *
      * @param candidateGroupName name of the candidate group.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of turningEvents in body.
      */
-    @GetMapping("/tasks/{candidateGroupName}")
-    public List<TurningEvent> getCandidateGroupTasks(@PathVariable String candidateGroupName) {
+    @GetMapping("/turning-events/open/{candidateGroupName}")
+    public List<TurningEvent> getOpenTurningEventsForCandidateGroup(@PathVariable String candidateGroupName) {
         log.debug("REST request to get TurningEvents for a specific candidate group : {}", candidateGroupName);
 
         List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
