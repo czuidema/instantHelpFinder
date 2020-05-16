@@ -14,13 +14,13 @@ export class ICUNurse implements IICUNurse {
     public isAvailable?: boolean,
     public pushSubscription?: IPushSubscription,
     public isPreferredICUNurse?: boolean,
-    public type?: string,
+    public dtype?: string,
     public user?: User
   ) {
     this.id = id;
     this.isAvailable = isAvailable;
     this.isPreferredICUNurse = isPreferredICUNurse || false;
-    this.type = 'ICUNurse';
+    this.dtype = 'ICUNurse';
     this.user = user;
   }
 }
