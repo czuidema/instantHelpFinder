@@ -24,6 +24,7 @@ export class TurningEventService {
   }
 
   acceptTurningEventDoctor(doctorId: number, turningEventId: number): Observable<EntityResponseType> {
+    console.log(doctorId + ' ' + turningEventId);
     return this.http.put<ITurningEvent>(`${this.resourceUrl}/${turningEventId}/accept/doctor`, doctorId, { observe: 'response' });
   }
 

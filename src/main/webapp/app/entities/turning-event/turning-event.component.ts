@@ -63,6 +63,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
       userName = this.account?.login;
     }
     this.userSubscription = this.userService.find(userName).subscribe(user => (this.user = user));
+    this.turningEventService
+      .queryTasks('Doctors')
+      .subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEventsDoctors = res.body || []));
   }
 
   ngOnDestroy(): void {

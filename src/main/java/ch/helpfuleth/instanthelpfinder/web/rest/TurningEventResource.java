@@ -123,8 +123,8 @@ public class TurningEventResource {
         turningEvent.setDoctor(doctor);
 
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
-        String taskId = processInstance.getActivityId();
-        flowableService.completeTask(taskId);
+        Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
+        flowableService.completeTask(task.getId());
     }
 
     /**
@@ -166,9 +166,10 @@ public class TurningEventResource {
         List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
         List<TurningEvent> turningEvents = new ArrayList<TurningEvent>();
         for (Task task : tasks) {
-            Map<String,Object> processVariables = task.getProcessVariables();
-            // get turningEventId from task
-            Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString());
+            String processInstanceId = task.getProcessInstanceId();
+            Map<String,Object> processVariables = flowableService.getProcessInstanceVariables(processInstanceId);
+            Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString()).longValue();
+
             TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
             turningEvents.add(turningEvent);
         }

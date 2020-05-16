@@ -75,4 +75,12 @@ public class FlowableService {
         return runtimeService.createProcessInstanceQuery().variableValueEquals("turningEventId",turningEventId).singleResult();
     }
 
+    public Task getTaskByProcessInstanceId(String processInstanceId) {
+        return taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
+    public Map<String, Object> getProcessInstanceVariables(String processInstanceId) {
+        return runtimeService.getVariables(processInstanceId);
+    }
+
 }
