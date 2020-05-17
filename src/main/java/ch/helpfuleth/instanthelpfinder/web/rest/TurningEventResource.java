@@ -106,25 +106,23 @@ public class TurningEventResource {
             .body(result);
     }
 
-    /**
-     * {@code PUT  /turning-events/:id/accept/doctor} : Accepts a TurningEvent of a doctor.
-     *
-     * @param id of the turningEvent that the doctor accepts.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/turning-events/{id}/accept/doctor")
-    public void acceptTurningEventDoctor(@PathVariable Long id, @RequestBody Long userId) throws URISyntaxException {
+    @PutMapping("/turning-events/doctors/{userId}")
+    public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody Long id, @PathVariable Long userId) {
         log.debug("REST request to update TurningEvent : {}", id);
+        System.out.println("REST API acceptTurningEventDoctor executed.");
 
         // TODO: if TurningEvent does not exist, return not found.
         TurningEvent turningEvent = turningEventRepository.getOne(id);
 
         Doctor doctor = doctorRepository.getOne(userId);
-        turningEvent.setDoctor(doctor);
+        //turningEvent.setDoctor(doctor);
 
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
         Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
         flowableService.completeTask(task.getId());
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
+            .body(turningEvent);
     }
 
     /**

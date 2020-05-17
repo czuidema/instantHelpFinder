@@ -1,6 +1,8 @@
 package ch.helpfuleth.instanthelpfinder.web.rest;
 
+import ch.helpfuleth.instanthelpfinder.domain.Doctor;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
+import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.service.FlowableService;
 import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
@@ -31,17 +33,20 @@ public class TurningEventTestResource {
     FlowableService flowableService;
     TurningEventRepository turningEventRepository;
     TaskService taskService;
+    DoctorRepository doctorRepository;
 
     public TurningEventTestResource(
         RuntimeService runtimeService,
         FlowableService flowableService,
         TurningEventRepository turningEventRepository,
-        TaskService taskService
+        TaskService taskService,
+        DoctorRepository doctorRepository
     ) {
         this.runtimeService = runtimeService;
         this.flowableService = flowableService;
         this.turningEventRepository = turningEventRepository;
         this.taskService = taskService;
+        this.doctorRepository = doctorRepository;
     }
 
     // get tasks for candidate group on the command line
@@ -60,16 +65,17 @@ public class TurningEventTestResource {
 
     // complete task on the command line
     @RequestMapping(value="/tasks/toComplete", method= RequestMethod.GET, produces= MediaType.APPLICATION_JSON_VALUE)
-    public TaskRepresentation completeCandidateGroupTasksSimple(@RequestParam Long turningEventId) throws URISyntaxException {
+    public TaskRepresentation completeCandidateGroupTasksSimple(@RequestParam Long turningEventId, @RequestParam Long doctorId) throws URISyntaxException {
         log.debug("REST request to complete task : {}", turningEventId);
         if (turningEventId == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
+        Doctor doctor = doctorRepository.getOne(doctorId);
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEventId);
 
         Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
-        return new TaskRepresentation(task.getId(), "we do not know", processInstance.getId(), turningEventId);
+        return new TaskRepresentation(task.getId(), "we do not know", processInstance.getId(), turningEvent.getId());
     }
 
     static class TaskRepresentation {

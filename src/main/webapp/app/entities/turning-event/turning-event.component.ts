@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { JhiEventManager } from 'ng-jhipster';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -48,8 +48,15 @@ export class TurningEventComponent implements OnInit, OnDestroy {
 
   acceptTurningEventDoctor(turningEventId: number): void {
     if (this.user != undefined) {
-      this.turningEventService.acceptTurningEventDoctor(this.user.id, turningEventId);
+      this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.user.id, turningEventId));
     }
+  }
+
+  protected subscribeToAcceptResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
+    result.subscribe(
+      () => console.log('success'),
+      () => console.log('error')
+    );
   }
 
   ngOnInit(): void {
