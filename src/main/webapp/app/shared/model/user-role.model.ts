@@ -10,7 +10,13 @@ export interface IUserRole {
 }
 
 export class UserRole implements IUserRole {
-  constructor(public id?: number, public availability?: boolean, public pushSubscription?: IPushSubscription, public user?: User) {
+  constructor(
+    public id?: number,
+    public availability?: boolean,
+    public pushSubscription?: IPushSubscription,
+    public dtype?: string,
+    public user?: User
+  ) {
     this.availability = availability || false;
   }
 }

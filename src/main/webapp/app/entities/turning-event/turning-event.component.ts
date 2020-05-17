@@ -60,7 +60,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadAll();
+    // this.loadAll();
     this.registerChangeInTurningEvents();
 
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
@@ -69,7 +69,10 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     if (this.account?.login != undefined) {
       userName = this.account?.login;
     }
-    this.userSubscription = this.userService.find(userName).subscribe(user => (this.user = user));
+    this.userSubscription = this.userService.find(userName).subscribe(user => {
+      this.user = user;
+      console.log(this.user);
+    });
     this.turningEventService
       .queryTasks('Doctors')
       .subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEventsDoctors = res.body || []));
