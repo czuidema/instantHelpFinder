@@ -69,12 +69,12 @@ public class PushNotificationService {
 //      TODO: add method to PushSubscriptionRepository for selecting Doctor subscriptions
         Collection<PushSubscription> allSubscriptions = pushSubscriptionRepository.findAll();
 
-        String message = "{ \"notification\": {\"title\": \"Patient drehen\", \"body\": \"Zeitfenster: " +
+        String message = "{\"title\": \"Patient drehen\", \"body\": \"Zeitfenster: " +
             (
                 (turningEvent.getDefiniteTimeSlot() != null) ?
                 turningEvent.getDefiniteTimeSlot().toString() :
-                ""
-            ) + "\"} }" ;
+                "unbekannt"
+            ) + "\"}" ;
 
         for (PushSubscription subscription: allSubscriptions) {
 

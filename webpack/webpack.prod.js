@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -30,49 +30,49 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
     },
     module: {
         rules: [
-        {
-            test: /\.scss$/,
-            use: ['to-string-loader', 'css-loader', 'postcss-loader', {
-                loader: 'sass-loader',
-                options: { implementation: sass }
-            }],
-            exclude: /(vendor\.scss|global\.scss)/
-        },
-        {
-            test: /(vendor\.scss|global\.scss)/,
-            use: [
-                {
-                    loader: MiniCssExtractPlugin.loader,
-                    options: {
-                        publicPath: '../'
-                    }
-                },
-                'css-loader',
-                'postcss-loader',
-                {
+            {
+                test: /\.scss$/,
+                use: ['to-string-loader', 'css-loader', 'postcss-loader', {
                     loader: 'sass-loader',
                     options: { implementation: sass }
-                }
-            ]
-        },
-        {
-            test: /\.css$/,
-            use: ['to-string-loader', 'css-loader'],
-            exclude: /(vendor\.css|global\.css)/
-        },
-        {
-            test: /(vendor\.css|global\.css)/,
-            use: [
-                {
-                    loader: MiniCssExtractPlugin.loader,
-                    options: {
-                        publicPath: '../'
+                }],
+                exclude: /(vendor\.scss|global\.scss)/
+            },
+            {
+                test: /(vendor\.scss|global\.scss)/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../'
+                        }
+                    },
+                    'css-loader',
+                    'postcss-loader',
+                    {
+                        loader: 'sass-loader',
+                        options: { implementation: sass }
                     }
-                },
-                'css-loader',
-                'postcss-loader'
-            ]
-        }]
+                ]
+            },
+            {
+                test: /\.css$/,
+                use: ['to-string-loader', 'css-loader'],
+                exclude: /(vendor\.css|global\.css)/
+            },
+            {
+                test: /(vendor\.css|global\.css)/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../'
+                        }
+                    },
+                    'css-loader',
+                    'postcss-loader'
+                ]
+            }]
     },
     optimization: {
         runtimeChunk: false,
@@ -126,12 +126,12 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
         }),
         new MomentLocalesPlugin({
             localesToKeep: [
-                    'de',
-                    'en',
-                    'fr',
-                    'it'
-                    // jhipster-needle-i18n-language-moment-webpack - JHipster will add/remove languages in this array
-                ]
+                'de',
+                'en',
+                'fr',
+                'it'
+                // jhipster-needle-i18n-language-moment-webpack - JHipster will add/remove languages in this array
+            ]
         }),
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
@@ -143,10 +143,10 @@ module.exports = webpackMerge(commonConfig({ env: ENV }), {
             minimize: true,
             debug: false
         }),
-        new WorkboxPlugin.GenerateSW({
-            clientsClaim: true,
-            skipWaiting: true,
-            exclude: [/swagger-ui/]
+        new WorkboxPlugin.InjectManifest({
+            exclude: [/swagger-ui/],
+            swSrc: './src/main/webapp/sw.js',
+            swDest: 'sw.js'
         })
     ],
     mode: 'production'
