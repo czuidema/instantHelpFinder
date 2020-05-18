@@ -14,6 +14,8 @@ import { AccountService } from 'app/core/auth/account.service';
 import { IUser } from 'app/core/user/user.model';
 import { UserService } from 'app/core/user/user.service';
 import { combineAll } from 'rxjs/operators';
+import { UserRoleService } from 'app/entities/user-role/user-role.service';
+import { IUserRole } from 'app/shared/model/user-role.model';
 
 @Component({
   selector: 'jhi-turning-event',
@@ -21,11 +23,12 @@ import { combineAll } from 'rxjs/operators';
 })
 export class TurningEventComponent implements OnInit, OnDestroy {
   turningEvents?: ITurningEvent[];
-  turningEventsDoctors?: ITurningEvent[];
+  openTurningEvents?: ITurningEvent[];
+  inboxEventSubscriber?: Subscription;
   eventSubscriber?: Subscription;
   account: Account | null = null;
   authSubscription?: Subscription;
-  user?: IUser;
+  userRole?: IUserRole;
   userSubscription?: Subscription;
 
   tabToggle: boolean = true;
@@ -39,22 +42,30 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     protected eventManager: JhiEventManager,
     protected modalService: NgbModal,
     protected accountService: AccountService,
-    protected userService: UserService
+    protected userRoleService: UserRoleService
   ) {}
 
   loadAll(): void {
     this.turningEventService.query().subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEvents = res.body || []));
   }
 
-  acceptTurningEventDoctor(turningEventId: number): void {
-    if (this.user != undefined) {
-      this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.user.id, turningEventId));
+  loadOpenTurningEvents(dtype: string): void {
+    this.turningEventService.queryTasks(dtype).subscribe((res: HttpResponse<ITurningEvent[]>) => (this.openTurningEvents = res.body || []));
+  }
+
+  acceptTurningEvent(turningEventId: number): void {
+    if (this.userRole != undefined && this.userRole.user != undefined) {
+      if (this.userRole.dtype === 'Doctor') {
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.user.id, turningEventId));
+      } else if (this.userRole.dtype === 'Assistant') {
+        // REST API for assistant
+      }
     }
   }
 
   protected subscribeToAcceptResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
     result.subscribe(
-      () => console.log('success'),
+      () => this.eventManager.broadcast('openTurningEventListModification'),
       () => console.log('error')
     );
   }
@@ -65,22 +76,28 @@ export class TurningEventComponent implements OnInit, OnDestroy {
 
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
     // TODO: needs to be simplified!
-    let userName: string = '';
+    let login: string = '';
     if (this.account?.login != undefined) {
-      userName = this.account?.login;
+      login = this.account?.login;
     }
-    this.userSubscription = this.userService.find(userName).subscribe(user => {
-      this.user = user;
-      console.log(this.user);
+    this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
+      this.userRole = res.body || undefined;
+      if (this.userRole != undefined) {
+        if (this.userRole.dtype === 'Doctor') {
+          this.loadOpenTurningEvents('Doctor');
+        } else if (this.userRole.dtype === 'Assistant') {
+          this.loadOpenTurningEvents('Assistant');
+        }
+      }
     });
-    this.turningEventService
-      .queryTasks('Doctors')
-      .subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEventsDoctors = res.body || []));
   }
 
   ngOnDestroy(): void {
     if (this.eventSubscriber) {
       this.eventManager.destroy(this.eventSubscriber);
+    }
+    if (this.inboxEventSubscriber) {
+      this.eventManager.destroy(this.inboxEventSubscriber);
     }
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
@@ -109,6 +126,11 @@ export class TurningEventComponent implements OnInit, OnDestroy {
 
   registerChangeInTurningEvents(): void {
     this.eventSubscriber = this.eventManager.subscribe('turningEventListModification', () => this.loadAll());
+    this.inboxEventSubscriber = this.eventManager.subscribe('openTurningEventListModification', () => {
+      if (this.userRole !== undefined && this.userRole.dtype !== undefined) {
+        this.loadOpenTurningEvents(this.userRole?.dtype);
+      }
+    });
   }
 
   delete(turningEvent: ITurningEvent): void {
