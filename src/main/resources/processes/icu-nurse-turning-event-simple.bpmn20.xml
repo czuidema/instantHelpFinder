@@ -46,7 +46,7 @@
 
     <sequenceFlow id="Flow_101hdy3" sourceRef="Activity_03cnjq4" targetRef="Activity_0vk7l8u"/>
 
-    <userTask id="Activity_0vk7l8u" name="Pick one time slot" flowable:candidateGroups="Doctors">
+    <userTask id="Activity_0vk7l8u" name="Pick one time slot" flowable:candidateGroups="Doctor">
       <incoming>Flow_101hdy3</incoming>
       <outgoing>Flow_1yqvohe</outgoing>
     </userTask>
@@ -61,7 +61,7 @@
 
     <sequenceFlow id="Flow_1ivt4cj" sourceRef="Activity_0ihbqbl" targetRef="Activity_0lruncs"/>
 
-    <userTask id="Activity_0lruncs" name="Find three assistants to participate" flowable:candidateGroups="Assistants">
+    <userTask id="Activity_0lruncs" name="Find three assistants to participate" flowable:candidateGroups="Assistant">
       <incoming>Flow_1ivt4cj</incoming>
       <outgoing>Flow_1drg8p8</outgoing>
     </userTask>
