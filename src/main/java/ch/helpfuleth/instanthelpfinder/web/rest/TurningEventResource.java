@@ -109,12 +109,12 @@ public class TurningEventResource {
     @PutMapping("/turning-events/doctors/{userId}")
     public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody Long id, @PathVariable Long userId) {
         log.debug("REST request to update TurningEvent : {}", id);
-        System.out.println("REST API acceptTurningEventDoctor executed.");
 
         // TODO: if TurningEvent does not exist, return not found.
         TurningEvent turningEvent = turningEventRepository.getOne(id);
 
         Doctor doctor = doctorRepository.getOne(userId);
+        // TODO: REST API fails if this is uncommented!
         //turningEvent.setDoctor(doctor);
 
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
