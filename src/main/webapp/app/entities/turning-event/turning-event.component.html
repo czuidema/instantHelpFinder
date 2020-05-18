@@ -22,7 +22,7 @@
     <div class="row">
         <div class="col" [class.d-none]="!tabToggle" [class.d-md-block]="!tabToggle">
             <h5>  Schedule <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon> </h5>
-            <div class="card">
+            <div class="card" *ngIf="turningEvents?.length > 0">
                 <div class="list-group list-group-flush  accordion" id="accordionLeft">
 
                     <div *ngFor="let turningEvent of turningEvents ;trackBy: trackId">
@@ -80,10 +80,10 @@
         <div class="col"  [class.d-none]="tabToggle" [class.d-md-block]="tabToggle">
             <h5>Inbox <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon></h5>
 
-            <div class="card">
+            <div class="card" *ngIf="openTurningEvents?.length > 0">
                 <div class="list-group list-group-flush accordion" id="accordionRight">
 
-                    <div *ngFor="let turningEvent of turningEventsDoctors ;trackBy: trackId">
+                    <div *ngFor="let turningEvent of openTurningEvents ;trackBy: trackId">
                         <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">18:20 - 18:30</h5>
@@ -100,7 +100,7 @@
                                         <span class="d-none d-md-inline">Decline</span>
                                     </button>-->
 
-                                    <button type="submit" (click)="acceptTurningEventDoctor(turningEvent.id)"
+                                    <button type="submit" (click)="acceptTurningEvent(turningEvent.id)"
                                             class="btn btn-success btn-sm">
                                         <span class="d-none d-md-inline">Join</span>
                                     </button>
