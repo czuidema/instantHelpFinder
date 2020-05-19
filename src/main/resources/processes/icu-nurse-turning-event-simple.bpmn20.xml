@@ -74,7 +74,14 @@
       <outgoing>Flow_005atu4</outgoing>
     </serviceTask>
 
-    <sequenceFlow id="Flow_005atu4" sourceRef="Activity_0dab7q2" targetRef="Event_1iyvwnl"/>
+    <sequenceFlow id="Flow_005atu4" sourceRef="Activity_0dab7q2" targetRef="Activity_05gfdzh"/>
+
+      <userTask id="Activity_05gfdzh" name="Turn patient" flowable:candidateGroups="Participant">
+          <incoming>Flow_005atu4</incoming>
+          <outgoing>Flow_164mwmw</outgoing>
+      </userTask>
+
+      <sequenceFlow id="Flow_164mwmw" sourceRef="Activity_05gfdzh" targetRef="Event_1iyvwnl"/>
 
     <endEvent id="Event_1iyvwnl">
       <incoming>Flow_164mwmw</incoming>
