@@ -54,10 +54,10 @@
 
                 <div class="form-group">
                     <label>Possible Time Slots</label>
-                    <div class="list-group list-group-horizontal-md">
+                    <div class="list-group list-group-horizontal-md justify-content-between">
                         <div class="custom-control custom-checkbox" *ngFor="let timeSlot of potentialTimeSlots; let index = index;">
-                            <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}" [formControl]="getTimeSlotCtrl(index)">
-                            <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start.toLocaleTimeString() + ' - ' + timeSlot.end.toLocaleTimeString()}}</label>
+                            <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}" [attr.formControl]="getTimeSlotCtrl(index)">
+                            <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + timeSlot.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}}</label>
                         </div>
                         <!--<button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[0]" (click)="ChooseTime1()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>-->
                         <!--<button type="button" class="list-group-item list-group-item-action col-md-2" [class.active] = "timeConditions[1]" (click)="ChooseTime2()">{{date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2)}}</button>-->
