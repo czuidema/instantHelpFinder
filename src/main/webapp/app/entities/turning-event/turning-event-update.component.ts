@@ -33,6 +33,7 @@ export class TurningEventUpdateComponent implements OnInit {
   timeConditions: boolean[] = [false, false, false, false, false, false];
 
   preferredTime = moment();
+  timeStamp = moment().toDate();
   potentialTimeSlots: ITimeSlot[] = [];
 
   login: String = '';
@@ -90,6 +91,14 @@ export class TurningEventUpdateComponent implements OnInit {
 
       this.assistantService.query().subscribe((res: HttpResponse<IAssistant[]>) => (this.assistants = res.body || []));
     });
+
+    for (let i = 0; i < 5; i++) {
+      this.potentialTimeSlots.push(new TimeSlot(this.preferredTime.toDate(), this.preferredTime.add(10, 'minute').toDate(), false));
+      (this.editForm.get('potentialTimeSlotsCtrl') as FormArray).push(
+        new FormControl({ value: false, disabled: !this.editForm.get('id')!.value })
+      );
+    }
+
     this.editForm.get('preferredTimeCtrl')!.valueChanges.subscribe(value => {
       const time = value.split(':');
       const preferredTime = moment()
@@ -97,10 +106,10 @@ export class TurningEventUpdateComponent implements OnInit {
         .minute(+time[1])
         .second(0);
       for (let i = 0; i < 5; i++) {
-        this.potentialTimeSlots.push(new TimeSlot(preferredTime.toDate(), preferredTime.add(10, 'minute').toDate(), false));
-        (this.editForm.get('potentialTimeSlotsCtrl') as FormArray).push(
-          new FormControl({ value: false, disabled: !this.editForm.get('id')!.value })
-        );
+        this.potentialTimeSlots[i] = new TimeSlot(preferredTime.toDate(), preferredTime.add(10, 'minute').toDate(), false);
+        //(this.editForm.get('potentialTimeSlotsCtrl') as FormArray).push(
+        //  new FormControl({ value: false, disabled: !this.editForm.get('id')!.value })
+        //);
       }
     });
   }
