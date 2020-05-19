@@ -50,7 +50,7 @@
                 <div class="list-group list-group-horizontal-md">
                     <div class="custom-control custom-checkbox" *ngFor="let timeSlot of turningEvent.potentialTimeSlots; let index = index;">
                         <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}">
-                        <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start.toLocaleTimeString() + ' - ' + timeSlot.end.toLocaleTimeString()}}</label>
+                        <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start}}</label>
                     </div>
                 </div>
 

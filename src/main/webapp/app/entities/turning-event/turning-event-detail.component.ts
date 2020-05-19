@@ -35,9 +35,9 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
 
   loadTurningEvent(): void {
     if (this.turningEvent != null && this.turningEvent.id != undefined) {
-      this.turningEventService
-        .find(this.turningEvent.id)
-        .subscribe((res: HttpResponse<ITurningEvent>) => (this.turningEvent = res.body || null));
+      this.turningEventService.find(this.turningEvent.id).subscribe((res: HttpResponse<ITurningEvent>) => {
+        this.turningEvent = res.body || null;
+      });
     }
   }
 
