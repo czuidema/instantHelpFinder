@@ -16,6 +16,7 @@ import { UserService } from 'app/core/user/user.service';
 import { combineAll } from 'rxjs/operators';
 import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { IUserRole } from 'app/shared/model/user-role.model';
+import { IAssistant } from 'app/shared/model/assistant.model';
 
 @Component({
   selector: 'jhi-turning-event',
@@ -58,8 +59,20 @@ export class TurningEventComponent implements OnInit, OnDestroy {
       if (this.userRole.dtype === 'Doctor') {
         this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEventId));
       } else if (this.userRole.dtype === 'Assistant') {
-        // REST API for assistant
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEventId));
       }
+    }
+  }
+
+  isMyTurningEvent(turningEvent: ITurningEvent): boolean {
+    if (this.userRole === undefined || this.userRole.id === undefined) {
+      return false;
+    } else if (turningEvent.doctor?.id === this.userRole?.id) {
+      return true;
+    } else if (turningEvent.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)) {
+      return true;
+    } else {
+      return false;
     }
   }
 

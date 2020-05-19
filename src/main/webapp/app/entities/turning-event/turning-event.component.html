@@ -100,7 +100,7 @@
                                         <span class="d-none d-md-inline">Decline</span>
                                     </button>-->
 
-                                    <button type="submit" (click)="acceptTurningEvent(turningEvent.id)"
+                                    <button *ngIf="!isMyTurningEvent(turningEvent)" type="submit" (click)="acceptTurningEvent(turningEvent.id)"
                                             class="btn btn-success btn-sm">
                                         <span class="d-none d-md-inline">Join</span>
                                     </button>
