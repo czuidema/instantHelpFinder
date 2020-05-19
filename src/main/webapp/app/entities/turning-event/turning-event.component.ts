@@ -163,8 +163,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     // this.loadAll();
     this.registerChangeInTurningEvents();
 
+    // ******************************************
+    // TODO: This userRole check should be global
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
-    // TODO: needs to be simplified!
     let login: string = '';
     if (this.account?.login != undefined) {
       login = this.account?.login;
@@ -182,6 +183,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
         }
       }
     });
+    // *******************************************
   }
 
   ngOnDestroy(): void {

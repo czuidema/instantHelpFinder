@@ -30,22 +30,29 @@
                     <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
                     <dd>
                         <div *ngIf="turningEvent.doctor">
-                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor?.id }}</a>
+                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor.user ? turningEvent.doctor.user.firstName : ''}} {{ turningEvent.doctor.user ? turningEvent.doctor.user.lastName : ''}}</a>
                         </div>
                     </dd>
                     <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
                     <dd>
                         <div *ngIf="turningEvent.icuNurse">
-                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse?.id }}</a>
+                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.firstName : ''}} {{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.lastName : ''}}</a>
                         </div>
                     </dd>
                     <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
                     <dd>
-                        <span *ngFor="let assistants of turningEvent.assistants; let last = last">
-                            <a [routerLink]="['/assistant', assistants?.id, 'view']">{{ assistants.id }}</a>{{ last ? '' : ', ' }}
+                        <span *ngFor="let assistant of turningEvent.assistants; let last = last">
+                            <a [routerLink]="['/assistant', assistant?.id, 'view']">{{ assistant.user ? assistant.user.firstName : '' }} {{ assistant.user ? assistant.user.lastName : '' }}</a>{{ last ? '' : ', ' }}
                         </span>
                     </dd>
                 </dl>
+
+                <div class="list-group list-group-horizontal-md">
+                    <div class="custom-control custom-checkbox" *ngFor="let timeSlot of turningEvent.potentialTimeSlots; let index = index;">
+                        <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}">
+                        <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start.toLocaleTimeString() + ' - ' + timeSlot.end.toLocaleTimeString()}}</label>
+                    </div>
+                </div>
 
                 <button type="submit"
                         (click)="previousState()"
@@ -53,10 +60,10 @@
                     <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
                 </button>
 
-                <button type="button"
-                        [routerLink]="['/turning-event', turningEvent.id, 'edit']"
-                        class="btn btn-primary">
-                    <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+                <button *ngIf="!isMyTurningEvent(turningEvent)" type="button"
+                        (click)="acceptTurningEvent(turningEvent.id)"
+                        class="btn btn-success">
+                    <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span >Join</span>
                 </button>
             </div>
         </div>

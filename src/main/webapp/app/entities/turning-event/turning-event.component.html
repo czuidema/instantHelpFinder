@@ -29,9 +29,8 @@
                         <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">18:20 - 18:30</h5>
-                                <small><span class="badge badge-pill badge-warning">2</span></small>
                             </div>
-                            <p class="mb-1">Bed: 489, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
+                            <p class="mb-1">Patient: {{turningEvent.patientName}}, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
                         </a>
                         <div [id]="'collapse' + turningEvent.id" class="collapse" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionLeft">
                             <div class="card-body ">
@@ -84,52 +83,14 @@
                 <div class="list-group list-group-flush accordion" id="accordionRight">
 
                     <div *ngFor="let turningEvent of turningEventsInbox ;trackBy: trackId">
-                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" [routerLink]="['/turning-event', turningEvent.id, 'view']">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">18:20 - 18:30</h5>
-                                <small><span class="badge badge-pill badge-warning">2</span></small>
                             </div>
-                            <p class="mb-1">Bed: 489, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
+                            <p class="mb-1">Patient: {{turningEvent.patientName}}, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
                         </a>
-                        <div [id]="'collapse' + turningEvent.id" class="collapse" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionRight">
-                            <div class="card-body">
-
-                                <div class="btn-group float-right">
-                                    <!--<button type="submit" (click)="delete(turningEvent)"
-                                            class="btn btn-danger btn-sm">
-                                        <span class="d-none d-md-inline">Decline</span>
-                                    </button>-->
-
-                                    <button *ngIf="!isMyTurningEvent(turningEvent)" type="submit" (click)="acceptTurningEvent(turningEvent.id)"
-                                            class="btn btn-success btn-sm">
-                                        <span class="d-none d-md-inline">Join</span>
-                                    </button>
-                                </div>
-
-                                <dl class="row-md jh-entity-details">
-                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
-                                    <dd>
-                                        <div *ngIf="turningEvent.doctor">
-                                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor.user ? turningEvent.doctor.user.firstName : ''}} {{ turningEvent.doctor.user ? turningEvent.doctor.user.lastName : ''}}</a>
-                                        </div>
-                                    </dd>
-                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
-                                    <dd>
-                                        <div *ngIf="turningEvent.icuNurse">
-                                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.firstName : ''}} {{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.lastName : ''}}</a>
-                                        </div>
-                                    </dd>
-                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
-                                    <dd>
-                                        <span *ngFor="let assistant of turningEvent.assistants; let last = last">
-                                            <a [routerLink]="['/assistant', assistant?.id, 'view']">{{ assistant.user ? assistant.user.firstName : '' }} {{ assistant.user ? assistant.user.lastName : '' }}</a>{{ last ? '' : ', ' }}
-                                        </span>
-                                    </dd>
-                                </dl>
-
-                            </div>
-                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -139,47 +100,15 @@
                 <div class="list-group list-group-flush accordion" id="accordionRightTwo">
 
                     <div *ngFor="let turningEvent of turningEventsPending ;trackBy: trackId">
-                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" [routerLink]="['/turning-event', turningEvent.id, 'view']">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">18:20 - 18:30</h5>
                                 <small><span class="badge badge-pill badge-warning">2</span></small>
                             </div>
                             <p class="mb-1">Bed: 489, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
                         </a>
-                        <div [id]="'collapse' + turningEvent.id" class="collapse" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionRightTwo">
-                            <div class="card-body">
-
-                                <div class="btn-group float-right">
-                                    <!--<button type="submit" (click)="delete(turningEvent)"
-                                            class="btn btn-danger btn-sm">
-                                        <span class="d-none d-md-inline">Decline</span>
-                                    </button>-->
-                                </div>
-
-                                <dl class="row-md jh-entity-details">
-                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
-                                    <dd>
-                                        <div *ngIf="turningEvent.doctor">
-                                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor.user ? turningEvent.doctor.user.firstName : ''}} {{ turningEvent.doctor.user ? turningEvent.doctor.user.lastName : ''}}</a>
-                                        </div>
-                                    </dd>
-                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
-                                    <dd>
-                                        <div *ngIf="turningEvent.icuNurse">
-                                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.firstName : ''}} {{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.lastName : ''}}</a>
-                                        </div>
-                                    </dd>
-                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
-                                    <dd>
-                                        <span *ngFor="let assistant of turningEvent.assistants; let last = last">
-                                            <a [routerLink]="['/assistant', assistant?.id, 'view']">{{ assistant.user ? assistant.user.firstName : '' }} {{ assistant.user ? assistant.user.lastName : '' }}</a>{{ last ? '' : ', ' }}
-                                        </span>
-                                    </dd>
-                                </dl>
-
-                            </div>
-                        </div>
                     </div>
+
                 </div>
             </div>
 
