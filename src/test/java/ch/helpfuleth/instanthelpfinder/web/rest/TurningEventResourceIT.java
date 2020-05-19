@@ -4,6 +4,7 @@ import ch.helpfuleth.instanthelpfinder.InstantHelpFinderApp;
 import ch.helpfuleth.instanthelpfinder.domain.Doctor;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.domain.enumeration.EPriority;
+import ch.helpfuleth.instanthelpfinder.repository.AssistantRepository;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.service.FlowableService;
@@ -79,6 +80,12 @@ public class TurningEventResourceIT {
 
     @Mock
     private DoctorRepository doctorRepositoryMock;
+
+    @Autowired
+    private AssistantRepository assistantRepository;
+
+    @Mock
+    private AssistantRepository assistantRepositoryMock;
 
     @Autowired
     private EntityManager em;
@@ -187,7 +194,7 @@ public class TurningEventResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllTurningEventsWithEagerRelationshipsIsEnabled() throws Exception {
-        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock);
+        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock, assistantRepositoryMock);
         when(turningEventRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         restTurningEventMockMvc.perform(get("/api/turning-events?eagerload=true"))
@@ -198,7 +205,7 @@ public class TurningEventResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllTurningEventsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock);
+        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock, assistantRepositoryMock);
         when(turningEventRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         restTurningEventMockMvc.perform(get("/api/turning-events?eagerload=true"))

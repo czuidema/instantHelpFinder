@@ -1,7 +1,9 @@
 package ch.helpfuleth.instanthelpfinder.web.rest;
 
+import ch.helpfuleth.instanthelpfinder.domain.Assistant;
 import ch.helpfuleth.instanthelpfinder.domain.Doctor;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
+import ch.helpfuleth.instanthelpfinder.repository.AssistantRepository;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.service.FlowableService;
@@ -45,17 +47,20 @@ public class TurningEventResource {
     private final TurningEventService turningEventService;
     private final FlowableService flowableService;
     private final DoctorRepository doctorRepository;
+    private final AssistantRepository assistantRepository;
 
     public TurningEventResource(
         TurningEventRepository turningEventRepository,
         TurningEventService turningEventService,
         FlowableService flowableService,
-        DoctorRepository doctorRepository
+        DoctorRepository doctorRepository,
+        AssistantRepository assistantRepository
         ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
         this.flowableService = flowableService;
         this.doctorRepository = doctorRepository;
+        this.assistantRepository = assistantRepository;
     }
 
     /**
@@ -106,18 +111,41 @@ public class TurningEventResource {
             .body(result);
     }
 
-    @PutMapping("/turning-events/doctors/{userId}")
-    public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody Long id, @PathVariable Long userId) {
+    @PutMapping("/turning-events/doctors/{userRoleId}")
+    public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody Long id, @PathVariable Long userRoleId) {
         log.debug("REST request to update TurningEvent : {}", id);
 
         TurningEvent turningEvent = turningEventRepository.getOne(id);
 
-        Doctor doctor = doctorRepository.getOne(userId);
+        Doctor doctor = doctorRepository.getOne(userRoleId);
         turningEvent.setDoctor(doctor);
 
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
         Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
         flowableService.completeTask(task.getId());
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
+            .body(turningEvent);
+    }
+
+    @PutMapping("/turning-events/assistants/{userRoleId}")
+    public ResponseEntity<TurningEvent> acceptTurningEventAssistant(@RequestBody Long id, @PathVariable Long userRoleId) {
+        log.debug("REST request to update TurningEvent : {}", id);
+
+        TurningEvent turningEvent = turningEventRepository.getOne(id);
+
+        Assistant assistant =  assistantRepository.getOne(userRoleId);
+
+        // TODO: Return an error, if an assistant is added twice.
+        Set<Assistant> assistants = turningEvent.getAssistants() ;
+        assistants.add(assistant);
+        turningEvent.setAssistants(assistants);
+
+        if (assistants.size() >= 3) {
+            ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
+            Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
+            flowableService.completeTask(task.getId());
+        }
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
             .body(turningEvent);
