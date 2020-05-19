@@ -54,9 +54,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   }
 
   acceptTurningEvent(turningEventId: number): void {
-    if (this.userRole != undefined && this.userRole.user != undefined) {
+    if (this.userRole != undefined && this.userRole.id != undefined) {
       if (this.userRole.dtype === 'Doctor') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.user.id, turningEventId));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEventId));
       } else if (this.userRole.dtype === 'Assistant') {
         // REST API for assistant
       }
