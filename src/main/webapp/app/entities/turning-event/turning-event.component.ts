@@ -24,7 +24,10 @@ import { IAssistant } from 'app/shared/model/assistant.model';
 })
 export class TurningEventComponent implements OnInit, OnDestroy {
   turningEvents?: ITurningEvent[];
-  openTurningEvents?: ITurningEvent[];
+  turningEventsInbox?: ITurningEvent[];
+  turningEventsSchedule?: ITurningEvent[];
+  turningEventsPending?: ITurningEvent[];
+
   inboxEventSubscriber?: Subscription;
   eventSubscriber?: Subscription;
   account: Account | null = null;
@@ -50,8 +53,81 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     this.turningEventService.query().subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEvents = res.body || []));
   }
 
-  loadOpenTurningEvents(dtype: string): void {
-    this.turningEventService.queryTasks(dtype).subscribe((res: HttpResponse<ITurningEvent[]>) => (this.openTurningEvents = res.body || []));
+  loadTurningEventsInbox(dtype: string): void {
+    if (dtype === 'Assistant') {
+      let turningEventsInboxCache$: ITurningEvent[] = [];
+      this.turningEventService.queryTasks(dtype).subscribe((res: HttpResponse<ITurningEvent[]>) => {
+        turningEventsInboxCache$ = res.body || [];
+        this.turningEventsInbox = turningEventsInboxCache$.filter(
+          (turningEvent: ITurningEvent) => !turningEvent.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)
+        );
+      });
+    } else {
+      this.turningEventService
+        .queryTasks(dtype)
+        .subscribe((res: HttpResponse<ITurningEvent[]>) => (this.turningEventsInbox = res.body || []));
+    }
+  }
+
+  loadTurningEventsSchedule(): void {
+    let turningEventsScheduleCache$: ITurningEvent[] = [];
+    this.turningEventService.queryTasks('Participant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
+      turningEventsScheduleCache$ = res.body || [];
+      console.log(turningEventsScheduleCache$);
+      if (this.userRole === undefined || this.userRole.id === undefined) {
+        console.log('userRole or userRole.id is undefined.');
+      } else if (this.userRole?.dtype === 'ICUNurse') {
+        this.turningEventsSchedule = turningEventsScheduleCache$.filter(
+          (turningEvent: ITurningEvent) => turningEvent.icuNurse?.id === this.userRole?.id
+        );
+      } else if (this.userRole?.dtype === 'Doctor') {
+        this.turningEventsSchedule = turningEventsScheduleCache$.filter(
+          (turningEvent: ITurningEvent) => turningEvent.doctor?.id === this.userRole?.id
+        );
+      } else if (this.userRole?.dtype === 'Assistant') {
+        this.turningEventsSchedule = turningEventsScheduleCache$.filter((turningEvent: ITurningEvent) =>
+          turningEvent.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)
+        );
+      }
+    });
+  }
+
+  loadTurningEventsPending(): void {
+    if (this.userRole === undefined || this.userRole.id === undefined) {
+      console.log('userRole or userRole.id is undefined.');
+    } else if (this.userRole?.dtype === 'ICUNurse') {
+      let turningEventsDoctorCache$: ITurningEvent[] = [];
+      let turningEventsAssistantCache$: ITurningEvent[] = [];
+      this.turningEventService.queryTasks('Doctor').subscribe((res: HttpResponse<ITurningEvent[]>) => {
+        turningEventsDoctorCache$ = res.body || [];
+        this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
+          turningEventsAssistantCache$ = res.body || [];
+          turningEventsDoctorCache$ = turningEventsDoctorCache$.filter(
+            (turningEvent: ITurningEvent) => turningEvent.icuNurse?.id === this.userRole?.id
+          );
+          turningEventsAssistantCache$ = turningEventsAssistantCache$.filter(
+            (turningEvent: ITurningEvent) => turningEvent.icuNurse?.id === this.userRole?.id
+          );
+          this.turningEventsPending = [...turningEventsDoctorCache$, ...turningEventsAssistantCache$];
+        });
+      });
+    } else if (this.userRole?.dtype === 'Doctor') {
+      let turningEventsAssistantCache$: ITurningEvent[] = [];
+      this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
+        turningEventsAssistantCache$ = res.body || [];
+        this.turningEventsPending = turningEventsAssistantCache$.filter(
+          (turningEvent: ITurningEvent) => turningEvent.doctor?.id === this.userRole?.id
+        );
+      });
+    } else if (this.userRole?.dtype === 'Assistant') {
+      let turningEventsAssistantCache$: ITurningEvent[] = [];
+      this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
+        turningEventsAssistantCache$ = res.body || [];
+        this.turningEventsPending = turningEventsAssistantCache$.filter((turningEvent: ITurningEvent) =>
+          turningEvent.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)
+        );
+      });
+    }
   }
 
   acceptTurningEvent(turningEventId: number): void {
@@ -95,11 +171,14 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     }
     this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
       this.userRole = res.body || undefined;
+      console.log(this.userRole);
       if (this.userRole != undefined) {
+        this.loadTurningEventsSchedule();
+        this.loadTurningEventsPending();
         if (this.userRole.dtype === 'Doctor') {
-          this.loadOpenTurningEvents('Doctor');
+          this.loadTurningEventsInbox('Doctor');
         } else if (this.userRole.dtype === 'Assistant') {
-          this.loadOpenTurningEvents('Assistant');
+          this.loadTurningEventsInbox('Assistant');
         }
       }
     });
@@ -141,7 +220,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     this.eventSubscriber = this.eventManager.subscribe('turningEventListModification', () => this.loadAll());
     this.inboxEventSubscriber = this.eventManager.subscribe('openTurningEventListModification', () => {
       if (this.userRole !== undefined && this.userRole.dtype !== undefined) {
-        this.loadOpenTurningEvents(this.userRole?.dtype);
+        this.loadTurningEventsInbox(this.userRole?.dtype);
+        this.loadTurningEventsPending();
+        this.loadTurningEventsSchedule();
       }
     });
   }
