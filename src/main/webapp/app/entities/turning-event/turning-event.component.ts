@@ -130,12 +130,12 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     }
   }
 
-  acceptTurningEvent(turningEventId: number): void {
-    if (this.userRole != undefined && this.userRole.id != undefined) {
+  acceptTurningEvent(turningEvent: ITurningEvent): void {
+    if (this.userRole != undefined && this.userRole.id != undefined && turningEvent.id !== undefined) {
       if (this.userRole.dtype === 'Doctor') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEventId));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEventId));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEvent.id));
       }
     }
   }

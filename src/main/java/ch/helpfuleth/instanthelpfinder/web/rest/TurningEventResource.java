@@ -112,20 +112,23 @@ public class TurningEventResource {
     }
 
     @PutMapping("/turning-events/doctors/{userRoleId}")
-    public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody Long id, @PathVariable Long userRoleId) {
-        log.debug("REST request to update TurningEvent : {}", id);
+    public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody TurningEvent turningEvent, @PathVariable Long userRoleId) throws URISyntaxException {
+        log.debug("REST request to update TurningEvent : {}", turningEvent);
+        if (turningEvent.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
 
-        TurningEvent turningEvent = turningEventRepository.getOne(id);
+        TurningEvent result = turningEventService.update(turningEvent);
 
         Doctor doctor = doctorRepository.getOne(userRoleId);
         turningEvent.setDoctor(doctor);
 
-        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
+        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEvent.getId());
         Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
         flowableService.completeTask(task.getId());
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
-            .body(turningEvent);
+            .body(result);
     }
 
     @PutMapping("/turning-events/assistants/{userRoleId}")
