@@ -11,13 +11,17 @@ import { Account } from 'app/core/user/account.model';
 import { AccountService } from 'app/core/auth/account.service';
 import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { IAssistant } from 'app/shared/model/assistant.model';
+import { ITimeSlot, TimeSlot } from 'app/shared/model/time-slot.model';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'jhi-turning-event-detail',
   templateUrl: './turning-event-detail.component.html'
 })
 export class TurningEventDetailComponent implements OnInit, OnDestroy {
+  isSaving = false;
   turningEvent: ITurningEvent | null = null;
+  potentialTimeSlots: ITimeSlot[] = [];
 
   // TODO: This userRole should be global
   userRole?: IUserRole;
@@ -25,12 +29,17 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   authSubscription?: Subscription;
   eventSubscriber?: Subscription;
 
+  pickTimeSlotsForm = this.fb.group({
+    potentialTimeSlotsCtrl: this.fb.array([])
+  });
+
   constructor(
     protected activatedRoute: ActivatedRoute,
     protected turningEventService: TurningEventService,
     protected eventManager: JhiEventManager,
     protected accountService: AccountService,
-    protected userRoleService: UserRoleService
+    protected userRoleService: UserRoleService,
+    private fb: FormBuilder
   ) {}
 
   loadTurningEvent(): void {
@@ -42,7 +51,19 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.activatedRoute.data.subscribe(({ turningEvent }) => (this.turningEvent = turningEvent));
+    this.activatedRoute.data.subscribe(({ turningEvent }) => {
+      this.turningEvent = turningEvent;
+      this.potentialTimeSlots = turningEvent.potentialTimeSlots
+        ? turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
+            pts.start = new Date(pts.start ? pts.start : '');
+            pts.end = new Date(pts.end ? pts.end : '');
+            return pts;
+          })
+        : [];
+
+      this.createFormInputs(this.potentialTimeSlots);
+    });
+
     this.registerChangeInTurningEvent();
 
     // ******************************************
@@ -57,6 +78,56 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
     });
     // *******************************************
   }
+
+  // TimeSlot Form
+
+  createFormInputs(potentialTimeSlots: ITimeSlot[]) {
+    this.pickTimeSlotsForm = this.fb.group({
+      potentialTimeSlotsCtrl: this.createFormArray(potentialTimeSlots)
+    });
+  }
+
+  createFormArray(potentialTimeSlots: ITimeSlot[]) {
+    const arr = potentialTimeSlots.map(timeSlot => {
+      return new FormControl(timeSlot.isSelected || false);
+    });
+    return new FormArray(arr);
+  }
+
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
+    result.subscribe(
+      () => this.onSaveSuccess(),
+      () => this.onSaveError()
+    );
+  }
+
+  protected onSaveSuccess(): void {
+    this.isSaving = false;
+    this.previousState();
+  }
+
+  protected onSaveError(): void {
+    this.isSaving = false;
+  }
+
+  getTimeSlotCtrl(i: number): AbstractControl | null {
+    if (this.pickTimeSlotsForm !== undefined) {
+      return (this.pickTimeSlotsForm.get('potentialTimeSlotsCtrl') as FormArray).at(i);
+    } else {
+      console.log('this.pickTimSlotsForm is undefined.');
+      return null;
+    }
+  }
+
+  save(): void {
+    this.isSaving = true;
+    if (this.turningEvent?.id !== undefined) {
+      this.turningEvent.potentialTimeSlots = this.potentialTimeSlots;
+      this.subscribeToSaveResponse(this.turningEventService.update(this.turningEvent));
+    }
+  }
+
+  //
 
   acceptTurningEvent(turningEventId: number | undefined): void {
     if (this.userRole != undefined && this.userRole.id != undefined && turningEventId != undefined) {
@@ -78,7 +149,7 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   isMyTurningEvent(turningEvent: ITurningEvent | undefined): boolean {
     if (this.userRole === undefined || this.userRole.id === undefined || turningEvent === undefined) {
       return false;
-    } else if (turningEvent.doctor?.id === this.userRole?.id) {
+    } else if (turningEvent.doctor?.id === this.userRole?.id || turningEvent.icuNurse?.id === this.userRole?.id) {
       return true;
     } else if (turningEvent.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)) {
       return true;

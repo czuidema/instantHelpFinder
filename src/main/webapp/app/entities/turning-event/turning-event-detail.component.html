@@ -47,12 +47,16 @@
                     </dd>
                 </dl>
 
-                <div class="list-group list-group-horizontal-md">
-                    <div class="custom-control custom-checkbox" *ngFor="let timeSlot of turningEvent.potentialTimeSlots; let index = index;">
-                        <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}">
-                        <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start}}</label>
+                <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="pickTimeSlotsForm">
+
+                    <div class="list-group list-group-horizontal-md">
+                        <div class="custom-control custom-checkbox" *ngFor="let timeSlot of potentialTimeSlots; let index = index;">
+                            <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}" [formControl]="getTimeSlotCtrl(index)">
+                            <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + timeSlot.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}}</label>
+                        </div>
                     </div>
-                </div>
+
+                </form>
 
                 <button type="submit"
                         (click)="previousState()"
