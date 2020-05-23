@@ -1,64 +1,71 @@
-<div class="row justify-content-center">
-    <div class="col-8">
-        <div *ngIf="turningEvent">
-            <h2><span jhiTranslate="instantHelpFinderApp.turningEvent.detail.title">Turning Event</span> {{ turningEvent.id }}</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <div *ngIf="turningEvent">
+                <h2><span jhiTranslate="instantHelpFinderApp.turningEvent.detail.title">Turning Event</span> {{ turningEvent.id }}</h2>
 
-            <hr>
+                <jhi-alert-error></jhi-alert-error>
 
-            <jhi-alert-error></jhi-alert-error>
+                <dl class="row-md jh-entity-details">
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.patientName">Patient Name</span></dt>
+                    <dd>
+                        <span>{{ turningEvent.patientName }}</span>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.patientData">Patient Data</span></dt>
+                    <dd>
+                        <span>{{ turningEvent.patientData }}</span>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.ward">Ward</span></dt>
+                    <dd>
+                        <span>{{ turningEvent.ward }}</span>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.roomNr">Room Nr</span></dt>
+                    <dd>
+                        <span>{{ turningEvent.roomNr }}</span>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.priority">Priority</span></dt>
+                    <dd>
+                        <span jhiTranslate="{{ 'instantHelpFinderApp.EPriority.' + turningEvent.priority }}">{{ turningEvent.priority }}</span>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
+                    <dd>
+                        <div *ngIf="turningEvent.doctor">
+                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor.user ? turningEvent.doctor.user.firstName : ''}} {{ turningEvent.doctor.user ? turningEvent.doctor.user.lastName : ''}}</a>
+                        </div>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
+                    <dd>
+                        <div *ngIf="turningEvent.icuNurse">
+                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.firstName : ''}} {{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.lastName : ''}}</a>
+                        </div>
+                    </dd>
+                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
+                    <dd>
+                        <span *ngFor="let assistant of turningEvent.assistants; let last = last">
+                            <a [routerLink]="['/assistant', assistant?.id, 'view']">{{ assistant.user ? assistant.user.firstName : '' }} {{ assistant.user ? assistant.user.lastName : '' }}</a>{{ last ? '' : ', ' }}
+                        </span>
+                    </dd>
+                </dl>
 
-            <dl class="row-md jh-entity-details">
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.patientName">Patient Name</span></dt>
-                <dd>
-                    <span>{{ turningEvent.patientName }}</span>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.patientData">Patient Data</span></dt>
-                <dd>
-                    <span>{{ turningEvent.patientData }}</span>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.ward">Ward</span></dt>
-                <dd>
-                    <span>{{ turningEvent.ward }}</span>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.roomNr">Room Nr</span></dt>
-                <dd>
-                    <span>{{ turningEvent.roomNr }}</span>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.priority">Priority</span></dt>
-                <dd>
-                    <span jhiTranslate="{{ 'instantHelpFinderApp.EPriority.' + turningEvent.priority }}">{{ turningEvent.priority }}</span>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
-                <dd>
-                    <div *ngIf="turningEvent.doctor">
-                        <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor?.id }}</a>
+                <div class="list-group list-group-horizontal-md">
+                    <div class="custom-control custom-checkbox" *ngFor="let timeSlot of turningEvent.potentialTimeSlots; let index = index;">
+                        <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}">
+                        <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start}}</label>
                     </div>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
-                <dd>
-                    <div *ngIf="turningEvent.icuNurse">
-                        <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse?.id }}</a>
-                    </div>
-                </dd>
-                <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
-                <dd>
-                    <span *ngFor="let assistants of turningEvent.assistants; let last = last">
-                        <a [routerLink]="['/assistant', assistants?.id, 'view']">{{ assistants.id }}</a>{{ last ? '' : ', ' }}
-                    </span>
-                </dd>
-            </dl>
+                </div>
 
-            <button type="submit"
-                    (click)="previousState()"
-                    class="btn btn-info">
-                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
-            </button>
+                <button type="submit"
+                        (click)="previousState()"
+                        class="btn btn-info">
+                    <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+                </button>
 
-            <button type="button"
-                    [routerLink]="['/turning-event', turningEvent.id, 'edit']"
-                    class="btn btn-primary">
-                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
-            </button>
+                <button *ngIf="!isMyTurningEvent(turningEvent)" type="button"
+                        (click)="acceptTurningEvent(turningEvent.id)"
+                        class="btn btn-success">
+                    <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span >Join</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>

@@ -23,6 +23,14 @@ export class TurningEventService {
     return this.http.put<ITurningEvent>(this.resourceUrl, turningEvent, { observe: 'response' });
   }
 
+  acceptTurningEventDoctor(doctorId: number, turningEventId: number): Observable<EntityResponseType> {
+    return this.http.put<ITurningEvent>(`${this.resourceUrl}/doctors/${doctorId}`, turningEventId, { observe: 'response' });
+  }
+
+  acceptTurningEventAssistant(assistantId: number, turningEventId: number): Observable<EntityResponseType> {
+    return this.http.put<ITurningEvent>(`${this.resourceUrl}/assistants/${assistantId}`, turningEventId, { observe: 'response' });
+  }
+
   find(id: number): Observable<EntityResponseType> {
     return this.http.get<ITurningEvent>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
@@ -30,6 +38,11 @@ export class TurningEventService {
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<ITurningEvent[]>(this.resourceUrl, { params: options, observe: 'response' });
+  }
+
+  queryTasks(candidateGroupName: string, req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption(req);
+    return this.http.get<ITurningEvent[]>(`${this.resourceUrl}/open/${candidateGroupName}`, { params: options, observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {

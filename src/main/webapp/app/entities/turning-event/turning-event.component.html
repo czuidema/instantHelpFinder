@@ -1,8 +1,5 @@
-<div>
-    <h2 id="page-heading">
-        <span jhiTranslate="instantHelpFinderApp.turningEvent.home.title">Turning Events</span>
-    </h2>
-
+<div class="container">
+    <div class="row">
     <jhi-alert-error></jhi-alert-error>
 
     <jhi-alert></jhi-alert>
@@ -10,52 +7,112 @@
     <div class="alert alert-warning" id="no-result" *ngIf="turningEvents?.length === 0">
         <span jhiTranslate="instantHelpFinderApp.turningEvent.home.notFound">No turningEvents found</span>
     </div>
+    </div>
+    <div class="row d-flex justify-content-center" >
+        <ul class="nav nav-pills m-2 d-md-none" >
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="tabToggle" (click)="tabToggleTrue()">Schedule</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"  [class.active]="!tabToggle" (click)="tabToggleFalse()">Inbox</a>
+            </li>
+        </ul>
+    </div>
 
-    <ul class="nav nav-pills m-2">
-        <li class="nav-item">
-            <a class="nav-link" [class.active] = "tabToggle" (click)="tabToggleTrue()">Your Tasks</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"  [class.active] = "!tabToggle" (click)="tabToggleFalse()">Open Tasks</a>
-        </li>
-    </ul>
+    <div class="row">
+        <div class="col" [class.d-none]="!tabToggle" [class.d-md-block]="!tabToggle">
+            <h5>  Schedule <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon> </h5>
+            <div class="card" *ngIf="turningEventsSchedule?.length > 0">
+                <div class="list-group list-group-flush  accordion" id="accordionLeft">
 
-    <div class="list-group">
-        <a *ngFor="let turningEvent of turningEvents ;trackBy: trackId" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">18:20 - 18:30</h5>
-                <small><span class="badge badge-success">Enough people</span> Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</small>
-            </div>
-            <p class="mb-1"><strong>Patient name: {{ turningEvent.patientName }}</strong></p>
-            <p class="mb-1">Hier kann man noch zusätzliche wichtige Informationen nennen.</p>
-            <p class="mb-1"><small>Doctor: {{ turningEvent.doctor?.user.firstName + ' ' + turningEvent.doctor?.user.lastName}}</small></p>
-            <p class="mb-1"><small>Assistance: <span *ngFor="let assistants of turningEvent.assistants; let last = last">
-                            {{ assistants.user.firstName + ' ' +  assistants.user.lastName}}{{ last ? '' : ', ' }}
-                        </span></small></p>
-            <div class="btn-group float-right">
-                <button type="submit"
-                        [routerLink]="['/turning-event', turningEvent.id, 'edit']"
-                        class="btn btn-primary btn-sm">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-                </button>
+                    <div *ngFor="let turningEvent of turningEventsSchedule ;trackBy: trackId">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">18:20 - 18:30</h5>
+                            </div>
+                            <p class="mb-1">Patient: {{turningEvent.patientName}}, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
+                        </a>
+                        <div [id]="'collapse' + turningEvent.id" class="collapse" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionLeft">
+                            <div class="card-body ">
 
-                <button type="submit" (click)="delete(turningEvent)"
-                        class="btn btn-danger btn-sm">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-                </button>
+<!--                                <div class="btn-group float-right">-->
+<!--                                    <button type="submit"-->
+<!--                                            [routerLink]="['/turning-event', turningEvent.id, 'edit']"-->
+<!--                                            class="btn btn-primary btn-sm">-->
+<!--                                        <span class="d-none d-md-inline">Report issue</span>-->
+<!--                                    </button>-->
+
+<!--                                    <button type="submit" (click)="delete(turningEvent)"-->
+<!--                                            class="btn btn-success btn-sm">-->
+<!--                                        <span class="d-none d-md-inline">Done</span>-->
+<!--                                    </button>-->
+<!--                                </div>-->
+
+                                <dl class="row-md jh-entity-details">
+                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>
+                                    <dd>
+                                        <div *ngIf="turningEvent.doctor">
+                                            <a [routerLink]="['/doctor', turningEvent.doctor?.id, 'view']">{{ turningEvent.doctor.user ? turningEvent.doctor.user.firstName : ''}} {{ turningEvent.doctor.user ? turningEvent.doctor.user.lastName : ''}}</a>
+                                        </div>
+                                    </dd>
+                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.icuNurse">Icu Nurse</span></dt>
+                                    <dd>
+                                        <div *ngIf="turningEvent.icuNurse">
+                                            <a [routerLink]="['/icu-nurse', turningEvent.icuNurse?.id, 'view']">{{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.firstName : ''}} {{ turningEvent.icuNurse.user? turningEvent.icuNurse.user.lastName : ''}}</a>
+                                        </div>
+                                    </dd>
+                                    <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.assistants">Assistants</span></dt>
+                                    <dd>
+                                        <span *ngFor="let assistant of turningEvent.assistants; let last = last">
+                                            <a [routerLink]="['/assistant', assistant?.id, 'view']">{{ assistant.user ? assistant.user.firstName : '' }} {{ assistant.user ? assistant.user.lastName : '' }}</a>{{ last ? '' : ', ' }}
+                                        </span>
+                                    </dd>
+                                </dl>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </a>
-        <a class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">18:50 - 19:10</h5>
-                <small><span class="badge badge-danger">1 more person needed</span> Ward: A, Room: 230</small>
+        </div>
+
+        <div class="col"  [class.d-none]="tabToggle" [class.d-md-block]="tabToggle">
+            <h5>Inbox <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon></h5>
+
+            <div class="card" *ngIf="turningEventsInbox?.length > 0">
+                <div class="list-group list-group-flush accordion" id="accordionRight">
+
+                    <div *ngFor="let turningEvent of turningEventsInbox ;trackBy: trackId">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" [routerLink]="['/turning-event', turningEvent.id, 'view']">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">18:20 - 18:30</h5>
+                            </div>
+                            <p class="mb-1">Patient: {{turningEvent.patientName}}, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
+                        </a>
+                    </div>
+
+                </div>
             </div>
-            <p class="mb-1"><strong>Patient name: Christoph Kramer</strong></p>
-            <p class="mb-1">Hier kann man noch zusätzliche wichtige Informationen nennen.</p>
-            <p class="mb-1"><small>Doctor: Frank Walter</small></p>
-            <p class="mb-1"><small>Assistance: Ute Hahn</small></p>
-        </a>
+
+            <h5>Pending <fa-icon [icon]="InboxIcon" fixedWidth="true" class="ml-2"></fa-icon></h5>
+
+            <div class="card" *ngIf="turningEventsPending?.length > 0">
+                <div class="list-group list-group-flush accordion" id="accordionRightTwo">
+
+                    <div *ngFor="let turningEvent of turningEventsPending ;trackBy: trackId">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" [routerLink]="['/turning-event', turningEvent.id, 'view']">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">18:20 - 18:30</h5>
+                                <small><span class="badge badge-pill badge-warning">2</span></small>
+                            </div>
+                            <p class="mb-1">Bed: 489, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
     </div>
 </div>

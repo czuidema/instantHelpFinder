@@ -328,6 +328,13 @@
             <artifactId>metrics-core</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+
+        <!--    flowable process engine-->
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-process</artifactId>
+            <version>6.5.0</version>
+        </dependency>
         <dependency>
             <groupId>nl.martijndwars</groupId>
             <artifactId>web-push</artifactId>

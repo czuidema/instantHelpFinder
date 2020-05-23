@@ -1,23 +1,31 @@
 package ch.helpfuleth.instanthelpfinder.web.rest;
 
+import ch.helpfuleth.instanthelpfinder.domain.Assistant;
+import ch.helpfuleth.instanthelpfinder.domain.Doctor;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
+import ch.helpfuleth.instanthelpfinder.repository.AssistantRepository;
+import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
+import ch.helpfuleth.instanthelpfinder.service.FlowableService;
 import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
 import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.Doc;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * REST controller for managing {@link ch.helpfuleth.instanthelpfinder.domain.TurningEvent}.
@@ -37,13 +45,22 @@ public class TurningEventResource {
     private final TurningEventRepository turningEventRepository;
 
     private final TurningEventService turningEventService;
+    private final FlowableService flowableService;
+    private final DoctorRepository doctorRepository;
+    private final AssistantRepository assistantRepository;
 
     public TurningEventResource(
         TurningEventRepository turningEventRepository,
-        TurningEventService turningEventService
+        TurningEventService turningEventService,
+        FlowableService flowableService,
+        DoctorRepository doctorRepository,
+        AssistantRepository assistantRepository
         ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
+        this.flowableService = flowableService;
+        this.doctorRepository = doctorRepository;
+        this.assistantRepository = assistantRepository;
     }
 
     /**
@@ -59,7 +76,15 @@ public class TurningEventResource {
         if (turningEvent.getId() != null) {
             throw new BadRequestAlertException("A new turningEvent cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
         TurningEvent result = this.turningEventService.createNew(turningEvent);
+
+        Map<String, Object> variables = new HashMap<String, Object>();
+        variables.put("turningEventId", result.getId());
+
+        // start process instance (currently ICUNurse)
+        ProcessInstance processInstance = flowableService.startProcess(variables);
+
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -84,6 +109,46 @@ public class TurningEventResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
             .body(result);
+    }
+
+    @PutMapping("/turning-events/doctors/{userRoleId}")
+    public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody Long id, @PathVariable Long userRoleId) {
+        log.debug("REST request to update TurningEvent : {}", id);
+
+        TurningEvent turningEvent = turningEventRepository.getOne(id);
+
+        Doctor doctor = doctorRepository.getOne(userRoleId);
+        turningEvent.setDoctor(doctor);
+
+        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
+        Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
+        flowableService.completeTask(task.getId());
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
+            .body(turningEvent);
+    }
+
+    @PutMapping("/turning-events/assistants/{userRoleId}")
+    public ResponseEntity<TurningEvent> acceptTurningEventAssistant(@RequestBody Long id, @PathVariable Long userRoleId) {
+        log.debug("REST request to update TurningEvent : {}", id);
+
+        TurningEvent turningEvent = turningEventRepository.getOne(id);
+
+        Assistant assistant =  assistantRepository.getOne(userRoleId);
+
+        // TODO: Return an error, if an assistant is added twice.
+        Set<Assistant> assistants = turningEvent.getAssistants() ;
+        assistants.add(assistant);
+        turningEvent.setAssistants(assistants);
+
+        if (assistants.size() >= 3) {
+            ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
+            Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
+            flowableService.completeTask(task.getId());
+        }
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
+            .body(turningEvent);
     }
 
     /**
@@ -111,6 +176,30 @@ public class TurningEventResource {
         return ResponseUtil.wrapOrNotFound(turningEvent);
     }
 
+    // get tasks for a candidate group, candidateGroupName can be Doctors or Assistants
+    /**
+     * {@code GET  /turning-events/open/:candidateGroupName} : get all the turningEvents associated to candidateGroupName.
+     *
+     * @param candidateGroupName name of the candidate group.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of turningEvents in body.
+     */
+    @GetMapping("/turning-events/open/{candidateGroupName}")
+    public List<TurningEvent> getOpenTurningEventsForCandidateGroup(@PathVariable String candidateGroupName) {
+        log.debug("REST request to get TurningEvents for a specific candidate group : {}", candidateGroupName);
+
+        List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
+        List<TurningEvent> turningEvents = new ArrayList<TurningEvent>();
+        for (Task task : tasks) {
+            String processInstanceId = task.getProcessInstanceId();
+            Map<String,Object> processVariables = flowableService.getProcessInstanceVariables(processInstanceId);
+            Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString()).longValue();
+
+            TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
+            turningEvents.add(turningEvent);
+        }
+        return turningEvents;
+    }
+
     /**
      * {@code DELETE  /turning-events/:id} : delete the "id" turningEvent.
      *
@@ -120,7 +209,12 @@ public class TurningEventResource {
     @DeleteMapping("/turning-events/{id}")
     public ResponseEntity<Void> deleteTurningEvent(@PathVariable Long id) {
         log.debug("REST request to delete TurningEvent : {}", id);
+
+        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
+        flowableService.deleteProcessInstance(processInstance.getId());
+
         turningEventRepository.deleteById(id);
+
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }
