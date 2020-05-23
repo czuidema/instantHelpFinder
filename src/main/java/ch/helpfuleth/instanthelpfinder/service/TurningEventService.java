@@ -8,6 +8,8 @@ import ch.helpfuleth.instanthelpfinder.domain.enumeration.ETurningEventStatus;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.repository.UserRoleRepository;
 import ch.helpfuleth.instanthelpfinder.security.SecurityUtils;
+import ch.helpfuleth.instanthelpfinder.service.event.OnTurningEventPublishedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +21,16 @@ public class TurningEventService {
 
     private final UserRoleRepository userRoleRepository;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
     public TurningEventService(
         TurningEventRepository turningEventRepository,
-        UserRoleRepository userRoleRepository
+        UserRoleRepository userRoleRepository,
+        ApplicationEventPublisher applicationEventPublisher
     ) {
         this.turningEventRepository = turningEventRepository;
         this.userRoleRepository = userRoleRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public TurningEvent createNew(TurningEvent turningEvent) {
@@ -38,6 +44,13 @@ public class TurningEventService {
         } else if (userRole instanceof ICUNurse) {
             turningEvent.setIcuNurse((ICUNurse) userRole);
         }
+
+        try {
+            applicationEventPublisher.publishEvent(new OnTurningEventPublishedEvent(turningEvent));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return turningEventRepository.save(turningEvent);
     }
 
