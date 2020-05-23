@@ -74,7 +74,8 @@ public class PushNotificationService {
                 (turningEvent.getDefiniteTimeSlot() != null) ?
                 turningEvent.getDefiniteTimeSlot().toString() :
                 "unbekannt"
-            ) + "\"}" ;
+            ) + "\"," +
+                "\"data\": {\"url\": \"localhost:8080/turningEvents/" + turningEvent.getId() + "\"}}" ;
 
         for (PushSubscription subscription: allSubscriptions) {
 
