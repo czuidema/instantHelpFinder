@@ -47,14 +47,19 @@
                     </dd>
                 </dl>
 
-                <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="pickTimeSlotsForm">
+                <form name="editForm" role="form" novalidate (ngSubmit)="acceptTurningEvent()" [formGroup]="pickTimeSlotsForm">
 
                     <div class="list-group list-group-horizontal-md">
                         <div class="custom-control custom-checkbox" *ngFor="let timeSlot of potentialTimeSlots; let index = index;">
-                            <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}" [formControl]="getTimeSlotCtrl(index)">
+                            <input type="checkbox" (change)="setIsSelected()" class="custom-control-input" id="{{'timeSlot-' + index}}" [formControl]="getTimeSlotCtrl(index)">
                             <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + timeSlot.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}}</label>
                         </div>
                     </div>
+
+                    <button *ngIf="!isMyTurningEvent(turningEvent)" type="submit" id="save-entity"
+                            class="btn btn-success">
+                        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span >Join</span>
+                    </button>
 
                 </form>
 
@@ -64,11 +69,7 @@
                     <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
                 </button>
 
-                <button *ngIf="!isMyTurningEvent(turningEvent)" type="button"
-                        (click)="acceptTurningEvent(turningEvent.id)"
-                        class="btn btn-success">
-                    <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span >Join</span>
-                </button>
+
             </div>
         </div>
     </div>

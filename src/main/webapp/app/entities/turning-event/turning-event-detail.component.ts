@@ -12,7 +12,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { IAssistant } from 'app/shared/model/assistant.model';
 import { ITimeSlot, TimeSlot } from 'app/shared/model/time-slot.model';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 
 @Component({
   selector: 'jhi-turning-event-detail',
@@ -21,7 +21,9 @@ import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Valida
 export class TurningEventDetailComponent implements OnInit, OnDestroy {
   isSaving = false;
   turningEvent: ITurningEvent | null = null;
+
   potentialTimeSlots: ITimeSlot[] = [];
+  selectedPotentialTimeSlots: ITimeSlot[] = [];
 
   // TODO: This userRole should be global
   userRole?: IUserRole;
@@ -61,7 +63,7 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
           })
         : [];
 
-      this.createFormInputs(this.potentialTimeSlots);
+      this.addPotentialTimeSlotsControls(this.potentialTimeSlots);
     });
 
     this.registerChangeInTurningEvent();
@@ -81,60 +83,46 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
 
   // TimeSlot Form
 
-  createFormInputs(potentialTimeSlots: ITimeSlot[]) {
-    this.pickTimeSlotsForm = this.fb.group({
-      potentialTimeSlotsCtrl: this.createFormArray(potentialTimeSlots)
+  addPotentialTimeSlotsControls(potentialTimeSlots: ITimeSlot[]) {
+    potentialTimeSlots.forEach(timeSlot => {
+      (this.pickTimeSlotsForm.get('potentialTimeSlotsCtrl') as FormArray).push(new FormControl(timeSlot.isSelected || false));
     });
   }
 
-  createFormArray(potentialTimeSlots: ITimeSlot[]) {
-    const arr = potentialTimeSlots.map(timeSlot => {
-      return new FormControl(timeSlot.isSelected || false);
+  get potentialTimeSlotsArray() {
+    return <FormArray>this.pickTimeSlotsForm.get('potentialTimeSlotsCtrl');
+  }
+
+  getTimeSlotCtrl(i: number): AbstractControl {
+    return (this.pickTimeSlotsForm.get('potentialTimeSlotsCtrl') as FormArray).at(i);
+  }
+
+  setIsSelected(): void {
+    this.potentialTimeSlotsArray.controls.forEach((control, i) => {
+      if (control.value && this.turningEvent?.potentialTimeSlots !== undefined) {
+        this.turningEvent.potentialTimeSlots[i].isSelected = true;
+      } else if (this.turningEvent?.potentialTimeSlots !== undefined) {
+        this.turningEvent.potentialTimeSlots[i].isSelected = false;
+      }
     });
-    return new FormArray(arr);
-  }
-
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
-    result.subscribe(
-      () => this.onSaveSuccess(),
-      () => this.onSaveError()
-    );
-  }
-
-  protected onSaveSuccess(): void {
-    this.isSaving = false;
-    this.previousState();
-  }
-
-  protected onSaveError(): void {
-    this.isSaving = false;
-  }
-
-  getTimeSlotCtrl(i: number): AbstractControl | null {
-    if (this.pickTimeSlotsForm !== undefined) {
-      return (this.pickTimeSlotsForm.get('potentialTimeSlotsCtrl') as FormArray).at(i);
-    } else {
-      console.log('this.pickTimSlotsForm is undefined.');
-      return null;
-    }
-  }
-
-  save(): void {
-    this.isSaving = true;
-    if (this.turningEvent?.id !== undefined) {
-      this.turningEvent.potentialTimeSlots = this.potentialTimeSlots;
-      this.subscribeToSaveResponse(this.turningEventService.update(this.turningEvent));
-    }
+    console.log(this.turningEvent?.potentialTimeSlots);
   }
 
   //
 
-  acceptTurningEvent(turningEventId: number | undefined): void {
-    if (this.userRole != undefined && this.userRole.id != undefined && turningEventId != undefined) {
+  acceptTurningEvent(): void {
+    if (
+      this.userRole != undefined &&
+      this.userRole.id != undefined &&
+      this.turningEvent != undefined &&
+      this.turningEvent?.id !== undefined
+    ) {
       if (this.userRole.dtype === 'Doctor') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEventId));
+        this.setIsSelected();
+
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, this.turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEventId));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, this.turningEvent.id));
       }
     }
   }
