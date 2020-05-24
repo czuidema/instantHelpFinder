@@ -98,14 +98,13 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   }
 
   setIsSelected(): void {
-    // this.potentialTimeSlotsArray.controls.forEach((control, i) => {
-    //   if (control.value && this.turningEvent?.potentialTimeSlots !== undefined) {
-    //     this.turningEvent.potentialTimeSlots[i].isSelected = true;
-    //   } else if (this.turningEvent?.potentialTimeSlots !== undefined) {
-    //     this.turningEvent.potentialTimeSlots[i].isSelected = false;
-    //   }
-    // });
-    console.log(this.turningEvent?.potentialTimeSlots);
+    this.potentialTimeSlotsArray.controls.forEach((control, i) => {
+      if (control.value && this.turningEvent?.potentialTimeSlots !== undefined) {
+        this.potentialTimeSlots[i].isSelected = true;
+      } else if (this.turningEvent?.potentialTimeSlots !== undefined) {
+        this.potentialTimeSlots[i].isSelected = false;
+      }
+    });
   }
 
   //
@@ -119,6 +118,10 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
     ) {
       if (this.userRole.dtype === 'Doctor') {
         this.setIsSelected();
+        this.turningEvent.potentialTimeSlots = this.potentialTimeSlots.filter(timeSlot => timeSlot.isSelected === true);
+
+        // TODO: Remove this for assistant doodle!
+        this.turningEvent.definiteTimeSlot = this.potentialTimeSlots[0];
 
         this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, this.turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
