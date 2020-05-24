@@ -2,6 +2,7 @@ package ch.helpfuleth.instanthelpfinder.web.rest;
 
 import ch.helpfuleth.instanthelpfinder.domain.Assistant;
 import ch.helpfuleth.instanthelpfinder.domain.Doctor;
+import ch.helpfuleth.instanthelpfinder.domain.TimeSlot;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.AssistantRepository;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
@@ -13,6 +14,7 @@ import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,8 @@ import javax.print.Doc;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing {@link ch.helpfuleth.instanthelpfinder.domain.TurningEvent}.
@@ -123,7 +127,14 @@ public class TurningEventResource {
         Doctor doctor = doctorRepository.getOne(userRoleId);
         result.setDoctor(doctor);
 
+        Collection<String> timeSlotIds = new ArrayList<String>();
+        for (TimeSlot timeSlot: result.getPotentialTimeSlots()) {
+            timeSlotIds.add(timeSlot.getId().toString());
+        }
+
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEvent.getId());
+        flowableService.setVariable(processInstance.getId(), "timeSlotIds", timeSlotIds);
+
         Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
         flowableService.completeTask(task.getId());
         return ResponseEntity.ok()
@@ -132,23 +143,32 @@ public class TurningEventResource {
     }
 
     @PutMapping("/turning-events/assistants/{userRoleId}")
-    public ResponseEntity<TurningEvent> acceptTurningEventAssistant(@RequestBody Long id, @PathVariable Long userRoleId) {
-        log.debug("REST request to update TurningEvent : {}", id);
-
-        TurningEvent turningEvent = turningEventRepository.getOne(id);
-
-        Assistant assistant =  assistantRepository.getOne(userRoleId);
-
-        // TODO: Return an error, if an assistant is added twice.
-        Set<Assistant> assistants = turningEvent.getAssistants() ;
-        assistants.add(assistant);
-        turningEvent.setAssistants(assistants);
-
-        if (assistants.size() >= 3) {
-            ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
-            Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
-            flowableService.completeTask(task.getId());
+    public ResponseEntity<TurningEvent> acceptTurningEventAssistant(@RequestBody TurningEvent turningEvent, @PathVariable Long userRoleId) {
+        log.debug("REST request to update TurningEvent : {}", turningEvent);
+        if (turningEvent.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        // Add assistant to selected time slots
+        Predicate<TimeSlot> steamsPredicate = TimeSlot::isSelected;
+        Collection<TimeSlot> selectedTimeSlots = turningEvent.getPotentialTimeSlots().stream().filter(steamsPredicate).collect(Collectors.toList());
+        for (TimeSlot timeSlot: selectedTimeSlots) {
+            Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
+            flowableService.addAssistantToTaskById(userRoleId, task.getId());
+            List<org.flowable.identitylink.api.IdentityLink> assistantsVoted = flowableService.getIdentityLinksForTaskById(task.getId());
+            // TODO: the first time should be scheduled.
+            if ( assistantsVoted.size() >= 3) {
+                Set<Assistant> assistants = new HashSet<Assistant>() ;
+                for (IdentityLink assistantIdentityLink: assistantsVoted) {
+                    Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
+                    Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
+                    assistants.add(assistant);
+                }
+                TurningEvent result = turningEventRepository.getOne(turningEvent.getId());
+                result.setAssistants(assistants);
+                flowableService.completeTask(task.getId());
+            }
+        }
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
             .body(turningEvent);
@@ -191,7 +211,7 @@ public class TurningEventResource {
         log.debug("REST request to get TurningEvents for a specific candidate group : {}", candidateGroupName);
 
         List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
-        List<TurningEvent> turningEvents = new ArrayList<TurningEvent>();
+        Set<TurningEvent> turningEvents = new HashSet<TurningEvent>();
         for (Task task : tasks) {
             String processInstanceId = task.getProcessInstanceId();
             Map<String,Object> processVariables = flowableService.getProcessInstanceVariables(processInstanceId);
@@ -200,7 +220,7 @@ public class TurningEventResource {
             TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
             turningEvents.add(turningEvent);
         }
-        return turningEvents;
+        return new ArrayList<TurningEvent>(turningEvents);
     }
 
     /**

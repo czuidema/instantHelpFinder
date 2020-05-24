@@ -1,11 +1,16 @@
 package ch.helpfuleth.instanthelpfinder.service;
 
+import ch.helpfuleth.instanthelpfinder.domain.TimeSlot;
+import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
+import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
+import com.sun.imageio.plugins.common.SingleTileRenderedImage;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,16 +27,19 @@ public class FlowableService {
     private final RuntimeService runtimeService;
     private final TaskService taskService;
     private final DoctorRepository doctorRepository;
+    private final TurningEventRepository turningEventRepository;
 
     @Autowired
     public FlowableService(
         RuntimeService runtimeService,
         TaskService taskService,
-        DoctorRepository doctorRepository
+        DoctorRepository doctorRepository,
+        TurningEventRepository turningEventRepository
     ) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.doctorRepository = doctorRepository;
+        this.turningEventRepository = turningEventRepository;
     }
 
     public ProcessInstance startProcess(Map<String, Object> variables) {
@@ -53,11 +61,6 @@ public class FlowableService {
         return taskService.createTaskQuery().taskCandidateGroup(groupName).list();
     }
 
-    public List<String> setCandidateUsers(Long turnEventId) {
-        // use TurnEventId to get NurseId, DoctorId, AssistantsId
-        return Arrays.asList("NurseId", "DoctorId", "AssistantId");
-    }
-
     public void deleteProcessInstance(String processInstanceId) {
         runtimeService.deleteProcessInstance(processInstanceId, "None" );
     }
@@ -66,8 +69,27 @@ public class FlowableService {
         taskService.complete(taskId);
     }
 
-    public void setVariable(String executionId, String variableName, Long value) {
+    public void setVariable(String executionId, String variableName, Object value) {
         runtimeService.setVariable(executionId,variableName,value);
+    }
+
+    public void addAssistantToTaskById(Long userId, String taskId) {
+        taskService.addCandidateUser(taskId, userId.toString());
+    }
+
+    public boolean isAssistantParticipatingInTurningEvent(Long userId, Long turningEventId) {
+        TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
+        for (TimeSlot timeSlot: turningEvent.getPotentialTimeSlots()) {
+            Task task = getTaskByTimeSlotId(timeSlot.getId());
+            List<org.flowable.identitylink.api.IdentityLink> assistantsVoted = taskService.getIdentityLinksForTask(task.getId());
+            for (IdentityLink assistantVoted : assistantsVoted) {
+                Long assistantUserId = Long.valueOf(assistantVoted.getUserId());
+                if (assistantUserId.equals(userId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // TODO: carefully check this query!
@@ -75,8 +97,16 @@ public class FlowableService {
         return runtimeService.createProcessInstanceQuery().variableValueEquals("turningEventId",turningEventId).singleResult();
     }
 
+    public Task getTaskByTimeSlotId(Long timeSlotId) {
+        return taskService.createTaskQuery().taskVariableValueEquals("timeSlotId", timeSlotId).singleResult();
+    }
+
     public Task getTaskByProcessInstanceId(String processInstanceId) {
         return taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
+    public List<IdentityLink> getIdentityLinksForTaskById(String taskId) {
+        return taskService.getIdentityLinksForTask(taskId);
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId) {
