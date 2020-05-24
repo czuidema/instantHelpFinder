@@ -121,7 +121,7 @@ public class TurningEventResource {
         TurningEvent result = turningEventService.update(turningEvent);
 
         Doctor doctor = doctorRepository.getOne(userRoleId);
-        turningEvent.setDoctor(doctor);
+        result.setDoctor(doctor);
 
         ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(turningEvent.getId());
         Task task = flowableService.getTaskByProcessInstanceId(processInstance.getId());
