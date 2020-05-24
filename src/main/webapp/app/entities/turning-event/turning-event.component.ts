@@ -73,7 +73,6 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     let turningEventsScheduleCache$: ITurningEvent[] = [];
     this.turningEventService.queryTasks('Participant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
       turningEventsScheduleCache$ = res.body || [];
-      console.log(turningEventsScheduleCache$);
       if (this.userRole === undefined || this.userRole.id === undefined) {
         console.log('userRole or userRole.id is undefined.');
       } else if (this.userRole?.dtype === 'ICUNurse') {
@@ -172,7 +171,6 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     }
     this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
       this.userRole = res.body || undefined;
-      console.log(this.userRole);
       if (this.userRole != undefined) {
         this.loadTurningEventsSchedule();
         this.loadTurningEventsPending();

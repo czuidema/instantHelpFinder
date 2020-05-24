@@ -98,13 +98,13 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   }
 
   setIsSelected(): void {
-    this.potentialTimeSlotsArray.controls.forEach((control, i) => {
-      if (control.value && this.turningEvent?.potentialTimeSlots !== undefined) {
-        this.turningEvent.potentialTimeSlots[i].isSelected = true;
-      } else if (this.turningEvent?.potentialTimeSlots !== undefined) {
-        this.turningEvent.potentialTimeSlots[i].isSelected = false;
-      }
-    });
+    // this.potentialTimeSlotsArray.controls.forEach((control, i) => {
+    //   if (control.value && this.turningEvent?.potentialTimeSlots !== undefined) {
+    //     this.turningEvent.potentialTimeSlots[i].isSelected = true;
+    //   } else if (this.turningEvent?.potentialTimeSlots !== undefined) {
+    //     this.turningEvent.potentialTimeSlots[i].isSelected = false;
+    //   }
+    // });
     console.log(this.turningEvent?.potentialTimeSlots);
   }
 
