@@ -1,26 +1,30 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { JhiLanguageService } from 'ng-jhipster';
 import { SessionStorageService } from 'ngx-webstorage';
 import { Observable, ReplaySubject, of } from 'rxjs';
 import { shareReplay, tap, catchError } from 'rxjs/operators';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
+import { UserRoleService } from 'app/entities/user-role/user-role.service';
 
 import { SERVER_API_URL } from 'app/app.constants';
 import { Account } from 'app/core/user/account.model';
+import { IUserRole, UserRole } from 'app/shared/model/user-role.model';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   private userIdentity: Account | null = null;
   private authenticationState = new ReplaySubject<Account | null>(1);
   private accountCache$?: Observable<Account | null>;
+  private userRole?: IUserRole;
 
   constructor(
     private languageService: JhiLanguageService,
     private sessionStorage: SessionStorageService,
     private http: HttpClient,
     private stateStorageService: StateStorageService,
+    private userRoleService: UserRoleService,
     private router: Router
   ) {}
 
@@ -31,6 +35,18 @@ export class AccountService {
   authenticate(identity: Account | null): void {
     this.userIdentity = identity;
     this.authenticationState.next(this.userIdentity);
+    let login = this.userIdentity!.login;
+    this.userRoleService.findByUserLogin(login).subscribe(
+      (res: HttpResponse<IUserRole>) => {
+        this.userRole = res.body || undefined;
+      },
+      () => {
+        console.log('error when getting user role at authenticate.');
+      },
+      () => {
+        console.log('Finished getting user role at authenticate.');
+      }
+    );
   }
 
   hasAnyAuthority(authorities: string[] | string): boolean {
@@ -41,6 +57,30 @@ export class AccountService {
       authorities = [authorities];
     }
     return this.userIdentity.authorities.some((authority: string) => authorities.includes(authority));
+  }
+
+  hasAnyUserRole(userRoles: string[] | string): boolean {
+    let login = this.userIdentity!.login;
+    this.userRoleService.findByUserLogin(login).subscribe(
+      (res: HttpResponse<IUserRole>) => {
+        this.userRole = res.body || undefined;
+      },
+      () => {
+        console.log('error when getting user role at hasAnyUserRole.');
+      },
+      () => {
+        console.log('Finished getting user role at hasAnyUserRole.');
+      }
+    );
+    console.log('UserRoles: ' + this.userRole);
+    if (!this.userRole || !this.userRole.dtype) {
+      return false;
+    }
+    if (!Array.isArray(userRoles)) {
+      userRoles = [userRoles];
+    }
+    console.log(this.userRole);
+    return userRoles.some((userRole: string) => this.userRole?.dtype === userRole);
   }
 
   identity(force?: boolean): Observable<Account | null> {

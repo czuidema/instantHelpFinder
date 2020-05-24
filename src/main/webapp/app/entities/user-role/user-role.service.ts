@@ -5,9 +5,6 @@ import { Observable, of, ReplaySubject } from 'rxjs';
 import { SERVER_API_URL } from 'app/app.constants';
 import { createRequestOption } from 'app/shared/util/request-util';
 import { IUserRole } from 'app/shared/model/user-role.model';
-import { Account } from 'app/core/user/account.model';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
-import { AccountService } from 'app/core/auth/account.service';
 
 type EntityResponseType = HttpResponse<IUserRole>;
 type EntityArrayResponseType = HttpResponse<IUserRole[]>;
@@ -20,7 +17,7 @@ export class UserRoleService {
 
   public resourceUrl = SERVER_API_URL + 'api/user-roles';
 
-  constructor(protected http: HttpClient, protected accountService: AccountService) {}
+  constructor(protected http: HttpClient) {}
 
   create(userRole: IUserRole): Observable<EntityResponseType> {
     return this.http.post<IUserRole>(this.resourceUrl, userRole, { observe: 'response' });
@@ -52,15 +49,17 @@ export class UserRoleService {
     this.userRoleState.next(this.userRole);
   }
 
-  hasAnyUserRole(userRoles: string[] | string): boolean {
+  /*hasAnyUserRole(userRoles: string[] | string): boolean {
+    console.log('UserRoles: ' + this.userRole);
     if (!this.userRole || !this.userRole.dtype) {
       return false;
     }
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }
+    console.log(this.userRole);
     return userRoles.some((userRole: string) => this.userRole?.dtype === userRole);
-  }
+  }*/
 
   getUserRoleState(): Observable<IUserRole | null> {
     return this.userRoleState.asObservable();
