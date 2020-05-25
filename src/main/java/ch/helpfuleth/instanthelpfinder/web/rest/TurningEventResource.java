@@ -6,6 +6,7 @@ import ch.helpfuleth.instanthelpfinder.domain.TimeSlot;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.AssistantRepository;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
+import ch.helpfuleth.instanthelpfinder.repository.TimeSlotRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.service.FlowableService;
 import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
@@ -52,19 +53,22 @@ public class TurningEventResource {
     private final FlowableService flowableService;
     private final DoctorRepository doctorRepository;
     private final AssistantRepository assistantRepository;
+    private final TimeSlotRepository timeSlotRepository;
 
     public TurningEventResource(
         TurningEventRepository turningEventRepository,
         TurningEventService turningEventService,
         FlowableService flowableService,
         DoctorRepository doctorRepository,
-        AssistantRepository assistantRepository
+        AssistantRepository assistantRepository,
+        TimeSlotRepository timeSlotRepository
         ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
         this.flowableService = flowableService;
         this.doctorRepository = doctorRepository;
         this.assistantRepository = assistantRepository;
+        this.timeSlotRepository = timeSlotRepository;
     }
 
     /**
@@ -164,7 +168,12 @@ public class TurningEventResource {
                     assistants.add(assistant);
                 }
                 TurningEvent result = turningEventRepository.getOne(turningEvent.getId());
+                Map<String, Object> taskLocalVariables = task.getTaskLocalVariables();
+                Long timeSlotId = Long.valueOf(taskLocalVariables.get("timeSlotId").toString()).longValue();
+                TimeSlot definiteTimeSlot = timeSlotRepository.getOne(timeSlotId);
+
                 result.setAssistants(assistants);
+                result.setDefiniteTimeSlot(definiteTimeSlot);
                 flowableService.completeTask(task.getId());
             }
         }
