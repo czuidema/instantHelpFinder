@@ -34,19 +34,23 @@ export class AccountService {
 
   authenticate(identity: Account | null): void {
     this.userIdentity = identity;
-    this.authenticationState.next(this.userIdentity);
-    let login = this.userIdentity!.login;
-    this.userRoleService.findByUserLogin(login).subscribe(
-      (res: HttpResponse<IUserRole>) => {
-        this.userRole = res.body || undefined;
-      },
-      () => {
-        console.log('error when getting user role at authenticate.');
-      },
-      () => {
-        console.log('Finished getting user role at authenticate.');
-      }
-    );
+    let login = this.userIdentity?.login;
+
+    if (login) {
+      this.userRoleService.findByUserLogin(login).subscribe(
+        (res: HttpResponse<IUserRole>) => {
+          this.userRole = res.body || undefined;
+          this.authenticationState.next(this.userIdentity);
+        },
+        () => {
+          console.log('error when getting user role at authenticate.');
+        }
+      );
+    } else {
+      // if there is no login create an empty user role.
+      this.userRole = new UserRole();
+      this.authenticationState.next(this.userIdentity);
+    }
   }
 
   hasAnyAuthority(authorities: string[] | string): boolean {
@@ -60,26 +64,12 @@ export class AccountService {
   }
 
   hasAnyUserRole(userRoles: string[] | string): boolean {
-    let login = this.userIdentity!.login;
-    this.userRoleService.findByUserLogin(login).subscribe(
-      (res: HttpResponse<IUserRole>) => {
-        this.userRole = res.body || undefined;
-      },
-      () => {
-        console.log('error when getting user role at hasAnyUserRole.');
-      },
-      () => {
-        console.log('Finished getting user role at hasAnyUserRole.');
-      }
-    );
-    console.log('UserRoles: ' + this.userRole);
     if (!this.userRole || !this.userRole.dtype) {
       return false;
     }
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }
-    console.log(this.userRole);
     return userRoles.some((userRole: string) => this.userRole?.dtype === userRole);
   }
 

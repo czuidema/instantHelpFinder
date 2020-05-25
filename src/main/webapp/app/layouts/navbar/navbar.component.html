@@ -24,7 +24,7 @@
                 </a>
             </li>
 
-            <li *hasAnyUserRole="'Doctor'" display="dynamic" class="nav-item" [routerLink]="['/turning-event/new']">
+            <li *hasAnyUserRoleDir="['Doctor', 'ICUNurse']" display="dynamic" class="nav-item" [routerLink]="['/turning-event/new']">
                 <a class="nav-link">
                     <span>
                         <fa-icon icon="plus"></fa-icon>

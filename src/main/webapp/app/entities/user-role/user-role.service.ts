@@ -49,18 +49,6 @@ export class UserRoleService {
     this.userRoleState.next(this.userRole);
   }
 
-  /*hasAnyUserRole(userRoles: string[] | string): boolean {
-    console.log('UserRoles: ' + this.userRole);
-    if (!this.userRole || !this.userRole.dtype) {
-      return false;
-    }
-    if (!Array.isArray(userRoles)) {
-      userRoles = [userRoles];
-    }
-    console.log(this.userRole);
-    return userRoles.some((userRole: string) => this.userRole?.dtype === userRole);
-  }*/
-
   getUserRoleState(): Observable<IUserRole | null> {
     return this.userRoleState.asObservable();
   }

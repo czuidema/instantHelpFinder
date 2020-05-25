@@ -4,7 +4,7 @@ import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { AccountService } from 'app/core/auth/account.service';
 
 @Directive({
-  selector: '[hasAnyUserRole]'
+  selector: '[hasAnyUserRoleDir]'
 })
 export class HasAnyUserRoleDirective implements OnDestroy {
   private userRoles: string[] = [];
@@ -18,7 +18,7 @@ export class HasAnyUserRoleDirective implements OnDestroy {
   ) {}
 
   @Input()
-  set hasAnyUserRole(value: string | string[]) {
+  set hasAnyUserRoleDir(value: string | string[]) {
     this.userRoles = typeof value === 'string' ? [value] : value;
     this.updateView();
     // Get notified each time authentication state changes.
@@ -28,7 +28,6 @@ export class HasAnyUserRoleDirective implements OnDestroy {
   ngOnDestroy(): void {}
 
   private updateView(): void {
-    console.log('Update view of any user role. UserRoles: ' + this.userRoles);
     const hasAnyUserRole = this.accountService.hasAnyUserRole(this.userRoles);
     this.viewContainerRef.clear();
     if (hasAnyUserRole) {
