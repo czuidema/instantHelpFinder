@@ -68,6 +68,8 @@ export class RegisterComponent implements AfterViewInit {
     if (password !== this.registerForm.get(['confirmPassword'])!.value) {
       this.doNotMatch = true;
     } else {
+      const firstName = this.registerForm.get(['firstName'])!.value;
+      const lastName = this.registerForm.get(['lastName'])!.value;
       const login = this.registerForm.get(['login'])!.value;
       const email = this.registerForm.get(['email'])!.value;
       const userRoleIndex = +this.registerForm.get(['userRoleName'])!.value;
@@ -95,10 +97,12 @@ export class RegisterComponent implements AfterViewInit {
           newSubAsString['keys']['p256dh']
         );
 
-        this.registerService.save({ userRole, login, email, password, langKey: this.languageService.getCurrentLanguage() }).subscribe(
-          () => (this.success = true),
-          response => this.processError(response)
-        );
+        this.registerService
+          .save({ userRole, firstName, lastName, login, email, password, langKey: this.languageService.getCurrentLanguage() })
+          .subscribe(
+            () => (this.success = true),
+            response => this.processError(response)
+          );
       });
     }
   }
