@@ -8,6 +8,7 @@ import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
+import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
@@ -96,12 +97,25 @@ public class FlowableService {
         return runtimeService.createProcessInstanceQuery().variableValueEquals("turningEventId",turningEventId).singleResult();
     }
 
+    public Execution getExecutionByTimeSlotId(Long timeSlotId) {
+        return runtimeService.createExecutionQuery().variableValueEquals("timeSlot", timeSlotId.toString()).singleResult();
+    }
+
     public Task getTaskByTimeSlotId(Long timeSlotId) {
-        return taskService.createTaskQuery().taskVariableValueEquals("timeSlotId", timeSlotId).singleResult();
+        Execution execution = runtimeService.createExecutionQuery().variableValueEquals("timeSlot", timeSlotId.toString()).singleResult();
+        return taskService.createTaskQuery().executionId(execution.getId()).singleResult();
+    }
+
+    public List<Task> getAllActiveTasks() {
+        return taskService.createTaskQuery().active().list();
     }
 
     public Task getTaskByProcessInstanceId(String processInstanceId) {
         return taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
+    public Task getTaskByExecutionId(String executionId) {
+        return taskService.createTaskQuery().executionId(executionId).singleResult();
     }
 
     public List<IdentityLink> getIdentityLinksForTaskById(String taskId) {

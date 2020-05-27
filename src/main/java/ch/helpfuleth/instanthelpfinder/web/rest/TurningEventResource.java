@@ -14,6 +14,7 @@ import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
@@ -153,12 +154,27 @@ public class TurningEventResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         TurningEvent turningEvent = turningEventRepository.getOne(inputData.getId());
+
+        // select a potential time slot
+        Collection<TimeSlot>  timeSlots = turningEvent.getPotentialTimeSlots();
+        int i = 0;
+        for (TimeSlot timeSlot: timeSlots) {
+            if (i == 0) {
+                timeSlot.setSelected(true);
+            }
+            i++;
+        }
+
+
         Predicate<TimeSlot> selectedTimeSlotsPredicate = TimeSlot::isSelected;
-        Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
+        // Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
+        Collection<TimeSlot> selectedTimeSlots = turningEvent.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
         // TODO: sort selectedTimeSlots by time.
 
         for (TimeSlot timeSlot: selectedTimeSlots) {
             // TODO: This task may not exist anymore, if another assistant finishes the task just a bit before.
+            List<Task> activeTasks = flowableService.getAllActiveTasks();
+
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
             flowableService.addAssistantToTaskById(userRoleId, task.getId());
 
@@ -172,9 +188,7 @@ public class TurningEventResource {
                     Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
                     assistants.add(assistant);
                 }
-                Map<String, Object> taskLocalVariables = task.getTaskLocalVariables();
-                Long timeSlotId = Long.valueOf(taskLocalVariables.get("timeSlotId").toString());
-                TimeSlot definiteTimeSlot = timeSlotRepository.getOne(timeSlotId);
+                TimeSlot definiteTimeSlot = timeSlotRepository.getOne(timeSlot.getId());
 
                 turningEvent.setAssistants(assistants);
                 turningEvent.setDefiniteTimeSlot(definiteTimeSlot);
