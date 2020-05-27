@@ -4,7 +4,6 @@ import ch.helpfuleth.instanthelpfinder.domain.TimeSlot;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
-import com.sun.imageio.plugins.common.SingleTileRenderedImage;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.delegate.DelegateExecution;
