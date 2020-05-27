@@ -27,8 +27,8 @@ export class TurningEventService {
     return this.http.put<ITurningEvent>(`${this.resourceUrl}/doctors/${doctorId}`, turningEvent, { observe: 'response' });
   }
 
-  acceptTurningEventAssistant(assistantId: number, turningEventId: number): Observable<EntityResponseType> {
-    return this.http.put<ITurningEvent>(`${this.resourceUrl}/assistants/${assistantId}`, turningEventId, { observe: 'response' });
+  acceptTurningEventAssistant(assistantId: number, turningEvent: ITurningEvent): Observable<EntityResponseType> {
+    return this.http.put<ITurningEvent>(`${this.resourceUrl}/assistants/${assistantId}`, turningEvent, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {

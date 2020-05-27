@@ -119,13 +119,9 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
       if (this.userRole.dtype === 'Doctor') {
         this.setIsSelected();
         this.turningEvent.potentialTimeSlots = this.potentialTimeSlots.filter(timeSlot => timeSlot.isSelected === true);
-
-        // TODO: Remove this for assistant doodle!
-        this.turningEvent.definiteTimeSlot = this.potentialTimeSlots[0];
-
         this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, this.turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, this.turningEvent.id));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, this.turningEvent));
       }
     }
   }

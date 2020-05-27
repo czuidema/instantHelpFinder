@@ -98,9 +98,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
       let turningEventsDoctorCache$: ITurningEvent[] = [];
       let turningEventsAssistantCache$: ITurningEvent[] = [];
       this.turningEventService.queryTasks('Doctor').subscribe((res: HttpResponse<ITurningEvent[]>) => {
-        turningEventsDoctorCache$ = this.setDefiniteTimeSlots(res.body || []);
+        turningEventsDoctorCache$ = res.body || [];
         this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
-          turningEventsAssistantCache$ = this.setDefiniteTimeSlots(res.body || []);
+          turningEventsAssistantCache$ = res.body || [];
           turningEventsDoctorCache$ = turningEventsDoctorCache$.filter(
             (turningEvent: ITurningEvent) => turningEvent.icuNurse?.id === this.userRole?.id
           );
@@ -113,7 +113,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     } else if (this.userRole?.dtype === 'Doctor') {
       let turningEventsAssistantCache$: ITurningEvent[] = [];
       this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
-        turningEventsAssistantCache$ = this.setDefiniteTimeSlots(res.body || []);
+        turningEventsAssistantCache$ = res.body || [];
         this.turningEventsPending = turningEventsAssistantCache$.filter(
           (turningEvent: ITurningEvent) => turningEvent.doctor?.id === this.userRole?.id
         );
@@ -121,7 +121,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     } else if (this.userRole?.dtype === 'Assistant') {
       let turningEventsAssistantCache$: ITurningEvent[] = [];
       this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
-        turningEventsAssistantCache$ = this.setDefiniteTimeSlots(res.body || []);
+        turningEventsAssistantCache$ = res.body || [];
         this.turningEventsPending = turningEventsAssistantCache$.filter((turningEvent: ITurningEvent) =>
           turningEvent.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)
         );
@@ -144,7 +144,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
       if (this.userRole.dtype === 'Doctor') {
         this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEvent.id));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEvent));
       }
     }
   }
