@@ -73,8 +73,8 @@ public class FlowableService {
         runtimeService.setVariable(executionId,variableName,value);
     }
 
-    public void addAssistantToTaskById(Long userId, String taskId) {
-        taskService.addCandidateUser(taskId, userId.toString());
+    public void addAssistantToTaskById(Long userRoleId, String taskId) {
+        taskService.addUserIdentityLink(taskId, userRoleId.toString(), "PARTICIPANT");
     }
 
     public boolean isAssistantParticipatingInTurningEvent(Long userId, Long turningEventId) {

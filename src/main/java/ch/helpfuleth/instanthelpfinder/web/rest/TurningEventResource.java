@@ -153,15 +153,18 @@ public class TurningEventResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         TurningEvent turningEvent = turningEventRepository.getOne(inputData.getId());
-        Predicate<TimeSlot> streamsPredicate = TimeSlot::isSelected;
-        Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(streamsPredicate).collect(Collectors.toList());
+        Predicate<TimeSlot> selectedTimeSlotsPredicate = TimeSlot::isSelected;
+        Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
         // TODO: sort selectedTimeSlots by time.
 
         for (TimeSlot timeSlot: selectedTimeSlots) {
             // TODO: This task may not exist anymore, if another assistant finishes the task just a bit before.
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
             flowableService.addAssistantToTaskById(userRoleId, task.getId());
-            List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService.getIdentityLinksForTaskById(task.getId());
+
+            Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
+            List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService.getIdentityLinksForTaskById(task.getId()).stream().filter(assistantsForThisTimeSlotPredicate).collect(Collectors.toList());
+
             if ( assistantsForThisTimeSlot.size() >= 3) {
                 Set<Assistant> assistants = new HashSet<Assistant>() ;
                 for (IdentityLink assistantIdentityLink: assistantsForThisTimeSlot) {
@@ -170,7 +173,7 @@ public class TurningEventResource {
                     assistants.add(assistant);
                 }
                 Map<String, Object> taskLocalVariables = task.getTaskLocalVariables();
-                Long timeSlotId = Long.valueOf(taskLocalVariables.get("timeSlotId").toString()).longValue();
+                Long timeSlotId = Long.valueOf(taskLocalVariables.get("timeSlotId").toString());
                 TimeSlot definiteTimeSlot = timeSlotRepository.getOne(timeSlotId);
 
                 turningEvent.setAssistants(assistants);
