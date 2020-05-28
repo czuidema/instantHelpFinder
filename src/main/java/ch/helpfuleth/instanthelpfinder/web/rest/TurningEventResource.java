@@ -188,10 +188,9 @@ public class TurningEventResource {
                     Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
                     assistants.add(assistant);
                 }
-                TimeSlot definiteTimeSlot = timeSlotRepository.getOne(timeSlot.getId());
 
                 turningEvent.setAssistants(assistants);
-                turningEvent.setDefiniteTimeSlot(definiteTimeSlot);
+                turningEvent.setDefiniteTimeSlot(timeSlot);
                 flowableService.completeTask(task.getId());
 
                 return ResponseEntity.ok()
