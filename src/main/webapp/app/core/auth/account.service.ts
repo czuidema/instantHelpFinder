@@ -111,6 +111,14 @@ export class AccountService {
     return this.userIdentity ? this.userIdentity.imageUrl : '';
   }
 
+  getUserRole(): IUserRole {
+    if (this.userRole) {
+      return this.userRole;
+    } else {
+      return new UserRole();
+    }
+  }
+
   private fetch(): Observable<Account> {
     return this.http.get<Account>(SERVER_API_URL + 'api/account');
   }

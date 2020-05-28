@@ -11,9 +11,7 @@ import { TurningEventService } from './turning-event.service';
 import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog.component';
 import { Account } from 'app/core/user/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { IUser } from 'app/core/user/user.model';
-import { UserService } from 'app/core/user/user.service';
-import { combineAll } from 'rxjs/operators';
+
 import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { IUserRole } from 'app/shared/model/user-role.model';
 import { IAssistant } from 'app/shared/model/assistant.model';
@@ -162,28 +160,22 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // this.loadAll();
     this.registerChangeInTurningEvents();
-
-    // ******************************************
-    // TODO: This userRole check should be global
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
     let login: string = '';
     if (this.account?.login != undefined) {
       login = this.account?.login;
     }
-    this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
-      this.userRole = res.body || undefined;
-      console.log(this.userRole);
-      if (this.userRole != undefined) {
-        this.loadTurningEventsSchedule();
-        this.loadTurningEventsPending();
-        if (this.userRole.dtype === 'Doctor') {
-          this.loadTurningEventsInbox('Doctor');
-        } else if (this.userRole.dtype === 'Assistant') {
-          this.loadTurningEventsInbox('Assistant');
-        }
+
+    this.userRole = this.accountService.getUserRole();
+    if (this.userRole != undefined) {
+      this.loadTurningEventsSchedule();
+      this.loadTurningEventsPending();
+      if (this.userRole.dtype === 'Doctor') {
+        this.loadTurningEventsInbox('Doctor');
+      } else if (this.userRole.dtype === 'Assistant') {
+        this.loadTurningEventsInbox('Assistant');
       }
-    });
-    // *******************************************
+    }
   }
 
   ngOnDestroy(): void {

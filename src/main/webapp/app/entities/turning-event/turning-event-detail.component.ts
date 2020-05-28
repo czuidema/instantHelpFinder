@@ -44,18 +44,8 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ turningEvent }) => (this.turningEvent = turningEvent));
     this.registerChangeInTurningEvent();
-
-    // ******************************************
-    // TODO: This userRole check should be global
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
-    let login: string = '';
-    if (this.account?.login != undefined) {
-      login = this.account?.login;
-    }
-    this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
-      this.userRole = res.body || undefined;
-    });
-    // *******************************************
+    this.userRole = this.accountService.getUserRole();
   }
 
   acceptTurningEvent(turningEventId: number | undefined): void {
