@@ -61,9 +61,14 @@
 
     <sequenceFlow id="Flow_1ivt4cj" sourceRef="Activity_0ihbqbl" targetRef="Activity_0lruncs"/>
 
-    <userTask id="Activity_0lruncs" name="Find three assistants to participate" flowable:candidateGroups="Assistant">
-      <incoming>Flow_1ivt4cj</incoming>
-      <outgoing>Flow_1drg8p8</outgoing>
+    <userTask id="Activity_0lruncs" name="Find three assistants to participate for this timeSlot" flowable:candidateGroups="Assistant">
+        <incoming>Flow_1ivt4cj</incoming>
+        <outgoing>Flow_1drg8p8</outgoing>
+        <multiInstanceLoopCharacteristics isSequential="false">
+            <loopDataInputRef>timeSlotIds</loopDataInputRef>
+            <inputDataItem name="timeSlot"/>
+            <completionCondition>${nrOfCompletedInstances >= 1}</completionCondition>
+        </multiInstanceLoopCharacteristics>
     </userTask>
 
     <sequenceFlow id="Flow_1drg8p8" sourceRef="Activity_0lruncs" targetRef="Activity_0dab7q2"/>

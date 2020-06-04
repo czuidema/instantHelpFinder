@@ -47,12 +47,34 @@
                     </dd>
                 </dl>
 
-                <div class="list-group list-group-horizontal-md">
-                    <div class="custom-control custom-checkbox" *ngFor="let timeSlot of turningEvent.potentialTimeSlots; let index = index;">
-                        <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}">
-                        <label class="custom-control-label" for="{{'timeSlot-' + index}}">{{timeSlot.start}}</label>
+                <form name="editForm" role="form" novalidate (ngSubmit)="acceptTurningEvent()" >
+
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox"
+                             *ngFor="let timeSlot of turningEvent.potentialTimeSlots; let index = index;">
+                            <input type="checkbox" class="custom-control-input" id="{{'timeSlot-' + index}}"
+                                   [formControl]="timeSlotsFormArray.at(index)">
+                            <label class="custom-control-label"
+                                   for="{{'timeSlot-' + index}}">
+                                {{timeSlot.start.toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) + ' - ' + timeSlot.end.toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                })}}
+                            </label>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="form-group">
+                        <button *ngIf="!isMyTurningEvent" type="submit" id="save-entity"
+                                class="btn btn-success">
+                            <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span >Join</span>
+                        </button>
+                    </div>
+
+                </form>
 
                 <button type="submit"
                         (click)="previousState()"
@@ -60,11 +82,7 @@
                     <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
                 </button>
 
-                <button *ngIf="!isMyTurningEvent(turningEvent)" type="button"
-                        (click)="acceptTurningEvent(turningEvent.id)"
-                        class="btn btn-success">
-                    <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span >Join</span>
-                </button>
+
             </div>
         </div>
     </div>

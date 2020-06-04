@@ -34,18 +34,13 @@ export class AccountService {
 
   authenticate(identity: Account | null): void {
     this.userIdentity = identity;
-    let login = this.userIdentity?.login;
+    const login = this.userIdentity?.login;
 
     if (login) {
-      this.userRoleService.findByUserLogin(login).subscribe(
-        (res: HttpResponse<IUserRole>) => {
-          this.userRole = res.body || undefined;
-          this.authenticationState.next(this.userIdentity);
-        },
-        () => {
-          console.log('error when getting user role at authenticate.');
-        }
-      );
+      this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
+        this.userRole = res.body || undefined;
+        this.authenticationState.next(this.userIdentity);
+      });
     } else {
       // if there is no login create an empty user role.
       this.userRole = new UserRole();

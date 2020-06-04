@@ -28,25 +28,25 @@
                     <div *ngFor="let turningEvent of turningEventsSchedule ;trackBy: trackId">
                         <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" data-toggle="collapse" [attr.data-target]="'#collapse' + turningEvent.id" aria-expanded="true" [attr.aria-controls]="'collapse' + turningEvent.id">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">18:20 - 18:30</h5>
+                                <h5 class="mb-1">{{turningEvent.definiteTimeSlot.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}}</h5>
                             </div>
                             <p class="mb-1">Patient: {{turningEvent.patientName}}, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
                         </a>
                         <div [id]="'collapse' + turningEvent.id" class="collapse" [attr.aria-labelledby]="'heading' + turningEvent.id" data-parent="#accordionLeft">
                             <div class="card-body ">
 
-<!--                                <div class="btn-group float-right">-->
+                                <div class="btn-group float-right">
 <!--                                    <button type="submit"-->
 <!--                                            [routerLink]="['/turning-event', turningEvent.id, 'edit']"-->
 <!--                                            class="btn btn-primary btn-sm">-->
 <!--                                        <span class="d-none d-md-inline">Report issue</span>-->
 <!--                                    </button>-->
 
-<!--                                    <button type="submit" (click)="delete(turningEvent)"-->
-<!--                                            class="btn btn-success btn-sm">-->
-<!--                                        <span class="d-none d-md-inline">Done</span>-->
-<!--                                    </button>-->
-<!--                                </div>-->
+                                    <button type="submit" (click)="delete(turningEvent)"
+                                            class="btn btn-success btn-sm">
+                                        <span class="d-none d-md-inline">Done</span>
+                                    </button>
+                                </div>
 
                                 <dl class="row-md jh-entity-details">
                                     <dt><span jhiTranslate="instantHelpFinderApp.turningEvent.doctor">Doctor</span></dt>

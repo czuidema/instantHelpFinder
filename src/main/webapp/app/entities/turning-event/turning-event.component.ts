@@ -11,9 +11,6 @@ import { TurningEventService } from './turning-event.service';
 import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog.component';
 import { Account } from 'app/core/user/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { IUser } from 'app/core/user/user.model';
-import { UserService } from 'app/core/user/user.service';
-import { combineAll } from 'rxjs/operators';
 import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { IUserRole } from 'app/shared/model/user-role.model';
 import { IAssistant } from 'app/shared/model/assistant.model';
@@ -35,9 +32,9 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   userRole?: IUserRole;
   userSubscription?: Subscription;
 
-  tabToggle: boolean = true;
-  accordionInboxToggle: boolean = false;
-  isOpen: boolean = true;
+  tabToggle = true;
+  accordionInboxToggle = false;
+  isOpen = true;
 
   InboxIcon = faInbox;
 
@@ -72,11 +69,8 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   loadTurningEventsSchedule(): void {
     let turningEventsScheduleCache$: ITurningEvent[] = [];
     this.turningEventService.queryTasks('Participant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
-      turningEventsScheduleCache$ = res.body || [];
-      console.log(turningEventsScheduleCache$);
-      if (this.userRole === undefined || this.userRole.id === undefined) {
-        console.log('userRole or userRole.id is undefined.');
-      } else if (this.userRole?.dtype === 'ICUNurse') {
+      turningEventsScheduleCache$ = this.setDefiniteTimeSlots(res.body || []);
+      if (this.userRole?.dtype === 'ICUNurse') {
         this.turningEventsSchedule = turningEventsScheduleCache$.filter(
           (turningEvent: ITurningEvent) => turningEvent.icuNurse?.id === this.userRole?.id
         );
@@ -93,15 +87,13 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   }
 
   loadTurningEventsPending(): void {
-    if (this.userRole === undefined || this.userRole.id === undefined) {
-      console.log('userRole or userRole.id is undefined.');
-    } else if (this.userRole?.dtype === 'ICUNurse') {
+    if (this.userRole?.dtype === 'ICUNurse') {
       let turningEventsDoctorCache$: ITurningEvent[] = [];
       let turningEventsAssistantCache$: ITurningEvent[] = [];
       this.turningEventService.queryTasks('Doctor').subscribe((res: HttpResponse<ITurningEvent[]>) => {
         turningEventsDoctorCache$ = res.body || [];
-        this.turningEventService.queryTasks('Assistant').subscribe((res: HttpResponse<ITurningEvent[]>) => {
-          turningEventsAssistantCache$ = res.body || [];
+        this.turningEventService.queryTasks('Assistant').subscribe((response: HttpResponse<ITurningEvent[]>) => {
+          turningEventsAssistantCache$ = response.body || [];
           turningEventsDoctorCache$ = turningEventsDoctorCache$.filter(
             (turningEvent: ITurningEvent) => turningEvent.icuNurse?.id === this.userRole?.id
           );
@@ -130,12 +122,22 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     }
   }
 
-  acceptTurningEvent(turningEventId: number): void {
-    if (this.userRole != undefined && this.userRole.id != undefined) {
+  setDefiniteTimeSlots(turningEvents: ITurningEvent[]): ITurningEvent[] {
+    return turningEvents.map(turningEvent => {
+      if (turningEvent.definiteTimeSlot !== undefined) {
+        turningEvent.definiteTimeSlot.start = new Date(turningEvent.definiteTimeSlot.start ? turningEvent.definiteTimeSlot.start : '');
+        turningEvent.definiteTimeSlot.end = new Date(turningEvent.definiteTimeSlot.end ? turningEvent.definiteTimeSlot.end : '');
+      }
+      return turningEvent;
+    });
+  }
+
+  acceptTurningEvent(turningEvent: ITurningEvent): void {
+    if (this.userRole !== undefined && this.userRole.id !== undefined && turningEvent.id !== undefined) {
       if (this.userRole.dtype === 'Doctor') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEventId));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
-        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEventId));
+        this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, turningEvent));
       }
     }
   }
@@ -153,10 +155,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
   }
 
   protected subscribeToAcceptResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
-    result.subscribe(
-      () => this.eventManager.broadcast('openTurningEventListModification'),
-      () => console.log('error')
-    );
+    result.subscribe(() => this.eventManager.broadcast('openTurningEventListModification'));
   }
 
   ngOnInit(): void {
@@ -166,14 +165,13 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     // ******************************************
     // TODO: This userRole check should be global
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
-    let login: string = '';
-    if (this.account?.login != undefined) {
+    let login = '';
+    if (this.account?.login !== undefined) {
       login = this.account?.login;
     }
     this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
       this.userRole = res.body || undefined;
-      console.log(this.userRole);
-      if (this.userRole != undefined) {
+      if (this.userRole !== undefined) {
         this.loadTurningEventsSchedule();
         this.loadTurningEventsPending();
         if (this.userRole.dtype === 'Doctor') {

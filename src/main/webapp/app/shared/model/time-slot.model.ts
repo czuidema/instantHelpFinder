@@ -1,9 +1,9 @@
 export interface ITimeSlot {
   start?: Date;
   end?: Date;
-  isSelected?: boolean;
+  selected?: boolean;
 }
 
 export class TimeSlot implements ITimeSlot {
-  constructor(public start?: Date, public end?: Date, public isSelected?: boolean) {}
+  constructor(public start?: Date, public end?: Date, public selected?: boolean) {}
 }

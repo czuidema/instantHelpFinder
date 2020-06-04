@@ -128,7 +128,7 @@ export class TurningEventUpdateComponent implements OnInit {
     });
     turningEvent.potentialTimeSlots
       ? turningEvent.potentialTimeSlots.map(pts => {
-          (this.editForm.get('potentialTimeSlotsCtrl')! as FormArray).push(new FormControl(pts.isSelected));
+          (this.editForm.get('potentialTimeSlotsCtrl')! as FormArray).push(new FormControl(pts.selected));
         })
       : [];
   }
