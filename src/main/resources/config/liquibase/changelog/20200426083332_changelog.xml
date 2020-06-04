@@ -16,7 +16,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="time_slotPK"/>
             </column>
             <column name="end" type="datetime(6)"/>
-            <column name="is_selected" type="BIT"/>
+            <column name="selected" type="BIT"/>
             <column name="start" type="datetime(6)"/>
         </createTable>
     </changeSet>

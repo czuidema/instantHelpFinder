@@ -25,8 +25,8 @@ public class TimeSlot implements Serializable {
     @Column(name = "end")
     private ZonedDateTime end;
 
-    @Column(name = "is_selected")
-    private boolean isSelected;
+    @Column(name = "selected")
+    private boolean selected;
 
 
     public Long getId() {
@@ -54,10 +54,10 @@ public class TimeSlot implements Serializable {
     }
 
     public boolean isSelected() {
-        return isSelected;
+        return selected;
     }
 
     public void setSelected(boolean selected) {
-        isSelected = selected;
+        this.selected = selected;
     }
 }
