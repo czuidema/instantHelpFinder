@@ -90,20 +90,44 @@
        <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(function () {
-                            console.log('Service Worker Registered');
-                        });
-                });
-                window.addEventListener('push', function(event) {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(registration => {
+                            let serviceWorker;
+                            if (registration.installing) {
+                                serviceWorker = registration.installing;
+                                console.log('Service worker installing');
+                            } else if (registration.waiting) {
+                                serviceWorker = registration.waiting;
+                                console.log('Service worker installed & waiting');
+                            } else if (registration.active) {
+                                serviceWorker = registration.active;
+                                console.log('Service worker active');
+                            }
 
-                    var myNotif = event.data.json();
-                    const promiseChain = window.registration.showNotification(myNotif.title);
-
-                    event.waitUntil(promiseChain);
+                            if (serviceWorker) {
+                                console.log("sw current state", serviceWorker.state);
+                                if (serviceWorker.state === "activated") {
+                                    //If push subscription wasnt done yet have to do here
+                                    console.log("sw already activated - Do watever needed here");
+                                    registration.pushManager.subscribe({userVisibleOnly: true});
+                                }
+                                serviceWorker.addEventListener("statechange", function(e) {
+                                    console.log("sw statechange : ", e.target.state);
+                                    if (e.target.state === "activated") {
+                                        // use pushManger for subscribing here.
+                                        console.log("Just now activated. now we can subscribe for push notification")
+                                        registration.pushManager.subscribe({userVisibleOnly: true});
+                                    }
+                                });
+                            }
+                        })
+                        .catch(registrationError => {
+                            console.log('Service Worker Registration failed.');
+                            console.log(registrationError);
+                        })
                 });
             }
-        </script>
+       </script>
     <!-- Google Analytics: uncomment and change UA-XXXXX-X to be your site's ID.
     <script>
         (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=

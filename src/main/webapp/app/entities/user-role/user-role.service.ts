@@ -18,7 +18,7 @@ export class UserRoleService {
 
   public resourceUrl = SERVER_API_URL + 'api/user-roles';
 
-  constructor(protected http: HttpClient, protected accountService: AccountService) {}
+  constructor(protected http: HttpClient) {}
 
   create(userRole: IUserRole): Observable<EntityResponseType> {
     return this.http.post<IUserRole>(this.resourceUrl, userRole, { observe: 'response' });
@@ -48,16 +48,6 @@ export class UserRoleService {
   authenticate(identity: IUserRole | null): void {
     this.userRole = identity;
     this.userRoleState.next(this.userRole);
-  }
-
-  hasAnyUserRole(userRoles: string[] | string): boolean {
-    if (!this.userRole || !this.userRole.dtype) {
-      return false;
-    }
-    if (!Array.isArray(userRoles)) {
-      userRoles = [userRoles];
-    }
-    return userRoles.some((userRole: string) => this.userRole?.dtype === userRole);
   }
 
   getUserRoleState(): Observable<IUserRole | null> {
