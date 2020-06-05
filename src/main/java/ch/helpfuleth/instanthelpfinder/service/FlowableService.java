@@ -92,7 +92,6 @@ public class FlowableService {
         return false;
     }
 
-    // TODO: carefully check this query!
     public ProcessInstance getProcessInstanceByTurningEventId(Long turningEventId) {
         return runtimeService.createProcessInstanceQuery().variableValueEquals("turningEventId",turningEventId).singleResult();
     }
@@ -104,6 +103,11 @@ public class FlowableService {
     public Task getTaskByTimeSlotId(Long timeSlotId) {
         Execution execution = runtimeService.createExecutionQuery().variableValueEquals("timeSlot", timeSlotId.toString()).singleResult();
         return taskService.createTaskQuery().executionId(execution.getId()).singleResult();
+    }
+
+    public Task getTaskByTurningEventId(Long turningEventId) {
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().variableValueEquals("turningEventId",turningEventId).singleResult();
+        return taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
     }
 
     public List<Task> getAllActiveTasks() {
