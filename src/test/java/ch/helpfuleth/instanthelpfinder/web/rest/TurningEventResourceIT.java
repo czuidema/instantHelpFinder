@@ -89,12 +89,6 @@ public class TurningEventResourceIT {
     private AssistantRepository assistantRepositoryMock;
 
     @Autowired
-    private TimeSlotRepository timeSlotRepository;
-
-    @Mock
-    private TimeSlotRepository timeSlotRepositoryMock;
-
-    @Autowired
     private EntityManager em;
 
     @Autowired
@@ -201,7 +195,7 @@ public class TurningEventResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllTurningEventsWithEagerRelationshipsIsEnabled() throws Exception {
-        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock, assistantRepositoryMock, timeSlotRepositoryMock);
+        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock, assistantRepositoryMock);
         when(turningEventRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         restTurningEventMockMvc.perform(get("/api/turning-events?eagerload=true"))
@@ -212,7 +206,7 @@ public class TurningEventResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllTurningEventsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock, assistantRepositoryMock, timeSlotRepositoryMock);
+        TurningEventResource turningEventResource = new TurningEventResource(turningEventRepositoryMock, turningEventServiceMock, flowableServiceMock, doctorRepositoryMock, assistantRepositoryMock);
         when(turningEventRepositoryMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         restTurningEventMockMvc.perform(get("/api/turning-events?eagerload=true"))

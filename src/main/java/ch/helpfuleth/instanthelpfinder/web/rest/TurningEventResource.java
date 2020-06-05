@@ -6,7 +6,6 @@ import ch.helpfuleth.instanthelpfinder.domain.TimeSlot;
 import ch.helpfuleth.instanthelpfinder.domain.TurningEvent;
 import ch.helpfuleth.instanthelpfinder.repository.AssistantRepository;
 import ch.helpfuleth.instanthelpfinder.repository.DoctorRepository;
-import ch.helpfuleth.instanthelpfinder.repository.TimeSlotRepository;
 import ch.helpfuleth.instanthelpfinder.repository.TurningEventRepository;
 import ch.helpfuleth.instanthelpfinder.service.FlowableService;
 import ch.helpfuleth.instanthelpfinder.service.TurningEventService;
@@ -14,19 +13,16 @@ import ch.helpfuleth.instanthelpfinder.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.task.api.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.Doc;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -54,22 +50,19 @@ public class TurningEventResource {
     private final FlowableService flowableService;
     private final DoctorRepository doctorRepository;
     private final AssistantRepository assistantRepository;
-    private final TimeSlotRepository timeSlotRepository;
 
     public TurningEventResource(
         TurningEventRepository turningEventRepository,
         TurningEventService turningEventService,
         FlowableService flowableService,
         DoctorRepository doctorRepository,
-        AssistantRepository assistantRepository,
-        TimeSlotRepository timeSlotRepository
+        AssistantRepository assistantRepository
     ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
         this.flowableService = flowableService;
         this.doctorRepository = doctorRepository;
         this.assistantRepository = assistantRepository;
-        this.timeSlotRepository = timeSlotRepository;
     }
 
     /**
@@ -155,25 +148,12 @@ public class TurningEventResource {
         }
         TurningEvent turningEvent = turningEventRepository.getOne(inputData.getId());
 
-        // select a potential time slot
-        Collection<TimeSlot> timeSlots = turningEvent.getPotentialTimeSlots();
-        int i = 0;
-        for (TimeSlot timeSlot : timeSlots) {
-            if (i == 0) {
-                timeSlot.setSelected(true);
-            }
-            i++;
-        }
-
-
         Predicate<TimeSlot> selectedTimeSlotsPredicate = TimeSlot::isSelected;
-        // Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
-        Collection<TimeSlot> selectedTimeSlots = turningEvent.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
+        Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
         // TODO: sort selectedTimeSlots by time.
 
         for (TimeSlot timeSlot : selectedTimeSlots) {
             // TODO: This task may not exist anymore, if another assistant finishes the task just a bit before.
-            List<Task> activeTasks = flowableService.getAllActiveTasks();
 
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
             flowableService.addAssistantToTaskById(userRoleId, task.getId());
@@ -291,10 +271,8 @@ public class TurningEventResource {
     public ResponseEntity<Void> deleteTurningEvent(@PathVariable Long id) {
         log.debug("REST request to delete TurningEvent : {}", id);
 
-        ProcessInstance processInstance = flowableService.getProcessInstanceByTurningEventId(id);
-        flowableService.deleteProcessInstance(processInstance.getId());
-
-        turningEventRepository.deleteById(id);
+        Task task = flowableService.getTaskByTurningEventId(id);
+        flowableService.completeTask(task.getId());
 
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
