@@ -92,12 +92,15 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
       this.turningEvent?.id !== undefined
     ) {
       const timeSlotsSelections = this.timeSlotsFormArray.getRawValue();
-      this.turningEvent.potentialTimeSlots = this.turningEvent.potentialTimeSlots!.filter((timeSlot, i) => {
-        return (timeSlot.selected = timeSlotsSelections[i]);
-      });
       if (this.userRole.dtype === 'Doctor') {
+        this.turningEvent.potentialTimeSlots = this.turningEvent.potentialTimeSlots!.filter((timeSlot, i) => {
+          return (timeSlot.selected = timeSlotsSelections[i]);
+        });
         this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventDoctor(this.userRole.id, this.turningEvent));
       } else if (this.userRole.dtype === 'Assistant') {
+        this.turningEvent.potentialTimeSlots!.forEach((timeSlot, i) => {
+          timeSlot.selected = timeSlotsSelections[i];
+        });
         this.subscribeToAcceptResponse(this.turningEventService.acceptTurningEventAssistant(this.userRole.id, this.turningEvent));
       }
     }
