@@ -63,7 +63,7 @@ public class TurningEventResource {
         DoctorRepository doctorRepository,
         AssistantRepository assistantRepository,
         TimeSlotRepository timeSlotRepository
-        ) {
+    ) {
         this.turningEventRepository = turningEventRepository;
         this.turningEventService = turningEventService;
         this.flowableService = flowableService;
@@ -133,7 +133,7 @@ public class TurningEventResource {
         result.setDoctor(doctor);
 
         Collection<String> timeSlotIds = new ArrayList<String>();
-        for (TimeSlot timeSlot: result.getPotentialTimeSlots()) {
+        for (TimeSlot timeSlot : result.getPotentialTimeSlots()) {
             timeSlotIds.add(timeSlot.getId().toString());
         }
 
@@ -156,9 +156,9 @@ public class TurningEventResource {
         TurningEvent turningEvent = turningEventRepository.getOne(inputData.getId());
 
         // select a potential time slot
-        Collection<TimeSlot>  timeSlots = turningEvent.getPotentialTimeSlots();
+        Collection<TimeSlot> timeSlots = turningEvent.getPotentialTimeSlots();
         int i = 0;
-        for (TimeSlot timeSlot: timeSlots) {
+        for (TimeSlot timeSlot : timeSlots) {
             if (i == 0) {
                 timeSlot.setSelected(true);
             }
@@ -171,7 +171,7 @@ public class TurningEventResource {
         Collection<TimeSlot> selectedTimeSlots = turningEvent.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
         // TODO: sort selectedTimeSlots by time.
 
-        for (TimeSlot timeSlot: selectedTimeSlots) {
+        for (TimeSlot timeSlot : selectedTimeSlots) {
             // TODO: This task may not exist anymore, if another assistant finishes the task just a bit before.
             List<Task> activeTasks = flowableService.getAllActiveTasks();
 
@@ -181,9 +181,9 @@ public class TurningEventResource {
             Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
             List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService.getIdentityLinksForTaskById(task.getId()).stream().filter(assistantsForThisTimeSlotPredicate).collect(Collectors.toList());
 
-            if ( assistantsForThisTimeSlot.size() >= 3) {
-                Set<Assistant> assistants = new HashSet<Assistant>() ;
-                for (IdentityLink assistantIdentityLink: assistantsForThisTimeSlot) {
+            if (assistantsForThisTimeSlot.size() >= 3) {
+                Set<Assistant> assistants = new HashSet<Assistant>();
+                for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
                     Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
                     Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
                     assistants.add(assistant);
@@ -230,6 +230,7 @@ public class TurningEventResource {
     }
 
     // get tasks for a candidate group, candidateGroupName can be Doctors or Assistants
+
     /**
      * {@code GET  /turning-events/open/:candidateGroupName} : get all the turningEvents associated to candidateGroupName.
      *
@@ -244,13 +245,40 @@ public class TurningEventResource {
         Set<TurningEvent> turningEvents = new HashSet<TurningEvent>();
         for (Task task : tasks) {
             String processInstanceId = task.getProcessInstanceId();
-            Map<String,Object> processVariables = flowableService.getProcessInstanceVariables(processInstanceId);
+            Map<String, Object> processVariables = flowableService.getProcessInstanceVariables(processInstanceId);
             Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString()).longValue();
 
             TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
             turningEvents.add(turningEvent);
         }
         return new ArrayList<TurningEvent>(turningEvents);
+    }
+
+    @GetMapping("/turning-events/{id}/timeslots")
+    public Map<TimeSlot, Set<Assistant>> getTimeSlotsForTurningEvent(@PathVariable Long id) {
+        log.debug("REST request to get TimeSlots for TurningEvent : {}", id);
+        TurningEvent turningEvent = turningEventRepository.getOne(id);
+
+        Map<TimeSlot, Set<Assistant>> timeSlotsToAssistants = new HashMap<>();
+
+        for (TimeSlot timeSlot : turningEvent.getPotentialTimeSlots()) {
+            Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
+
+            Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
+            List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService
+                .getIdentityLinksForTaskById(task.getId())
+                .stream().filter(assistantsForThisTimeSlotPredicate)
+                .collect(Collectors.toList());
+
+            Set<Assistant> assistants = new HashSet<Assistant>();
+            for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
+                Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
+                Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
+                assistants.add(assistant);
+            }
+            timeSlotsToAssistants.put(timeSlot, assistants);
+        }
+        return timeSlotsToAssistants;
     }
 
     /**
