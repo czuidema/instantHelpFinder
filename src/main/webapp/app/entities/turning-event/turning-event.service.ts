@@ -31,8 +31,8 @@ export class TurningEventService {
     return this.http.put<ITurningEvent>(`${this.resourceUrl}/assistants/${assistantId}`, turningEvent, { observe: 'response' });
   }
 
-  getTimeSlots(turningEventId: number): Observable<any> {
-    return this.http.get<any>(`${this.resourceUrl}/${turningEventId}/timeslots`, { observe: 'response' });
+  getTimeSlots(turningEventId: number) {
+    return this.http.get(`${this.resourceUrl}/${turningEventId}/timeslots`, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {

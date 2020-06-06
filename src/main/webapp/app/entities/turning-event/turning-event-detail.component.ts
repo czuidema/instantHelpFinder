@@ -9,7 +9,7 @@ import { HttpResponse } from '@angular/common/http';
 import { JhiEventManager } from 'ng-jhipster';
 import { Account } from 'app/core/user/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { IAssistant } from 'app/shared/model/assistant.model';
+import { Assistant, IAssistant } from 'app/shared/model/assistant.model';
 import { TimeSlot } from 'app/shared/model/time-slot.model';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
@@ -48,7 +48,7 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.userRole = this.accountService.getUserRole();
-    this.dataObservable$.subscribe(([data, assistantsForTimeSlots]) => {
+    this.dataObservable$.subscribe(([data, res]) => {
       this.turningEvent = data.turningEvent;
       this.turningEvent!.potentialTimeSlots = data.turningEvent.potentialTimeSlots
         ? data.turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
@@ -57,8 +57,6 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
             return pts;
           })
         : [];
-
-      assistantsForTimeSlots;
 
       if (this.turningEvent?.doctor?.id === this.userRole?.id || this.turningEvent?.icuNurse?.id === this.userRole?.id) {
         this.isMyTurningEvent = true;

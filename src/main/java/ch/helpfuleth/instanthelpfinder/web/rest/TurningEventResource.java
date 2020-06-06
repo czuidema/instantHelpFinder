@@ -235,14 +235,15 @@ public class TurningEventResource {
     }
 
     @GetMapping("/turning-events/{id}/timeslots")
-    public Map<TimeSlot, Set<Assistant>> getTimeSlotsForTurningEvent(@PathVariable Long id) {
+    public List<TimeSlotRepresentation> getTimeSlotsForTurningEvent(@PathVariable Long id) {
         log.debug("REST request to get TimeSlots for TurningEvent : {}", id);
         TurningEvent turningEvent = turningEventRepository.getOne(id);
 
-        Map<TimeSlot, Set<Assistant>> timeSlotsToAssistants = new HashMap<>();
+        List<TimeSlotRepresentation> listOfTimeSlots = new ArrayList<TimeSlotRepresentation>();
 
         for (TimeSlot timeSlot : turningEvent.getPotentialTimeSlots()) {
             Set<Assistant> assistants = new HashSet<Assistant>();
+
 
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
             // if the turningEvent is not yet visible to assistants, there is no task associated to its potentialTimeSlots (i.e. task is null).
@@ -259,9 +260,10 @@ public class TurningEventResource {
                     assistants.add(assistant);
                 }
             }
-            timeSlotsToAssistants.put(timeSlot, assistants);
+            TimeSlotRepresentation timeSlotRepresentation = new TimeSlotRepresentation(timeSlot, assistants);
+            listOfTimeSlots.add(timeSlotRepresentation);
         }
-        return timeSlotsToAssistants;
+        return listOfTimeSlots;
     }
 
     /**
@@ -279,4 +281,31 @@ public class TurningEventResource {
 
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
+
+
+    static class TimeSlotRepresentation {
+
+        private TimeSlot timeSlot;
+        private Set<Assistant> assistants;
+
+        public TimeSlotRepresentation(TimeSlot timeSlot, Set<Assistant> assistants) {
+            this.timeSlot = timeSlot;
+            this.assistants = assistants;
+        }
+
+        public TimeSlot getTimeSlot() {
+            return timeSlot;
+        }
+        public void setTimeSlot(TimeSlot timeSlot) {
+            this.timeSlot = timeSlot;
+        }
+
+        public Set<Assistant> getAssistants() {
+            return assistants;
+        }
+        public void setAssistants(Set<Assistant> assistants) {
+            this.assistants = assistants;
+        }
+    }
+
 }
