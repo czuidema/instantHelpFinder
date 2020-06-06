@@ -102,7 +102,11 @@ public class FlowableService {
 
     public Task getTaskByTimeSlotId(Long timeSlotId) {
         Execution execution = runtimeService.createExecutionQuery().variableValueEquals("timeSlot", timeSlotId.toString()).singleResult();
-        return taskService.createTaskQuery().executionId(execution.getId()).singleResult();
+        if (execution != null) {
+            return taskService.createTaskQuery().executionId(execution.getId()).singleResult();
+        } else {
+            return null;
+        }
     }
 
     public Task getTaskByTurningEventId(Long turningEventId) {

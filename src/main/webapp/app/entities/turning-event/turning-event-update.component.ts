@@ -68,12 +68,10 @@ export class TurningEventUpdateComponent implements OnInit {
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => {
-      this.userRoleService.findByUserLogin(account!.login).subscribe((res: HttpResponse<IUserRole>) => {
-        this.currentUserRole = res.body || new UserRole();
-        if (this.currentUserRole instanceof Doctor) {
-          this.isDoctor = true;
-        }
-      });
+      this.currentUserRole = this.accountService.getUserRole();
+      if (this.currentUserRole instanceof Doctor) {
+        this.isDoctor = true;
+      }
     });
     this.activatedRoute.data.subscribe(({ turningEvent }) => {
       this.updateForm(turningEvent);

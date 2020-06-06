@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Data } from '@angular/router';
 
 import { ITurningEvent } from 'app/shared/model/turning-event.model';
 import { IUserRole } from 'app/shared/model/user-role.model';
@@ -9,21 +9,18 @@ import { HttpResponse } from '@angular/common/http';
 import { JhiEventManager } from 'ng-jhipster';
 import { Account } from 'app/core/user/account.model';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserRoleService } from 'app/entities/user-role/user-role.service';
 import { IAssistant } from 'app/shared/model/assistant.model';
 import { TimeSlot } from 'app/shared/model/time-slot.model';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { takeUntil } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'jhi-turning-event-detail',
   templateUrl: './turning-event-detail.component.html'
 })
 export class TurningEventDetailComponent implements OnInit, OnDestroy {
-  isSaving = false;
   turningEvent: ITurningEvent | null = null;
 
-  // TODO: This userRole should be global
   userRole?: IUserRole;
   account: Account | null = null;
 
@@ -38,44 +35,40 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
     protected turningEventService: TurningEventService,
     protected eventManager: JhiEventManager,
     protected accountService: AccountService,
-    protected userRoleService: UserRoleService,
     private fb: FormBuilder
   ) {}
 
+  dataObservable$ = this.activatedRoute.data
+    .pipe(
+      switchMap(data => {
+        return combineLatest([this.activatedRoute.data, this.turningEventService.getTimeSlots(data.turningEvent.id)]);
+      })
+    )
+    .pipe(takeUntil(this.destroy));
+
   ngOnInit(): void {
-    combineLatest([this.activatedRoute.data, this.accountService.getAuthenticationState().pipe(takeUntil(this.destroy))])
-      .pipe(takeUntil(this.destroy))
-      .subscribe(([data, account]) => {
-        this.turningEvent = data.turningEvent;
-        this.turningEvent!.potentialTimeSlots = data.turningEvent.potentialTimeSlots
-          ? data.turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
-              pts.start = new Date(pts.start ? pts.start : '');
-              pts.end = new Date(pts.end ? pts.end : '');
-              return pts;
-            })
-          : [];
-        this.account = account;
-        const login = this.account?.login ? this.account.login : '';
+    this.userRole = this.accountService.getUserRole();
+    this.dataObservable$.subscribe(([data, assistantsForTimeSlots]) => {
+      this.turningEvent = data.turningEvent;
+      this.turningEvent!.potentialTimeSlots = data.turningEvent.potentialTimeSlots
+        ? data.turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
+            pts.start = new Date(pts.start ? pts.start : '');
+            pts.end = new Date(pts.end ? pts.end : '');
+            return pts;
+          })
+        : [];
 
-        this.userRoleService.findByUserLogin(login).subscribe((res: HttpResponse<IUserRole>) => {
-          // TODO: This userRole check should be global
-          this.userRole = res.body || undefined;
-          if (this.userRole === undefined || this.userRole.id === undefined || this.turningEvent === undefined) {
-            this.isMyTurningEvent = false;
-          } else if (this.turningEvent?.doctor?.id === this.userRole?.id || this.turningEvent?.icuNurse?.id === this.userRole?.id) {
-            this.isMyTurningEvent = true;
-          } else if (this.turningEvent?.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)) {
-            this.isMyTurningEvent = true;
-          } else {
-            this.isMyTurningEvent = false;
-          }
+      assistantsForTimeSlots;
 
-          this.initFormArray();
-        });
-      });
+      if (this.turningEvent?.doctor?.id === this.userRole?.id || this.turningEvent?.icuNurse?.id === this.userRole?.id) {
+        this.isMyTurningEvent = true;
+      } else if (this.turningEvent?.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)) {
+        this.isMyTurningEvent = true;
+      }
+
+      this.initFormArray();
+    });
   }
-
-  // TimeSlot Form
 
   initFormArray(): void {
     this.turningEvent?.potentialTimeSlots!.map(timeSlot => this.timeSlotsFormArray.push(new FormControl(false)));
@@ -107,7 +100,7 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
   }
 
   protected subscribeToAcceptResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
-    result.subscribe(() => this.eventManager.broadcast('TurningEventModification'));
+    result.subscribe(() => this.previousState());
   }
 
   previousState(): void {

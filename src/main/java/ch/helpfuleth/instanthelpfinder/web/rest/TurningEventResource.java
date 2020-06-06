@@ -242,19 +242,22 @@ public class TurningEventResource {
         Map<TimeSlot, Set<Assistant>> timeSlotsToAssistants = new HashMap<>();
 
         for (TimeSlot timeSlot : turningEvent.getPotentialTimeSlots()) {
-            Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
-
-            Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
-            List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService
-                .getIdentityLinksForTaskById(task.getId())
-                .stream().filter(assistantsForThisTimeSlotPredicate)
-                .collect(Collectors.toList());
-
             Set<Assistant> assistants = new HashSet<Assistant>();
-            for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
-                Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
-                Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
-                assistants.add(assistant);
+
+            Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
+            // if the turningEvent is not yet visible to assistants, there is no task associated to its potentialTimeSlots (i.e. task is null).
+            if (task != null) {
+                Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
+                List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService
+                    .getIdentityLinksForTaskById(task.getId())
+                    .stream().filter(assistantsForThisTimeSlotPredicate)
+                    .collect(Collectors.toList());
+
+                for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
+                    Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
+                    Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
+                    assistants.add(assistant);
+                }
             }
             timeSlotsToAssistants.put(timeSlot, assistants);
         }
