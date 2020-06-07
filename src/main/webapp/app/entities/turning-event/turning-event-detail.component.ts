@@ -38,34 +38,33 @@ export class TurningEventDetailComponent implements OnInit, OnDestroy {
     private fb: FormBuilder
   ) {}
 
-  dataObservable$ = this.activatedRoute.data
-    .pipe(
-      switchMap(data => {
-        return combineLatest([this.activatedRoute.data, this.turningEventService.getTimeSlots(data.turningEvent.id)]);
-      })
-    )
-    .pipe(takeUntil(this.destroy));
-
   ngOnInit(): void {
     this.userRole = this.accountService.getUserRole();
-    this.dataObservable$.subscribe(([data, res]) => {
-      this.turningEvent = data.turningEvent;
-      this.turningEvent!.potentialTimeSlots = data.turningEvent.potentialTimeSlots
-        ? data.turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
-            pts.start = new Date(pts.start ? pts.start : '');
-            pts.end = new Date(pts.end ? pts.end : '');
-            return pts;
-          })
-        : [];
+    this.activatedRoute.data
+      .pipe(
+        switchMap(data => {
+          return combineLatest([this.activatedRoute.data, this.turningEventService.getTimeSlots(data.turningEvent.id)]);
+        }),
+        takeUntil(this.destroy)
+      )
+      .subscribe(([data, res]) => {
+        this.turningEvent = data.turningEvent;
+        this.turningEvent!.potentialTimeSlots = data.turningEvent.potentialTimeSlots
+          ? data.turningEvent.potentialTimeSlots.map((pts: TimeSlot) => {
+              pts.start = new Date(pts.start ? pts.start : '');
+              pts.end = new Date(pts.end ? pts.end : '');
+              return pts;
+            })
+          : [];
 
-      if (this.turningEvent?.doctor?.id === this.userRole?.id || this.turningEvent?.icuNurse?.id === this.userRole?.id) {
-        this.isMyTurningEvent = true;
-      } else if (this.turningEvent?.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)) {
-        this.isMyTurningEvent = true;
-      }
+        if (this.turningEvent?.doctor?.id === this.userRole?.id || this.turningEvent?.icuNurse?.id === this.userRole?.id) {
+          this.isMyTurningEvent = true;
+        } else if (this.turningEvent?.assistants?.some((assistant: IAssistant) => assistant.id === this.userRole?.id)) {
+          this.isMyTurningEvent = true;
+        }
 
-      this.initFormArray();
-    });
+        this.initFormArray();
+      });
   }
 
   initFormArray(): void {
