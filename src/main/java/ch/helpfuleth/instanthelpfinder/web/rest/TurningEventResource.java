@@ -85,7 +85,7 @@ public class TurningEventResource {
         variables.put("turningEventId", result.getId());
 
         // start process instance (currently ICUNurse)
-        ProcessInstance processInstance = flowableService.startProcess(variables);
+        flowableService.startProcess(variables);
 
         return ResponseEntity.created(new URI("/api/turning-events/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -113,6 +113,7 @@ public class TurningEventResource {
             .body(result);
     }
 
+    // TODO: refactor resource path to /doctors/{doctorId}/turningEvents
     @PutMapping("/turning-events/doctors/{userRoleId}")
     public ResponseEntity<TurningEvent> acceptTurningEventDoctor(@RequestBody TurningEvent turningEvent, @PathVariable Long userRoleId) throws URISyntaxException {
         log.debug("REST request to update TurningEvent : {}", turningEvent);
@@ -120,13 +121,13 @@ public class TurningEventResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
 
-        TurningEvent result = turningEventService.update(turningEvent);
+        TurningEvent updatedTurningEvent = turningEventService.update(turningEvent);
 
         Doctor doctor = doctorRepository.getOne(userRoleId);
-        result.setDoctor(doctor);
+        updatedTurningEvent.setDoctor(doctor);
 
-        Collection<String> timeSlotIds = new ArrayList<String>();
-        for (TimeSlot timeSlot : result.getPotentialTimeSlots()) {
+        Collection<String> timeSlotIds = new ArrayList<>();
+        for (TimeSlot timeSlot : updatedTurningEvent.getPotentialTimeSlots()) {
             timeSlotIds.add(timeSlot.getId().toString());
         }
 
@@ -137,51 +138,61 @@ public class TurningEventResource {
         flowableService.completeTask(task.getId());
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
-            .body(result);
+            .body(updatedTurningEvent);
     }
 
+    // TODO: refactor resource path to /assistants/{assistantId}/turningEvents
+    @Transactional
     @PutMapping("/turning-events/assistants/{userRoleId}")
-    public ResponseEntity<TurningEvent> acceptTurningEventAssistant(@RequestBody TurningEvent inputData, @PathVariable Long userRoleId) {
-        log.debug("REST request to update TurningEvent : {}", inputData);
-        if (inputData.getId() == null) {
+    public ResponseEntity<TurningEvent> acceptTurningEventAssistant(@RequestBody TurningEvent turningEvent, @PathVariable Long userRoleId) {
+        log.debug("REST request to update TurningEvent : {}", turningEvent);
+        if (turningEvent.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        TurningEvent turningEvent = turningEventRepository.getOne(inputData.getId());
 
-        Predicate<TimeSlot> selectedTimeSlotsPredicate = TimeSlot::isSelected;
-        Collection<TimeSlot> selectedTimeSlots = inputData.getPotentialTimeSlots().stream().filter(selectedTimeSlotsPredicate).collect(Collectors.toList());
-        // TODO: sort selectedTimeSlots by time.
+        if (Objects.requireNonNull(turningEvent.getAssistants()).size() > 0) {
+            throw new BadRequestAlertException("Turning event already occupied by 3 assistants.", ENTITY_NAME, "tooLate");
+        }
+
+        TurningEvent storedTurningEvent = turningEventRepository.getOne(turningEvent.getId());
+
+        Collection<TimeSlot> selectedTimeSlots = turningEvent.getPotentialTimeSlots().stream()
+                .filter(TimeSlot::isSelected)
+                .sorted(Comparator.comparing(TimeSlot::getStart))
+                .collect(Collectors.toList());
 
         for (TimeSlot timeSlot : selectedTimeSlots) {
-            // TODO: This task may not exist anymore, if another assistant finishes the task just a bit before.
 
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
             flowableService.addAssistantToTaskById(userRoleId, task.getId());
 
-            Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
-            List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService.getIdentityLinksForTaskById(task.getId()).stream().filter(assistantsForThisTimeSlotPredicate).collect(Collectors.toList());
+            List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService
+                    .getIdentityLinksForTaskById(task.getId())
+                    .stream()
+                    .filter(identityLink -> identityLink.getType().equals("PARTICIPANT"))
+                    .collect(Collectors.toList());
 
             if (assistantsForThisTimeSlot.size() >= 3) {
-                Set<Assistant> assistants = new HashSet<Assistant>();
+                Set<Assistant> assistants = new HashSet<>();
                 for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
                     Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
                     Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
                     assistants.add(assistant);
                 }
 
-                turningEvent.setAssistants(assistants);
-                turningEvent.setDefiniteTimeSlot(timeSlot);
+                storedTurningEvent.setAssistants(assistants);
+                storedTurningEvent.setDefiniteTimeSlot(timeSlot);
                 flowableService.completeTask(task.getId());
 
                 return ResponseEntity.ok()
-                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
-                    .body(turningEvent);
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, storedTurningEvent.getId().toString()))
+                    .body(storedTurningEvent);
             }
         }
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString()))
-            .body(turningEvent);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, storedTurningEvent.getId().toString()))
+            .body(storedTurningEvent);
     }
 
     /**
@@ -222,16 +233,16 @@ public class TurningEventResource {
         log.debug("REST request to get TurningEvents for a specific candidate group : {}", candidateGroupName);
 
         List<Task> tasks = flowableService.getCandidateGroupTasks(candidateGroupName);
-        Set<TurningEvent> turningEvents = new HashSet<TurningEvent>();
+        Set<TurningEvent> turningEvents = new HashSet<>();
         for (Task task : tasks) {
             String processInstanceId = task.getProcessInstanceId();
             Map<String, Object> processVariables = flowableService.getProcessInstanceVariables(processInstanceId);
-            Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString()).longValue();
+            Long turningEventId = Long.valueOf(processVariables.get("turningEventId").toString());
 
             TurningEvent turningEvent = turningEventRepository.getOne(turningEventId);
             turningEvents.add(turningEvent);
         }
-        return new ArrayList<TurningEvent>(turningEvents);
+        return new ArrayList<>(turningEvents);
     }
 
     @GetMapping("/turning-events/{id}/timeslots")
@@ -239,19 +250,18 @@ public class TurningEventResource {
         log.debug("REST request to get TimeSlots for TurningEvent : {}", id);
         TurningEvent turningEvent = turningEventRepository.getOne(id);
 
-        List<TimeSlotRepresentation> listOfTimeSlots = new ArrayList<TimeSlotRepresentation>();
+        List<TimeSlotRepresentation> listOfTimeSlots = new ArrayList<>();
 
         for (TimeSlot timeSlot : turningEvent.getPotentialTimeSlots()) {
-            Set<Assistant> assistants = new HashSet<Assistant>();
+            Set<Assistant> assistants = new HashSet<>();
 
 
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
             // if the turningEvent is not yet visible to assistants, there is no task associated to its potentialTimeSlots (i.e. task is null).
             if (task != null) {
-                Predicate<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlotPredicate = identityLink -> identityLink.getType().equals("PARTICIPANT");
                 List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService
                     .getIdentityLinksForTaskById(task.getId())
-                    .stream().filter(assistantsForThisTimeSlotPredicate)
+                    .stream().filter(identityLink -> identityLink.getType().equals("PARTICIPANT"))
                     .collect(Collectors.toList());
 
                 for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {

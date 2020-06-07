@@ -56,7 +56,7 @@ public class TurningEventService {
 
     public TurningEvent update(TurningEvent turningEvent) {
         String currentUserLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new RuntimeException("Could not get the logged in user."));
-        UserRole userRole = userRoleRepository.findOneByUserLogin(currentUserLogin).orElseThrow(() -> new RuntimeException("UserRole for user with login " + currentUserLogin + " not found."));
+        userRoleRepository.findOneByUserLogin(currentUserLogin).orElseThrow(() -> new RuntimeException("UserRole for user with login " + currentUserLogin + " not found."));
         if (turningEvent.getStatus() == ETurningEventStatus.PENDING) {
             if(turningEvent.getDoctor() != null && turningEvent.getIcuNurse() != null) {
 
