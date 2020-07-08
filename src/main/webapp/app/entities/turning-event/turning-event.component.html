@@ -85,7 +85,7 @@
                     <div *ngFor="let turningEvent of turningEventsInbox ;trackBy: trackId">
                         <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" [routerLink]="['/turning-event', turningEvent.id, 'view']">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">18:20 - 18:30</h5>
+                                <h5 class="mb-1"> {{getTime(turningEvent)}} </h5>
                             </div>
                             <p class="mb-1">Patient: {{turningEvent.patientName}}, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>
                         </a>
@@ -102,7 +102,7 @@
                     <div *ngFor="let turningEvent of turningEventsPending ;trackBy: trackId">
                         <a class="list-group-item list-group-item-action flex-column align-items-start" [id]="'heading' + turningEvent.id" [routerLink]="['/turning-event', turningEvent.id, 'view']">
                             <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">18:20 - 18:30</h5>
+                                <h5 class="mb-1">{{getTime(turningEvent)}}</h5>
                                 <small><span class="badge badge-pill badge-warning">2</span></small>
                             </div>
                             <p class="mb-1">Bed: 489, Ward: {{ turningEvent.ward }}, Room: {{ turningEvent.roomNr }}</p>

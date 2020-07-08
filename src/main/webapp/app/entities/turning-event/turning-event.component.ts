@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { faInbox } from '@fortawesome/free-solid-svg-icons';
 
-import { ITurningEvent } from 'app/shared/model/turning-event.model';
+import { ITurningEvent, TurningEvent } from 'app/shared/model/turning-event.model';
 import { TurningEventService } from './turning-event.service';
 import { TurningEventDeleteDialogComponent } from './turning-event-delete-dialog.component';
 import { Account } from 'app/core/user/account.model';
@@ -152,6 +152,33 @@ export class TurningEventComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
+  }
+
+  getTime(turningEvent: TurningEvent): string {
+    let hoursStart = '--';
+    let minutesStart = '--';
+    let hoursEnd = '--';
+    let minutesEnd = '--';
+
+    if (turningEvent.potentialTimeSlots) {
+      let firstSlotStart = turningEvent.potentialTimeSlots[0].start;
+      if (firstSlotStart) {
+        let fsStart = new Date(firstSlotStart);
+        let currentHours = fsStart.getHours();
+        hoursStart = ('0' + currentHours).slice(-2);
+        let currentMinutes = fsStart.getMinutes();
+        minutesStart = ('0' + currentMinutes).slice(-2);
+      }
+      let lastSlotEnd = turningEvent.potentialTimeSlots[turningEvent.potentialTimeSlots.length - 1].end;
+      if (lastSlotEnd) {
+        let lsEnd = new Date(lastSlotEnd);
+        let currentHours = lsEnd.getHours();
+        hoursEnd = ('0' + currentHours).slice(-2);
+        let currentMinutes = lsEnd.getMinutes();
+        minutesEnd = ('0' + currentMinutes).slice(-2);
+      }
+    }
+    return hoursStart + ':' + minutesStart + ' - ' + hoursEnd + ':' + minutesEnd;
   }
 
   protected subscribeToAcceptResponse(result: Observable<HttpResponse<ITurningEvent>>): void {
