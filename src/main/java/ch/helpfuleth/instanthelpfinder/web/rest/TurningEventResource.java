@@ -151,7 +151,12 @@ public class TurningEventResource {
         }
 
         if (Objects.requireNonNull(turningEvent.getAssistants()).size() > 0) {
-            throw new BadRequestAlertException("Turning event already occupied by 3 assistants.", ENTITY_NAME, "tooLate");
+            // remove this event because of trouble
+            Task task = flowableService.getTaskByTurningEventId(turningEvent.getId());
+
+            flowableService.completeTask(task.getId());
+            //throw new BadRequestAlertException("Turning event already occupied by 3 assistants.", ENTITY_NAME, "tooLate");
+            return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, turningEvent.getId().toString())).build();
         }
 
         TurningEvent storedTurningEvent = turningEventRepository.getOne(turningEvent.getId());
@@ -164,14 +169,15 @@ public class TurningEventResource {
         for (TimeSlot timeSlot : selectedTimeSlots) {
 
             Task task = flowableService.getTaskByTimeSlotId(timeSlot.getId());
-            flowableService.addAssistantToTaskById(userRoleId, task.getId());
 
+            // check if user is already part of slot.
             List<org.flowable.identitylink.api.IdentityLink> assistantsForThisTimeSlot = flowableService
-                    .getIdentityLinksForTaskById(task.getId())
-                    .stream()
-                    .filter(identityLink -> identityLink.getType().equals("PARTICIPANT"))
-                    .collect(Collectors.toList());
+                .getIdentityLinksForTaskById(task.getId())
+                .stream()
+                .filter(identityLink -> identityLink.getType().equals("PARTICIPANT"))
+                .collect(Collectors.toList());
 
+            // if for some reason enough people signed up, close task & subtasks
             if (assistantsForThisTimeSlot.size() >= 3) {
                 Set<Assistant> assistants = new HashSet<>();
                 for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
@@ -182,7 +188,58 @@ public class TurningEventResource {
 
                 storedTurningEvent.setAssistants(assistants);
                 storedTurningEvent.setDefiniteTimeSlot(timeSlot);
+
+                // complete subtask of time slot.
                 flowableService.completeTask(task.getId());
+
+                // complete all subtasks as well
+                Collection<TimeSlot> timeSlotList = turningEvent.getPotentialTimeSlots();
+                for(TimeSlot tSlot : timeSlotList) {
+                    Task taskOfSlot = flowableService.getTaskByTimeSlotId(tSlot.getId());
+                    if(taskOfSlot != null) {
+                        flowableService.completeTask(taskOfSlot.getId());
+                    }
+                }
+
+                return ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, storedTurningEvent.getId().toString()))
+                    .body(storedTurningEvent);
+            }
+
+            List <Long> userIdsOfTask = assistantsForThisTimeSlot.stream().map(x -> Long.valueOf(x.getUserId())).collect(Collectors.toList());
+            if(!userIdsOfTask.contains(userRoleId)){
+                flowableService.addAssistantToTaskById(userRoleId, task.getId());
+            }
+
+            assistantsForThisTimeSlot = flowableService
+                    .getIdentityLinksForTaskById(task.getId())
+                    .stream()
+                    .filter(identityLink -> identityLink.getType().equals("PARTICIPANT"))
+                    .collect(Collectors.toList());
+
+            // if after assigning enough assistants are in, close this task/subtasks.
+            if (assistantsForThisTimeSlot.size() >= 3) {
+                Set<Assistant> assistants = new HashSet<>();
+                for (IdentityLink assistantIdentityLink : assistantsForThisTimeSlot) {
+                    Long assistantUserRoleId = Long.valueOf(assistantIdentityLink.getUserId());
+                    Assistant assistant = assistantRepository.getOne(assistantUserRoleId);
+                    assistants.add(assistant);
+                }
+
+                storedTurningEvent.setAssistants(assistants);
+                storedTurningEvent.setDefiniteTimeSlot(timeSlot);
+
+                // complete subtask of time slot.
+                flowableService.completeTask(task.getId());
+
+                // complete all subtasks as well
+                Collection<TimeSlot> timeSlotList = turningEvent.getPotentialTimeSlots();
+                for(TimeSlot tSlot : timeSlotList) {
+                    Task taskOfSlot = flowableService.getTaskByTimeSlotId(tSlot.getId());
+                    if(taskOfSlot != null) {
+                        flowableService.completeTask(taskOfSlot.getId());
+                    }
+                }
 
                 return ResponseEntity.ok()
                     .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, storedTurningEvent.getId().toString()))

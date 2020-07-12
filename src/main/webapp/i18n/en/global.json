@@ -13,7 +13,7 @@
         "assistant": "Assistant",
         "request": "Request",
         "pushSubscription": "Push Subscription",
-        "turningEvent": "Turning Event",
+        "turningEvent": "Overview",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

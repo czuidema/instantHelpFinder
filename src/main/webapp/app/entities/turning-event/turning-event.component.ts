@@ -124,7 +124,7 @@ export class TurningEventComponent implements OnInit, OnDestroy {
 
   setDefiniteTimeSlots(turningEvents: ITurningEvent[]): ITurningEvent[] {
     return turningEvents.map(turningEvent => {
-      if (turningEvent.definiteTimeSlot !== undefined) {
+      if (turningEvent.definiteTimeSlot != undefined) {
         turningEvent.definiteTimeSlot.start = new Date(turningEvent.definiteTimeSlot.start ? turningEvent.definiteTimeSlot.start : '');
         turningEvent.definiteTimeSlot.end = new Date(turningEvent.definiteTimeSlot.end ? turningEvent.definiteTimeSlot.end : '');
       }
